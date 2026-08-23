@@ -54,31 +54,31 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 
 *Idea gráfica*
 
-![Imagen 1](./imagenes/imagen1.png) 
+![Imagen 1](src/Resources/imagenes/imagen1.png) 
 
 
 
-![Imagen 2](./imagenes/imagen2.png) 
+![Imagen 2](src/Resources/imagenes/imagen2.png) 
 
 
 
-![Imagen 3](./imagenes/imagen3.png)     
+![Imagen 3](src/Resources/imagenes/imagen3.png)     
 *Mapa del bosque (posible diseño)*
 
 
-![Imagen 4](./imagenes/imagen4.png)     
+![Imagen 4](src/Resources/imagenes/imagen4.png)     
 *Mapa del edificio (posible diseño)*
 
 
-![Imagen 5](./imagenes/imagen5.png)     
+![Imagen 5](src/Resources/imagenes/imagen5.png)     
 *Jefe final / por nivel -> Policia SWAT*
 
 
-![Imagen 6](./imagenes/imagen6.png)     
+![Imagen 6](src/Resources/imagenes/imagen6.png)     
 *Cientifico loco*
 
 
-![Imagen 7](./imagenes/imagen7.png)     
+![Imagen 7](src/Resources/imagenes/imagen7.png)     
 *Zombie gigante*
 
 

@@ -2,7 +2,9 @@ package view;
 
 import controller.GameController;
 import controller.GameLoopThread;
+import model.Enemy;
 import model.Player;
+import model.ZombieNormal;
 
 import javax.swing.*;
 
@@ -14,7 +16,8 @@ public class MainFrame extends JFrame {
         setResizable(false); // Bloquea el redimensionamiento
 
         Player player = new Player(384, 284);
-        GamePanel gamePanel = new GamePanel(player);
+        Enemy zombie = new ZombieNormal(50, 50);
+        GamePanel gamePanel = new GamePanel(player, zombie);
         add(gamePanel);
         pack();
         setLocationRelativeTo(null);
