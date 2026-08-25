@@ -50,6 +50,14 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 **Persistencia de datos:**
 - Guardado y consulta de mejores puntuaciones (High Scores) en una base de datos SQLite.
 
+### Diagramas de Diseño
+
+#### **Diagrama de Clases UML (Conceptual)**
+![imagen](src/Resources/imagenes/DiagramaClases.png)
+ 
+
+Link de Canva para correcciones: https://canva.link/lj27c3icjlp9dvf
+
 #### **Prototipo de la IGU (Wireframe)**
 
 *Idea gráfica*
