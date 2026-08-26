@@ -1,17 +1,27 @@
 package controller;
 
 import model.Player;
+import model.Proyectil;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener; 
 
-public class GameController extends KeyAdapter {
+import java.util.List;
+
+public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
     private final Player player;
+    private List<Proyectil> proyectiles;
 
-    public GameController( Player player) {
+    public GameController( Player player, List<Proyectil> proyectiles) {
         this.player = player;
+        this.proyectiles = proyectiles;
     }
+
+    // TECLADO
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -35,4 +45,43 @@ public class GameController extends KeyAdapter {
             default -> {}
         }
     }
+
+    // MOUSE
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        player.apuntarHacia(e.getX(), e.getY());
+    }
+
+    @Override
+    // Manteniendo algún botón pulsado
+    public void mouseDragged(MouseEvent e) {
+        player.apuntarHacia(e.getX(), e.getY());
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            System.out.println("Disparo efectuado");
+            Proyectil bala = player.disparar();
+            if (bala != null) {
+                proyectiles.add(bala);
+            }
+        }
+    }
+    
+    // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
+    // public class GameController extends MouseAdapter implements KeyListener {
+    // Investigar.
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
 }
