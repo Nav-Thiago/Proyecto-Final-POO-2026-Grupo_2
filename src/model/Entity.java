@@ -35,4 +35,13 @@ public abstract class Entity {
     public Rectangle getBounds() {
         return new Rectangle((int) x, (int) y, width, height);
     }
+
+    public boolean colisionaCon(Entity otra) {
+        if (otra == null) return false;
+
+        return this.x < otra.getX() + otra.getWidth() &&
+           this.x + this.width > otra.getX() &&
+           this.y < otra.getY() + otra.getHeight() &&
+           this.y + this.height > otra.getY();
+    }
 }
