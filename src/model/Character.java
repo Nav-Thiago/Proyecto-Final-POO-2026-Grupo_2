@@ -29,7 +29,7 @@ public abstract class Character extends Entity {
         }
     }
 
-    protected void takeDamage(int amount) {
+    public void takeDamage(int amount) {
         if (amount < this.health) {
             health -= amount;
         } else {
