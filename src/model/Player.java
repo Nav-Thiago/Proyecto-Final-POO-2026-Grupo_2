@@ -8,11 +8,13 @@ public class Player extends Character {
     private boolean moveRight;
 
     // Constantes para el límite del mapa
-    private final int mapWidth = 800;
-    private final int mapHeight = 600;
+    private final int mapWidth = 1280;
+    private final int mapHeight = 720;
+
+    private double angulo; // Ángulo en radianes hacia el cursor 
 
     public Player(double x, double y) {
-        super(x, y, 64, 64, 7.0, 100, 100);
+        super(x, y, 64, 64, 5.5, 100, 100);
     }
 
     public void setMoveUp(boolean moveUp) {
@@ -45,5 +47,31 @@ public class Player extends Character {
         if (x + width > mapWidth) x = mapWidth - width;
         if (y < 0) y = 0;
         if (y + height > mapHeight) y = mapHeight - height;
+    }
+
+    public void apuntarHacia(double mouseX, double mouseY) {
+        //Centro real del personaje
+        double centroX = this.getX() + (this.getWidth() / 2.0);
+        double centroY = this.getY() + (this.getHeight() / 2.0);
+
+        double deltaX = mouseX - centroX;
+        double deltaY = mouseY - centroY;
+
+        this.angulo = Math.atan2(deltaY, deltaX);
+    }
+    //Getter para obtener el ángulo
+    public double getAngulo() {
+        return angulo;
+    }
+
+    public Proyectil disparar() {
+        // Punto desde donde sale la bala
+        double origenX = this.x + (this.width / 2.0);
+        double origenY = this.y + (this.height / 2.0);
+
+        double dirX = Math.cos(this.angulo);
+        double dirY = Math.sin(this.angulo);
+
+        return new Proyectil(origenX, origenY, dirX, dirY, 12.0, 25.0);
     }
 }
