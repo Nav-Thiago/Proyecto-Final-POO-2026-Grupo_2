@@ -17,8 +17,8 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super("Cazador de zombies"); // Configura el título superior de la pantalla
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Asegura que el programa muera al cerrar la ventana
-        setResizable(false); // Bloquea el redimensionamiento
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Asegura que el programa muera al cerrar la ventana
+        this.setResizable(false); // Bloquea el redimensionamiento
 
         Player player = new Player(384, 284);
         Enemy zombie = new NormalZombie(50, 50);

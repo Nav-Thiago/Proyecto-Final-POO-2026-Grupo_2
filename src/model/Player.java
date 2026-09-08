@@ -8,7 +8,7 @@ public class Player extends Character {
     private boolean moveRight;
 
     // Constantes para el límite del mapa
-    private final int mapWidth = 1280;
+    private final int mapWidth = 1080;
     private final int mapHeight = 720;
 
     private double angle; // Ángulo en radianes hacia el cursor 
@@ -51,11 +51,11 @@ public class Player extends Character {
 
     public void aimAt(double mouseX, double mouseY) {
         //Centro real del personaje
-        double centroX = this.getX() + (this.getWidth() / 2.0);
-        double centroY = this.getY() + (this.getHeight() / 2.0);
+        double centerX = this.getX() + (this.getWidth() / 2.0);
+        double centerY = this.getY() + (this.getHeight() / 2.0);
 
-        double deltaX = mouseX - centroX;
-        double deltaY = mouseY - centroY;
+        double deltaX = mouseX - centerX;
+        double deltaY = mouseY - centerY;
 
         this.angle = Math.atan2(deltaY, deltaX);
     }
