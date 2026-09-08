@@ -11,7 +11,7 @@ public class Player extends Character {
     private final int mapWidth = 1280;
     private final int mapHeight = 720;
 
-    private double angulo; // Ángulo en radianes hacia el cursor 
+    private double angle; // Ángulo en radianes hacia el cursor 
 
     public Player(double x, double y) {
         super(x, y, 64, 64, 5.5, 100, 100);
@@ -49,7 +49,7 @@ public class Player extends Character {
         if (y + height > mapHeight) y = mapHeight - height;
     }
 
-    public void apuntarHacia(double mouseX, double mouseY) {
+    public void aimAt(double mouseX, double mouseY) {
         //Centro real del personaje
         double centroX = this.getX() + (this.getWidth() / 2.0);
         double centroY = this.getY() + (this.getHeight() / 2.0);
@@ -57,21 +57,21 @@ public class Player extends Character {
         double deltaX = mouseX - centroX;
         double deltaY = mouseY - centroY;
 
-        this.angulo = Math.atan2(deltaY, deltaX);
+        this.angle = Math.atan2(deltaY, deltaX);
     }
     //Getter para obtener el ángulo
-    public double getAngulo() {
-        return angulo;
+    public double getAngle() {
+        return angle;
     }
 
-    public Proyectil disparar() {
+    public Projectile shoot() {
         // Punto desde donde sale la bala
         double origenX = this.x + (this.width / 2.0);
         double origenY = this.y + (this.height / 2.0);
 
-        double dirX = Math.cos(this.angulo);
-        double dirY = Math.sin(this.angulo);
+        double dirX = Math.cos(this.angle);
+        double dirY = Math.sin(this.angle);
 
-        return new Proyectil(origenX, origenY, dirX, dirY, 12.0, 25.0);
+        return new Projectile(origenX, origenY, dirX, dirY, 12.0, 25.0);
     }
 }

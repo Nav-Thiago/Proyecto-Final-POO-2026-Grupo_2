@@ -36,7 +36,7 @@ public abstract class Entity {
         return new Rectangle((int) x, (int) y, width, height);
     }
 
-    public boolean colisionaCon(Entity otra) {
+    public boolean collidesWith(Entity otra) {
         if (otra == null) return false;
 
         return this.x < otra.getX() + otra.getWidth() &&

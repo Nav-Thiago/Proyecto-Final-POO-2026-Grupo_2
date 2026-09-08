@@ -1,7 +1,8 @@
 package controller;
 
 import model.Player;
-import model.Proyectil;
+import model.Projectile;
+import view.GamePanel;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -14,11 +15,14 @@ import java.util.List;
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
     private final Player player;
-    private List<Proyectil> proyectiles;
+    private List<Projectile> proyectiles;
 
-    public GameController( Player player, List<Proyectil> proyectiles) {
+    private final GamePanel gamePanel;
+
+    public GameController( Player player, List<Projectile> proyectiles, GamePanel gamePanel) {
         this.player = player;
         this.proyectiles = proyectiles;
+        this.gamePanel = gamePanel;
     }
 
     // TECLADO
@@ -30,6 +34,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> player.setMoveDown(true);
             case KeyEvent.VK_A, KeyEvent.VK_LEFT -> player.setMoveLeft(true);
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> player.setMoveRight(true);
+            case KeyEvent.VK_ENTER -> gamePanel.nextLevel();
             default -> {
             }
         }
@@ -50,20 +55,20 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        player.apuntarHacia(e.getX(), e.getY());
+        player.aimAt(e.getX(), e.getY());
     }
 
     @Override
     // Manteniendo algún botón pulsado
     public void mouseDragged(MouseEvent e) {
-        player.apuntarHacia(e.getX(), e.getY());
+        player.aimAt(e.getX(), e.getY());
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             System.out.println("Disparo efectuado");
-            Proyectil bala = player.disparar();
+            Projectile bala = player.shoot();
             if (bala != null) {
                 proyectiles.add(bala);
             }

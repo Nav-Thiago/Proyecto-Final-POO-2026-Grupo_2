@@ -1,8 +1,8 @@
 package model;
 
-public class ZombieNormal extends Enemy {
+public class NormalZombie extends Enemy {
 
-    public ZombieNormal(double x, double y) {
+    public NormalZombie(double x, double y) {
         super(x, y, 48, 48, 3.0, 2000, 3000);
     }
 

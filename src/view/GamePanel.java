@@ -2,7 +2,8 @@ package view;
 
 import model.Enemy;
 import model.Player;
-import model.Proyectil;
+import model.Projectile;
+import model.NormalZombie;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,16 +17,34 @@ import java.util.List;
 public class GamePanel extends JPanel {
 
     private final Player player;
-    private final Enemy zombie;
-    private final List<Proyectil> proyectiles;
+    private  Enemy zombie;
+    private final List<Projectile> projectiles;
+    
+  
 
     private BufferedImage playerSprite;
     private BufferedImage zombieSprite;
+    private gameStatus status = gameStatus.PLAYING;
+    public enum gameStatus {
+    PLAYING,
+    LEVEL_COMPLETED,
+    GAME_OVER,
+    GAME_WON
+}
 
-    public  GamePanel(Player player, Enemy zombie, List<Proyectil> proyectiles) {
+
+private Enemy createZombieEnemy(int nivel) {
+    return new NormalZombie(600, 300); // por ahora siempre igual, después variás según "nivel"
+}
+
+    
+    private int actualLevel = 1;
+    private final int totalLevels = 3;//a modificar(cantidad de niveles que agreguemos a futuro)
+
+    public  GamePanel(Player player, Enemy zombie, List<Projectile> projectiles) {
         this.player = player;
         this.zombie = zombie;
-        this.proyectiles = proyectiles;
+        this.projectiles = projectiles;
         setPreferredSize(new Dimension(1280, 720));
         setBackground(new Color(30,30, 35));
         setFocusable(true);
@@ -53,23 +72,50 @@ public class GamePanel extends JPanel {
     }
 
     public void update() {
-        if (player.isAlive()) {
-            player.update(getWidth(), getHeight());
-            if (zombie.isAlive()) {
-                zombie.update(player);
-            }
-            
-            for (Proyectil bala : proyectiles) {
-                bala.update(getWidth(), getHeight());
-                if (bala.isActivo() && zombie.isAlive() && bala.colisionaCon(zombie)) {
-                    bala.setActivo(false); //desaparece la bala
-                    zombie.takeDamage((int) bala.getDanio()); // Hace daño al zombie
-                    System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
-                }
-            }
-            proyectiles.removeIf(b -> !b.isActivo());
+    if (status != gameStatus.PLAYING) return;
+
+    if (!player.isAlive()) {
+        status = gameStatus.GAME_OVER;
+        return;
+    }
+
+    player.update(getWidth(), getHeight());
+
+    if (!zombie.isAlive()) {
+        if (actualLevel < totalLevels) {
+            status = gameStatus.LEVEL_COMPLETED;
+        } else {
+            status = gameStatus.GAME_WON;
+        }
+        return;
+    }
+
+    zombie.update(player);
+
+    for (Projectile bullet : projectiles) {
+        bullet.update(getWidth(), getHeight());
+        if (bullet.isActive() && zombie.isAlive() && bullet.collidesWith(zombie)) {
+            bullet.setActive(false);
+            zombie.takeDamage((int) bullet.getDamage());
+            System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
         }
     }
+    projectiles.removeIf(b -> !b.isActive());
+}
+        
+        
+    
+
+    private void showFinalMessage(Graphics2D g2, String texto, Color color) {
+    g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
+    g2.fillRect(0, 0, getWidth(), getHeight());
+
+    g2.setColor(color);
+    g2.setFont(new Font("Monospaced", Font.BOLD, 60));
+    FontMetrics fm = g2.getFontMetrics();
+    int textX = (getWidth() - fm.stringWidth(texto)) / 2;
+    int textY = getHeight() / 2;
+    g2.drawString(texto, textX, textY);}
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -83,11 +129,11 @@ public class GamePanel extends JPanel {
             if (zombieSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
 
-            double centroX = zombie.getX() + (zombie.getWidth() / 2.0);
-            double centroY = zombie.getY() + (zombie.getHeight() / 2.0);
+            double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
+            double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
-            g2.translate(centroX, centroY);
-            g2.rotate(zombie.getAngulo());
+            g2.translate(centerX, centerY);
+            g2.rotate(zombie.getAngle());
 
             int w = (int) zombie.getWidth();
             int h = (int) zombie.getHeight();
@@ -97,11 +143,11 @@ public class GamePanel extends JPanel {
 
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-            String textoVida = "HP: " + zombie.getHealth();
+            String lifeText = "HP: " + zombie.getHealth();
 
-            int textoX = (int) zombie.getX();
-            int textoY = (int) zombie.getY();
-            g2.drawString(textoVida, textoX, textoY);
+            int textX = (int) zombie.getX();
+            int textY = (int) zombie.getY();
+            g2.drawString(lifeText, textX, textY);
         } else {
 
             g2.setColor(Color.RED);
@@ -110,17 +156,17 @@ public class GamePanel extends JPanel {
     }
         
         g2.setColor(Color.YELLOW);
-        for (Proyectil bala : proyectiles) {
-            g2.fillOval((int) bala.getX(), (int) bala.getY(), (int) bala.getWidth(), (int) bala.getHeight());
+        for (Projectile bullet : projectiles) {
+            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), (int) bullet.getWidth(), (int) bullet.getHeight());
         }
         if (playerSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
 
-            double centroX = player.getX() + (player.getWidth() / 2.0);
-            double centroY = player.getY() + (player.getHeight() / 2.0);
+            double centerX = player.getX() + (player.getWidth() / 2.0);
+            double centerY = player.getY() + (player.getHeight() / 2.0);
 
-            g2.translate(centroX, centroY);
-            g2.rotate(player.getAngulo());
+            g2.translate(centerX, centerY);
+            g2.rotate(player.getAngle());
 
             int w = (int) player.getWidth();
             int h = (int) player.getHeight();
@@ -135,8 +181,26 @@ public class GamePanel extends JPanel {
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
 
-        String textoVida = "Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth();
+        String lifeText = "Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth();
 
-        g2.drawString(textoVida, 20, 30); // Dibuja el texto en la esquina superior izquierda
+        g2.drawString(lifeText, 20, 30);
+        
+        // Dibuja el texto en la esquina superior izquierda
+          if (status == gameStatus.GAME_OVER) {
+    showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
+} else if (status == gameStatus.LEVEL_COMPLETED) {
+    showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON EXITO!", Color.YELLOW);
+} else if (status == gameStatus.GAME_WON) {
+    showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+}
     }
+
+    public void nextLevel() {
+    if (status != gameStatus.LEVEL_COMPLETED) return;
+
+    actualLevel++;
+    zombie = createZombieEnemy(actualLevel); // ver punto 3
+    projectiles.clear();
+    status = gameStatus.PLAYING;
+}
 }

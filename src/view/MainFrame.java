@@ -4,8 +4,8 @@ import controller.GameController;
 import controller.GameLoopThread;
 import model.Enemy;
 import model.Player;
-import model.ZombieNormal;
-import model.Proyectil;
+import model.NormalZombie;
+import model.Projectile;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
 
-    List<Proyectil> proyectiles = new ArrayList<>();
+    List<Projectile> projectiles = new ArrayList<>();
 
     public MainFrame() {
         super("Cazador de zombies"); // Configura el título superior de la pantalla
@@ -21,13 +21,13 @@ public class MainFrame extends JFrame {
         setResizable(false); // Bloquea el redimensionamiento
 
         Player player = new Player(384, 284);
-        Enemy zombie = new ZombieNormal(50, 50);
-        GamePanel gamePanel = new GamePanel(player, zombie, proyectiles);
+        Enemy zombie = new NormalZombie(50, 50);
+        GamePanel gamePanel = new GamePanel(player, zombie, projectiles);
         add(gamePanel);
         pack();
         setLocationRelativeTo(null);
 
-        GameController controller = new GameController(player, proyectiles);
+        GameController controller = new GameController(player, projectiles, gamePanel);
         gamePanel.addKeyListener(controller);
         gamePanel.addMouseMotionListener(controller);
         gamePanel.addMouseListener(controller);
