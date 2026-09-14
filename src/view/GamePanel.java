@@ -1,6 +1,7 @@
 package view;
 
 import model.Enemy;
+import model.EnemySpawner;
 import model.Player;
 import model.Projectile;
 import model.NormalZombie;
@@ -17,10 +18,10 @@ import java.util.List;
 public class GamePanel extends JPanel {
 
     private final Player player;
-    private  Enemy zombie;
+    private final List<Enemy> enemies;
     private final List<Projectile> projectiles;
-    
-  
+    private EnemySpawner spawner;
+
 
     private BufferedImage playerSprite;
     private BufferedImage zombieSprite;
@@ -41,10 +42,11 @@ private Enemy createZombieEnemy(int nivel) {
     private int actualLevel = 1;
     private final int totalLevels = 3;//a modificar(cantidad de niveles que agreguemos a futuro)
 
-    public  GamePanel(Player player, Enemy zombie, List<Projectile> projectiles) {
+    public  GamePanel(Player player, List<Enemy> enemies, List<Projectile> projectiles) {
         this.player = player;
-        this.zombie = zombie;
+        this.enemies = enemies;
         this.projectiles = projectiles;
+        this.spawner = new EnemySpawner(this.enemies, 2000, 10);
         setPreferredSize(new Dimension(1280, 720));
         setBackground(new Color(30,30, 35));
         setFocusable(true);
@@ -71,41 +73,48 @@ private Enemy createZombieEnemy(int nivel) {
         }
     }
 
-    public void update() {
-    if (status != gameStatus.PLAYING) return;
+  public void update() {
+        if (status != gameStatus.PLAYING) return;
 
-    if (!player.isAlive()) {
-        status = gameStatus.GAME_OVER;
-        return;
-    }
-
-    player.update(getWidth(), getHeight());
-
-    if (!zombie.isAlive()) {
-        if (actualLevel < totalLevels) {
-            status = gameStatus.LEVEL_COMPLETED;
-        } else {
-            status = gameStatus.GAME_WON;
+        if (!player.isAlive()) {
+            status = gameStatus.GAME_OVER;
+            return;
         }
-        return;
-    }
 
-    zombie.update(player);
+        player.update(getWidth(), getHeight());
 
-    for (Projectile bullet : projectiles) {
-        bullet.update(getWidth(), getHeight());
-        if (bullet.isActive() && zombie.isAlive() && bullet.collidesWith(zombie)) {
-            bullet.setActive(false);
-            zombie.takeDamage((int) bullet.getDamage());
-            System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
+        spawner.update();
+
+        boolean todosMuertos = true; 
+
+        for (Enemy zombie : enemies) { 
+            if (zombie.isAlive()) {
+                todosMuertos = false; 
+                zombie.update(player);
+
+                for (Projectile bullet : projectiles) {
+                    bullet.update(getWidth(), getHeight());
+                    if (bullet.isActive() && bullet.collidesWith(zombie)) {
+                        bullet.setActive(false);
+                        zombie.takeDamage((int) bullet.getDamage());
+                        System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
+                    }
+                }
+            }
         }
+
+        projectiles.removeIf(b -> !b.isActive());
+
+        if (todosMuertos && spawner.isWaveComplete()) {
+            if (actualLevel < totalLevels) {
+                status = gameStatus.LEVEL_COMPLETED;
+            } else {
+                status = gameStatus.GAME_WON;
+            }
+        }
+
     }
-    projectiles.removeIf(b -> !b.isActive());
-}
-        
-        
     
-
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
     g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
     g2.fillRect(0, 0, getWidth(), getHeight());
@@ -125,6 +134,8 @@ private Enemy createZombieEnemy(int nivel) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
+        for (Enemy zombie : enemies){
+
         if (zombie.isAlive()) {
             if (zombieSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
@@ -140,6 +151,9 @@ private Enemy createZombieEnemy(int nivel) {
             g2.drawImage(zombieSprite, -w / 2, -h / 2, w, h, null);
 
             g2.setTransform(transformOriginal);
+
+            }
+    
 
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Monospaced", Font.BOLD, 20));
@@ -197,9 +211,10 @@ private Enemy createZombieEnemy(int nivel) {
 
     public void nextLevel() {
     if (status != gameStatus.LEVEL_COMPLETED) return;
-
+    
     actualLevel++;
-    zombie = createZombieEnemy(actualLevel); // ver punto 3
+    enemies.clear();
+    enemies.add(createZombieEnemy(actualLevel));
     projectiles.clear();
     status = gameStatus.PLAYING;
 }

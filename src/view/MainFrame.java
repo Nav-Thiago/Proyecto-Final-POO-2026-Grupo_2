@@ -21,8 +21,9 @@ public class MainFrame extends JFrame {
         this.setResizable(false); // Bloquea el redimensionamiento
 
         Player player = new Player(384, 284);
-        Enemy zombie = new NormalZombie(50, 50);
-        GamePanel gamePanel = new GamePanel(player, zombie, projectiles);
+        List<Enemy> enemies = new  ArrayList<>();
+        enemies.add(new NormalZombie(50, 50));
+        GamePanel gamePanel = new GamePanel(player, enemies, projectiles);
         add(gamePanel);
         pack();
         setLocationRelativeTo(null);
