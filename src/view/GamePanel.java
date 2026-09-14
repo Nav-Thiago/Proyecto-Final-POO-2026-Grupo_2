@@ -19,7 +19,7 @@ public class GamePanel extends JPanel {
 
     private final Player player;
     private final List<Enemy> enemies;
-    private final List<Bullet> projectiles;
+    private final List<Bullet> bullets;
     private EnemySpawner spawner;
 
 
@@ -27,25 +27,23 @@ public class GamePanel extends JPanel {
     private BufferedImage zombieSprite;
     private gameStatus status = gameStatus.PLAYING;
     public enum gameStatus {
-    PLAYING,
-    LEVEL_COMPLETED,
-    GAME_OVER,
-    GAME_WON
-}
+        PLAYING,
+        LEVEL_COMPLETED,
+        GAME_OVER,
+        GAME_WON
+    }
 
+    private Enemy createZombieEnemy(int nivel) {
+        return new NormalZombie(600, 300); // por ahora siempre igual, después varía según "nivel"
+    }
 
-private Enemy createZombieEnemy(int nivel) {
-    return new NormalZombie(600, 300); // por ahora siempre igual, después variás según "nivel"
-}
-
-    
     private int actualLevel = 1;
     private final int totalLevels = 3;//a modificar(cantidad de niveles que agreguemos a futuro)
 
-    public  GamePanel(Player player, List<Enemy> enemies, List<Bullet> projectiles) {
+    public  GamePanel(Player player, List<Enemy> enemies, List<Bullet> bullets) {
         this.player = player;
         this.enemies = enemies;
-        this.projectiles = projectiles;
+        this.bullets = bullets;
         this.spawner = new EnemySpawner(this.enemies, 2000, 10);
         setPreferredSize(new Dimension(1280, 720));
         setBackground(new Color(30,30, 35));
@@ -92,7 +90,7 @@ private Enemy createZombieEnemy(int nivel) {
                 todosMuertos = false; 
                 zombie.update(player);
 
-                for (Bullet bullet : projectiles) {
+                for (Bullet bullet : bullets) {
                     bullet.update(getWidth(), getHeight());
                     if (bullet.isActive() && bullet.collidesWith(zombie)) {
                         bullet.setActive(false);
@@ -103,7 +101,7 @@ private Enemy createZombieEnemy(int nivel) {
             }
         }
 
-        projectiles.removeIf(b -> !b.isActive());
+        bullets.removeIf(b -> !b.isActive());
 
         if (todosMuertos && spawner.isWaveComplete()) {
             if (actualLevel < totalLevels) {
@@ -120,11 +118,12 @@ private Enemy createZombieEnemy(int nivel) {
     g2.fillRect(0, 0, getWidth(), getHeight());
 
     g2.setColor(color);
-    g2.setFont(new Font("Monospaced", Font.BOLD, 60));
+    g2.setFont(new Font("Monospaced", Font.BOLD, 40));
     FontMetrics fm = g2.getFontMetrics();
     int textX = (getWidth() - fm.stringWidth(texto)) / 2;
     int textY = getHeight() / 2;
-    g2.drawString(texto, textX, textY);}
+    g2.drawString(texto, textX, textY);
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -134,44 +133,43 @@ private Enemy createZombieEnemy(int nivel) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        for (Enemy zombie : enemies){
+        for (Enemy zombie : enemies) {
 
-        if (zombie.isAlive()) {
-            if (zombieSprite != null) {
-            AffineTransform transformOriginal = g2.getTransform();
+            if (zombie.isAlive()) {
+                if (zombieSprite != null) {
+                    AffineTransform transformOriginal = g2.getTransform();
 
-            double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
-            double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
+                    double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
+                    double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
-            g2.translate(centerX, centerY);
-            g2.rotate(zombie.getAngle());
+                    g2.translate(centerX, centerY);
+                    g2.rotate(zombie.getAngle());
 
-            int w = (int) zombie.getWidth();
-            int h = (int) zombie.getHeight();
-            g2.drawImage(zombieSprite, -w / 2, -h / 2, w, h, null);
+                    int w = (int) zombie.getWidth();
+                    int h = (int) zombie.getHeight();
+                    g2.drawImage(zombieSprite, -w / 2, -h / 2, w, h, null);
 
-            g2.setTransform(transformOriginal);
+                    g2.setTransform(transformOriginal);
 
+                } else {
+
+                    g2.setColor(Color.RED);
+                    g2.fillOval((int) zombie.getX(), (int) zombie.getY(), zombie.getWidth(), zombie.getHeight());
+                }
+
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+                String lifeText = "HP: " + zombie.getHealth();
+
+                int textX = (int) zombie.getX();
+                int textY = (int) zombie.getY();
+                g2.drawString(lifeText, textX, textY);
             }
-    
-
-            g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-            String lifeText = "HP: " + zombie.getHealth();
-
-            int textX = (int) zombie.getX();
-            int textY = (int) zombie.getY();
-            g2.drawString(lifeText, textX, textY);
-        } else {
-
-            g2.setColor(Color.RED);
-            g2.fillOval((int) zombie.getX(), (int) zombie.getY(), zombie.getWidth(), zombie.getHeight());
         }
-    }
-        
+
         g2.setColor(Color.YELLOW);
-        for (Bullet bullet : projectiles) {
-            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), (int) bullet.getWidth(), (int) bullet.getHeight());
+        for (Bullet bullet : bullets) {
+            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth(), bullet.getHeight());
         }
         if (playerSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
@@ -195,27 +193,28 @@ private Enemy createZombieEnemy(int nivel) {
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
 
+        // Dibuja el texto en la esquina superior izquierda
         String lifeText = "Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth();
 
         g2.drawString(lifeText, 20, 30);
-        
-        // Dibuja el texto en la esquina superior izquierda
-          if (status == gameStatus.GAME_OVER) {
-    showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
-} else if (status == gameStatus.LEVEL_COMPLETED) {
-    showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON EXITO!", Color.YELLOW);
-} else if (status == gameStatus.GAME_WON) {
-    showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
-}
+
+        if (status == gameStatus.GAME_OVER) {
+            showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
+        } else if (status == gameStatus.LEVEL_COMPLETED) {
+            showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
+        } else if (status == gameStatus.GAME_WON) {
+            showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+        }
     }
 
-    public void nextLevel() {
-    if (status != gameStatus.LEVEL_COMPLETED) return;
-    
-    actualLevel++;
-    enemies.clear();
-    enemies.add(createZombieEnemy(actualLevel));
-    projectiles.clear();
-    status = gameStatus.PLAYING;
+        public void nextLevel() {
+            if (status != gameStatus.LEVEL_COMPLETED) return;
+
+            actualLevel++;
+            enemies.clear();
+            enemies.add(createZombieEnemy(actualLevel));
+            bullets.clear();
+            status = gameStatus.PLAYING;
+        }
 }
-}
+
