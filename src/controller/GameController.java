@@ -1,7 +1,7 @@
 package controller;
 
 import model.Player;
-import model.Projectile;
+import model.Bullet;
 import view.GamePanel;
 
 import java.awt.event.KeyAdapter;
@@ -15,11 +15,11 @@ import java.util.List;
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
     private final Player player;
-    private List<Projectile> proyectiles;
+    private List<Bullet> proyectiles;
 
     private final GamePanel gamePanel;
 
-    public GameController( Player player, List<Projectile> proyectiles, GamePanel gamePanel) {
+    public GameController( Player player, List<Bullet> proyectiles, GamePanel gamePanel) {
         this.player = player;
         this.proyectiles = proyectiles;
         this.gamePanel = gamePanel;
@@ -68,7 +68,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             System.out.println("Disparo efectuado");
-            Projectile bala = player.shoot();
+            Bullet bala = player.shoot();
             if (bala != null) {
                 proyectiles.add(bala);
             }

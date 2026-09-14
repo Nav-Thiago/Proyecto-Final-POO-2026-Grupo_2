@@ -3,7 +3,7 @@ package view;
 import model.Enemy;
 import model.EnemySpawner;
 import model.Player;
-import model.Projectile;
+import model.Bullet;
 import model.NormalZombie;
 
 import javax.imageio.ImageIO;
@@ -19,7 +19,7 @@ public class GamePanel extends JPanel {
 
     private final Player player;
     private final List<Enemy> enemies;
-    private final List<Projectile> projectiles;
+    private final List<Bullet> projectiles;
     private EnemySpawner spawner;
 
 
@@ -42,7 +42,7 @@ private Enemy createZombieEnemy(int nivel) {
     private int actualLevel = 1;
     private final int totalLevels = 3;//a modificar(cantidad de niveles que agreguemos a futuro)
 
-    public  GamePanel(Player player, List<Enemy> enemies, List<Projectile> projectiles) {
+    public  GamePanel(Player player, List<Enemy> enemies, List<Bullet> projectiles) {
         this.player = player;
         this.enemies = enemies;
         this.projectiles = projectiles;
@@ -92,7 +92,7 @@ private Enemy createZombieEnemy(int nivel) {
                 todosMuertos = false; 
                 zombie.update(player);
 
-                for (Projectile bullet : projectiles) {
+                for (Bullet bullet : projectiles) {
                     bullet.update(getWidth(), getHeight());
                     if (bullet.isActive() && bullet.collidesWith(zombie)) {
                         bullet.setActive(false);
@@ -170,7 +170,7 @@ private Enemy createZombieEnemy(int nivel) {
     }
         
         g2.setColor(Color.YELLOW);
-        for (Projectile bullet : projectiles) {
+        for (Bullet bullet : projectiles) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), (int) bullet.getWidth(), (int) bullet.getHeight());
         }
         if (playerSprite != null) {

@@ -64,7 +64,7 @@ public class Player extends Character {
         return angle;
     }
 
-    public Projectile shoot() {
+    public Bullet shoot() {
         // Punto desde donde sale la bala
         double origenX = this.x + (this.width / 2.0);
         double origenY = this.y + (this.height / 2.0);
@@ -72,6 +72,6 @@ public class Player extends Character {
         double dirX = Math.cos(this.angle);
         double dirY = Math.sin(this.angle);
 
-        return new Projectile(origenX, origenY, dirX, dirY, 12.0, 25.0);
+        return new Bullet(origenX, origenY, dirX, dirY, 12.0, 25.0);
     }
 }

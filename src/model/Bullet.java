@@ -2,14 +2,14 @@ package model;
 
 import java.awt.Rectangle; 
 
-public class Projectile extends Entity {
+public class Bullet extends Entity {
     private double dirX;
     private double dirY;
     private double speed;
     private double damage;
     private boolean active; // booleano para saber si la bala debe 'desaparecer'
 
-    public Projectile(double x, double y, double dirX, double dirY, double speed, double damage) {
+    public Bullet(double x, double y, double dirX, double dirY, double speed, double damage) {
         super(x, y, 6, 6);
         this.dirX = dirX;
         this.dirY = dirY;

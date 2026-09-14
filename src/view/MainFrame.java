@@ -5,7 +5,7 @@ import controller.GameLoopThread;
 import model.Enemy;
 import model.Player;
 import model.NormalZombie;
-import model.Projectile;
+import model.Bullet;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
 
-    List<Projectile> projectiles = new ArrayList<>();
+    List<Bullet> projectiles = new ArrayList<>();
 
     public MainFrame() {
         super("Cazador de zombies"); // Configura el título superior de la pantalla
