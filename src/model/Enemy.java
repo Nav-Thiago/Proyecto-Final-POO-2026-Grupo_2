@@ -30,7 +30,7 @@ public abstract class Enemy extends Character {
         move(dx, dy);
 
         long currentTime = System.currentTimeMillis();
-        if (getBounds().intersects(target.getBounds()) && currentTime - lastAttack >= ATTACK_COOLDOWN) {
+        if (this.getBounds().intersects(target.getBounds()) && currentTime - lastAttack >= ATTACK_COOLDOWN) {
             target.takeDamage(attack());
             lastAttack = currentTime;
         }

@@ -85,21 +85,21 @@ public class GamePanel extends JPanel {
 
         boolean todosMuertos = true; 
 
-        for (Enemy zombie : enemies) { 
-            if (zombie.isAlive()) {
-                todosMuertos = false; 
-                zombie.update(player);
+        for (Enemy zombie : enemies) {
+          if (zombie.isAlive()) {
+              todosMuertos = false;
+              zombie.update(player);
 
-                for (Bullet bullet : bullets) {
-                    bullet.update(getWidth(), getHeight());
-                    if (bullet.isActive() && bullet.collidesWith(zombie)) {
-                        bullet.setActive(false);
-                        zombie.takeDamage((int) bullet.getDamage());
-                        System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
-                    }
-                }
-            }
-        }
+              for (Bullet bullet : bullets) {
+                  bullet.update(getWidth(), getHeight());
+                  if (bullet.isActive() && bullet.collidesWith(zombie)) {
+                      bullet.setActive(false);
+                      zombie.takeDamage((int) bullet.getDamage());
+                      System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
+                  }
+              }
+          }
+      }
 
         bullets.removeIf(b -> !b.isActive());
 
