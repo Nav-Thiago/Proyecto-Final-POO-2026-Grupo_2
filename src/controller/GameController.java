@@ -67,11 +67,8 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            System.out.println("Disparo efectuado");
-            Bullet bala = player.shoot();
-            if (bala != null) {
-                proyectiles.add(bala);
-            }
+            List<Bullet> bullets = player.shoot();
+            proyectiles.addAll(bullets);
         }
     }
     

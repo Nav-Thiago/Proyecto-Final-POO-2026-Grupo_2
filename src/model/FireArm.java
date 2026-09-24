@@ -2,9 +2,9 @@ package model;
 
 import java.util.List;
 
-public abstract class FireArm extends Weapon {
+public abstract class FireArm extends Weapon implements AmmoHolder {
 
-    private int actualMunition;
+    protected int actualMunition;
     private int maxMunition;
 
     public FireArm(int damage, long cooldown, int actualMunition, int maxMunition){
@@ -16,9 +16,9 @@ public abstract class FireArm extends Weapon {
 
     @Override
     public List<Bullet> shoot(double x, double y, double angle){
-
         long currentTime = System.currentTimeMillis();
-        if (this.actualMunition > 0 || currentTime - this.lastShoot >= this.cooldown) {
+
+        if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
 
             this.actualMunition -= 1;
             this.lastShoot = currentTime;
@@ -30,5 +30,16 @@ public abstract class FireArm extends Weapon {
         }
 
         return List.of();
+    }
+
+    @Override
+    public void addAmmo(int amount) {
+        // El math.min asegura que no se pase de la munición máxima
+        this.actualMunition = Math.min(this.actualMunition + amount, this.maxMunition);
+    }
+
+    @Override
+    public void refillAmmo() {
+        this.actualMunition = this.maxMunition;
     }
 }
