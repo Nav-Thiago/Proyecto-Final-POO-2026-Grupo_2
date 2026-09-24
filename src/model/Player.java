@@ -72,6 +72,6 @@ public class Player extends Character {
         double dirX = Math.cos(this.angle);
         double dirY = Math.sin(this.angle);
 
-        return new Bullet(origenX, origenY, dirX, dirY, 12.0, 25.0);
+        return new Bullet(origenX, origenY, dirX, dirY, 8.0, 25.0);
     }
 }

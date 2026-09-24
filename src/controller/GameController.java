@@ -2,6 +2,7 @@ package controller;
 
 import model.Player;
 import model.Bullet;
+import model.GameModel;
 import view.GamePanel;
 
 import java.awt.event.KeyAdapter;
@@ -14,15 +15,18 @@ import java.util.List;
 
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
+
+    private final GameModel modelo;
     private final Player player;
     private List<Bullet> proyectiles;
 
     private final GamePanel gamePanel;
 
-    public GameController( Player player, List<Bullet> proyectiles, GamePanel gamePanel) {
+    public GameController( Player player, List<Bullet> proyectiles, GamePanel gamePanel, GameModel modelo) {
         this.player = player;
         this.proyectiles = proyectiles;
         this.gamePanel = gamePanel;
+        this.modelo = modelo;
     }
 
     // TECLADO
@@ -34,7 +38,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> player.setMoveDown(true);
             case KeyEvent.VK_A, KeyEvent.VK_LEFT -> player.setMoveLeft(true);
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> player.setMoveRight(true);
-            case KeyEvent.VK_ENTER -> gamePanel.nextLevel();
+            case KeyEvent.VK_ENTER -> modelo.nextLevel();
             default -> {
             }
         }
