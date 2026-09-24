@@ -16,6 +16,9 @@ public abstract class Character extends Entity {
     public int getHealth() {
         return health;
     }
+    public void setHealth(int health) {
+        this.health = health;
+    }
 
     public int getMaxHealth() {
         return maxHealth;
@@ -27,6 +30,14 @@ public abstract class Character extends Entity {
             x += (dx/length * speed);
             y += (dy/length * speed);
         }
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 
     public void takeDamage(int amount) {
