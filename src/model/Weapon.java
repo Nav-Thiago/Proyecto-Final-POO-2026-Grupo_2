@@ -5,7 +5,7 @@ import java.util.List;
 public abstract class Weapon {
 
     protected long cooldown;
-    protected long lastShoot;
+    protected long lastShoot = 0;
     private int damage;
 
     public Weapon(int damage) {

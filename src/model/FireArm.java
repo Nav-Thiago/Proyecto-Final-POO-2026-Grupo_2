@@ -2,21 +2,33 @@ package model;
 
 import java.util.List;
 
-public class FireArm extends Weapon {
+public abstract class FireArm extends Weapon {
 
-    public FireArm(double x, double y, int width, int height, int damage){
-        super(x, y, width, height, damage);
+    private int actualMunition;
+    private int maxMunition;
+
+    public FireArm(int damage, long cooldown, int actualMunition, int maxMunition){
+        super(damage);
+        this.cooldown = cooldown;
+        this.actualMunition = actualMunition;
+        this.maxMunition = maxMunition;
     }
 
     @Override
-    public List<Bullet> shoot(double x, double y, double angle) {
-        // Punto desde donde sale la bala
-        double origenX = this.x + (this.width / 2.0);
-        double origenY = this.y + (this.height / 2.0);
+    public List<Bullet> shoot(double x, double y, double angle){
 
-        double dirX = Math.cos(angle);
-        double dirY = Math.sin(angle);
+        long currentTime = System.currentTimeMillis();
+        if (this.actualMunition > 0 || currentTime - this.lastShoot >= this.cooldown) {
 
-        return List.of(origenX, origenY, dirX, dirY, 12.0, this.getDamage());
+            this.actualMunition -= 1;
+            this.lastShoot = currentTime;
+
+            double dirX = Math.cos(angle);
+            double dirY = Math.sin(angle);
+
+            return List.of(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
+        }
+
+        return List.of();
     }
 }
