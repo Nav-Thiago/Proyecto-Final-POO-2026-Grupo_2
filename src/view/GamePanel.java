@@ -1,12 +1,12 @@
 package view;
 
 import model.Enemy;
-import model.EnemySpawner;
 import model.Player;
 import model.Bullet;
 import model.NormalZombie;
 import model.PowerUp;          // [POWERUP]
 import model.PowerUpSpawner;   // [POWERUP]
+import model.GameModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -54,8 +54,19 @@ public class GamePanel extends JPanel {
         this.bullets = bullets;
         this.spawner = new EnemySpawner(this.enemies, 2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(powerUps, 8000, 3); // [POWERUP] uno cada 8 s, máximo 3 en el mapa
+
+
+public class GamePanel extends JPanel {
+
+    private final GameModel model; // La única dependencia estructural
+    private BufferedImage playerSprite;
+    private BufferedImage zombieSprite;
+
+    public GamePanel(GameModel model) {
+        this.model = model;
+
         setPreferredSize(new Dimension(1280, 720));
-        setBackground(new Color(30,30, 35));
+        setBackground(new Color(30, 30, 35));
         setFocusable(true);
         loadSprites();
         
@@ -63,15 +74,11 @@ public class GamePanel extends JPanel {
 
     private void loadSprites() {
         try (InputStream in = getClass().getResourceAsStream("/Resources/imagenes/player_idle.png")) {
-            if (in == null) {
-                throw new IOException("No se encontró /imagenes/player_idle.png en el classpath");
-            }
-            playerSprite = ImageIO.read(in);
-        } catch (IOException e) {
-            System.err.println("Error cargando sprite del jugador: " + e.getMessage());
-        }
+            if (in != null) playerSprite = ImageIO.read(in);
+        } catch (IOException e) { System.err.println("Error jugador: " + e.getMessage()); }
 
         try (InputStream in = getClass().getResourceAsStream("/Resources/imagenes/zombie_idle.png")) {
+
             if (in == null) {
                 throw new IOException("No se encontró /imagenes/zombie_idle.png en el classpath");
             }
@@ -160,70 +167,68 @@ public class GamePanel extends JPanel {
     int textX = (getWidth() - fm.stringWidth(texto)) / 2;
     int textY = getHeight() / 2;
     g2.drawString(texto, textX, textY);
+
+            if (in != null) zombieSprite = ImageIO.read(in);
+        } catch (IOException e) { System.err.println("Error zombie: " + e.getMessage()); }
+
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
         drawPowerUps(g2); // [POWERUP] primero, para que queden debajo de zombies y jugador
       
         
         for (Enemy zombie : enemies) {
+        GameModel.gameStatus currentStatus = model.getStatus();
+        Player player = model.getPlayer();
 
-            if (zombie.isAlive()) {
+
+        if (currentStatus == GameModel.gameStatus.PLAYING || currentStatus == GameModel.gameStatus.GAME_OVER) {
+            
+            for (Enemy zombie : model.getEnemies()) {
                 if (zombieSprite != null) {
                     AffineTransform transformOriginal = g2.getTransform();
-
                     double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
                     double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
                     g2.translate(centerX, centerY);
                     g2.rotate(zombie.getAngle());
-
                     int w = (int) zombie.getWidth();
                     int h = (int) zombie.getHeight();
                     g2.drawImage(zombieSprite, -w / 2, -h / 2, w, h, null);
-
                     g2.setTransform(transformOriginal);
-
                 } else {
-
                     g2.setColor(Color.RED);
                     g2.fillOval((int) zombie.getX(), (int) zombie.getY(), zombie.getWidth(), zombie.getHeight());
                 }
 
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-                String lifeText = "HP: " + zombie.getHealth();
+                g2.drawString("HP: " + zombie.getHealth(), (int) zombie.getX(), (int) zombie.getY());
+            }
 
-                int textX = (int) zombie.getX();
-                int textY = (int) zombie.getY();
-                g2.drawString(lifeText, textX, textY);
+            g2.setColor(Color.GREEN);
+            for (Bullet poison : model.getPoisonBullets()) {
+                g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), (int) poison.getHeight());
+            }
+
+            g2.setColor(Color.YELLOW);
+            for (Bullet bullet : model.getPlayerBullets()) {
+                g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth(), bullet.getHeight());
             }
         }
 
-        g2.setColor(Color.YELLOW);
-        for (Bullet bullet : bullets) {
-            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth(), bullet.getHeight());
-        }
         if (playerSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
-
             double centerX = player.getX() + (player.getWidth() / 2.0);
             double centerY = player.getY() + (player.getHeight() / 2.0);
-
             g2.translate(centerX, centerY);
             g2.rotate(player.getAngle());
-
-            int w = (int) player.getWidth();
-            int h = (int) player.getHeight();
-            g2.drawImage(playerSprite, -w / 2, -h / 2, w, h, null);
-
+            g2.drawImage(playerSprite, -(int)player.getWidth() / 2, -(int)player.getHeight() / 2, (int)player.getWidth(), (int)player.getHeight(), null);
             g2.setTransform(transformOriginal);
         } else {
             g2.setColor(Color.BLUE);
@@ -231,7 +236,8 @@ public class GamePanel extends JPanel {
         }
 
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
+        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+        g2.drawString("Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth(), 20, 30);
 
         // Dibuja el texto en la esquina superior izquierda
         String lifeText = "Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth();
@@ -249,10 +255,11 @@ public class GamePanel extends JPanel {
         }
 
         if (status == gameStatus.GAME_OVER) {
+        if (currentStatus == GameModel.gameStatus.GAME_OVER) {
             showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
-        } else if (status == gameStatus.LEVEL_COMPLETED) {
+        } else if (currentStatus == GameModel.gameStatus.LEVEL_COMPLETED) {
             showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
-        } else if (status == gameStatus.GAME_WON) {
+        } else if (currentStatus == GameModel.gameStatus.GAME_WON) {
             showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
         }
     }
@@ -267,4 +274,14 @@ public class GamePanel extends JPanel {
             powerUps.clear(); // [POWERUP]
             status = gameStatus.PLAYING;
         }
+    private void showFinalMessage(Graphics2D g2, String texto, Color color) {
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.setColor(color);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 40));
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = (getWidth() - fm.stringWidth(texto)) / 2;
+        int textY = getHeight() / 2;
+        g2.drawString(texto, textX, textY);
+    }
 }

@@ -148,5 +148,6 @@ public class Player extends Character {
 
     public void refillAmmo() {
         if (ammoHolder != null) ammoHolder.refillAmmo();
+        return new Bullet(origenX, origenY, dirX, dirY, 8.0, 25.0);
     }
 }
