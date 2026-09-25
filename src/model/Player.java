@@ -176,8 +176,14 @@ public class Player extends Character {
         if (ammoHolder != null) ammoHolder.addAmmo(amount);
     }
 
-    public void refillAmmo() {
-        if (ammoHolder != null) ammoHolder.refillAmmo();
-    }
+    public Bullet refillAmmo() { 
+    double origenX = this.x + (this.width / 2.0);
+    double origenY = this.y + (this.height / 2.0);
+    
+    double dirX = Math.cos(this.angle); 
+    double dirY = Math.sin(this.angle); 
+
+    return new Bullet(origenX, origenY, dirX, dirY, 12.0, 25.0 + damageBonus);
+}
 }
 
