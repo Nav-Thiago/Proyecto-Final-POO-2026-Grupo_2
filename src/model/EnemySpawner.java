@@ -25,7 +25,7 @@ public class EnemySpawner {
         
         if (currentTime - lastSpawnTime >= spawnInterval && zombieSpawned < waveLimit) {
             Random random = new Random();
-            int tipoZombie = random.nextInt(3);
+            int tipoZombie = random.nextInt(4);
 
             Enemy newZombie;
 
