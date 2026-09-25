@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModel {
 
@@ -9,6 +10,10 @@ public class GameModel {
     private final List<Bullet> playerBullets;
     private final List<Bullet> poisonBullets;
     private final EnemySpawner spawner;
+
+    // [POWERUP] Agregamos las listas y el spawner del compañero
+    private final List<PowerUp> powerUps = new CopyOnWriteArrayList<>();
+    private final PowerUpSpawner powerUpSpawner;
 
     public enum gameStatus {
         PLAYING, LEVEL_COMPLETED, GAME_OVER, GAME_WON
@@ -22,10 +27,12 @@ public class GameModel {
         this.enemies = enemies;
         this.playerBullets = playerBullets;
         this.poisonBullets = poisonBullets;
+        
+        // Inicializamos los spawners
         this.spawner = new EnemySpawner(this.enemies, this.poisonBullets, 2000, 10);
+        this.powerUpSpawner = new PowerUpSpawner(this.powerUps, 8000, 3); // [POWERUP] 
     }
 
-    // El update ahora recibe las dimensiones de la pantalla por parámetro
     public void update(int screenWidth, int screenHeight) {
         if (status != gameStatus.PLAYING) return;
 
@@ -36,6 +43,15 @@ public class GameModel {
 
         player.update(screenWidth, screenHeight);
         spawner.update();
+
+        // [POWERUP] Físicas y recolección de los potenciadores
+        powerUpSpawner.update(screenWidth, screenHeight);
+        for (PowerUp p : powerUps) {
+            if (p.isActive() && player.collidesWith(p)) {
+                p.collect(player);
+            }
+        }
+        powerUps.removeIf(p -> !p.isActive());
 
         for (Enemy zombie : enemies) {
             if (zombie.isAlive()) {
@@ -78,16 +94,18 @@ public class GameModel {
         if (status != gameStatus.LEVEL_COMPLETED) return;
         actualLevel++;
         enemies.clear();
-        enemies.add(new NormalZombie(600, 300)); // Creamos el primer zombie del nivel
+        enemies.add(new NormalZombie(600, 300));
         playerBullets.clear();
         poisonBullets.clear();
+        powerUps.clear(); // [POWERUP] Limpieza en el cambio de nivel
         status = gameStatus.PLAYING;
     }
 
-    // Getters para que la Vista (GamePanel) pueda leer los datos y dibujarlos
+    // Getters
     public Player getPlayer() { return player; }
     public List<Enemy> getEnemies() { return enemies; }
     public List<Bullet> getPlayerBullets() { return playerBullets; }
     public List<Bullet> getPoisonBullets() { return poisonBullets; }
+    public List<PowerUp> getPowerUps() { return powerUps; } // [POWERUP]
     public gameStatus getStatus() { return status; }
 }
