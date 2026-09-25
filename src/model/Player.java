@@ -101,14 +101,14 @@ public class Player extends Character {
         }
     }
 
-    public void equipWeapon(FireArm weapon){
+    public void equipWeapon(FireArm weapon) {
         this.primaryWeapon = weapon;
         this.activeWeapon = this.primaryWeapon;
         this.setAmmoHolder(weapon);
     }
 
     public List<Bullet> shoot() {
-        if (this.activeWeapon!= null) {
+        if (this.activeWeapon != null) {
             double centerX = this.getX() + (this.getWidth() / 2.0);
             double centerY = this.getY() + (this.getHeight() / 2.0);
 
@@ -117,7 +117,6 @@ public class Player extends Character {
 
         return List.of();
     }
-
 
     // ---------- [POWERUP] efectos ----------
     public void addEffect(Effect effect) {
@@ -167,7 +166,6 @@ public class Player extends Character {
     }
 
     // ---------- [POWERUP] munición ----------
-
     public void setAmmoHolder(AmmoHolder ammoHolder) {
         this.ammoHolder = ammoHolder;
     }
@@ -176,14 +174,10 @@ public class Player extends Character {
         if (ammoHolder != null) ammoHolder.addAmmo(amount);
     }
 
-    public Bullet refillAmmo() { 
-    double origenX = this.x + (this.width / 2.0);
-    double origenY = this.y + (this.height / 2.0);
-    
-    double dirX = Math.cos(this.angle); 
-    double dirY = Math.sin(this.angle); 
-
-    return new Bullet(origenX, origenY, dirX, dirY, 12.0, 25.0 + damageBonus);
-}
+    public void refillAmmo() {
+        if (this.ammoHolder != null) {
+            this.ammoHolder.refillAmmo();
+        }
+    }
 }
 

@@ -9,6 +9,7 @@ public class GameModel {
     private final List<Enemy> enemies;
     private final List<Bullet> playerBullets;
     private final List<Bullet> poisonBullets;
+    private final List<WeaponItem> groundWeapons;
     private final EnemySpawner spawner;
 
     // [POWERUP] Agregamos las listas y el spawner del compañero
@@ -22,16 +23,39 @@ public class GameModel {
     private int actualLevel = 1;
     private final int totalLevels = 3;
 
-    public GameModel(Player player, List<Enemy> enemies, List<Bullet> playerBullets, List<Bullet> poisonBullets) {
+    public GameModel(Player player, List<Enemy> enemies, List<Bullet> playerBullets, List<Bullet> poisonBullets, List<WeaponItem> groundWeapons) {
         this.player = player;
         this.enemies = enemies;
         this.playerBullets = playerBullets;
         this.poisonBullets = poisonBullets;
+        this.groundWeapons = groundWeapons;
         
         // Inicializamos los spawners
         this.spawner = new EnemySpawner(this.enemies, this.poisonBullets, 2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(this.powerUps, 8000, 3); // [POWERUP] 
     }
+
+    public void playerInteract() {
+        if (status != gameStatus.PLAYING) return;
+
+        for (int i = 0; i < this.groundWeapons.size(); i++) {
+            WeaponItem item = this.groundWeapons.get(i);
+
+            if (this.player.collidesWith(item)) {
+                FireArm oldWeapon = this.player.getPrimaryWeapon();
+                this.player.equipWeapon(item.getWeapon());
+                this.groundWeapons.remove(i);
+
+                if (oldWeapon != null) {
+                    WeaponItem droppedWeapon = new WeaponItem(this.player.getX(), this.player.getY(), oldWeapon);
+                    this.groundWeapons.add(droppedWeapon);
+                }
+
+                break;
+            }
+        }
+    }
+
 
     public void update(int screenWidth, int screenHeight) {
         if (status != gameStatus.PLAYING) return;
@@ -62,7 +86,6 @@ public class GameModel {
                     if (bullet.isActive() && bullet.collidesWith(zombie)) {
                         bullet.setActive(false);
                         zombie.takeDamage((int) bullet.getDamage());
-                        System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
                     }
                 }
             }
@@ -102,10 +125,19 @@ public class GameModel {
     }
 
     // Getters
-    public Player getPlayer() { return player; }
-    public List<Enemy> getEnemies() { return enemies; }
-    public List<Bullet> getPlayerBullets() { return playerBullets; }
-    public List<Bullet> getPoisonBullets() { return poisonBullets; }
-    public List<PowerUp> getPowerUps() { return powerUps; } // [POWERUP]
-    public gameStatus getStatus() { return status; }
+    public Player getPlayer() {return player;}
+
+    public List<Enemy> getEnemies() {return enemies;}
+
+    public List<Bullet> getPlayerBullets() {return playerBullets;}
+
+    public List<Bullet> getPoisonBullets() {return poisonBullets;}
+
+    public List<PowerUp> getPowerUps() {return powerUps;}// [POWERUP]
+
+    public List<WeaponItem> getGroundWeapons() {
+        return groundWeapons;
+    }
+
+    public gameStatus getStatus() {return status;}
 }
