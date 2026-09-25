@@ -19,7 +19,6 @@ public class GamePanel extends JPanel {
     private BufferedImage playerSprite;
     private BufferedImage zombieSprite;
 
-
     public  GamePanel(GameModel model) {
         this.model = model;
         setPreferredSize(new Dimension(1280, 720));
@@ -69,7 +68,12 @@ public class GamePanel extends JPanel {
             g2.drawString(label,
                     x + (p.getWidth() - fm.stringWidth(label)) / 2,
                     y + (p.getHeight() + fm.getAscent()) / 2 - 2);
+            }
+
         }
+    
+    public void togglePause() {
+        this.model.togglePause();
     }
 
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
@@ -208,6 +212,36 @@ public class GamePanel extends JPanel {
             showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
         } else if (status == GameModel.gameStatus.GAME_WON) {
             showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+        } else if (status == GameModel.gameStatus.PAUSED) {
+            showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
         }
+
+        // HITBOXES
+        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
+
+            // Hitbox del jugador (Verde)
+            g2.setColor(Color.GREEN);
+            Rectangle pBounds = player.getBounds();
+            g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
+
+            // Hitboxes de los zombies (Rojo)
+            g2.setColor(Color.RED);
+            for (Enemy zombie : this.model.getEnemies()) {
+                if (zombie.isAlive()) {
+                    Rectangle zBounds = zombie.getBounds();
+                    g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
+                }
+            }
+
+            // Hitboxes de las balas (Cian)
+            g2.setColor(Color.CYAN);
+            for (Bullet bullet : this.model.getPlayerBullets()) {
+                if (bullet.isActive()) {
+                    Rectangle bBounds = bullet.getBounds();
+                    g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
+                }
+            }
+            
+            g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
     }
 }

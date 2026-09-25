@@ -17,9 +17,18 @@ public class GameModel {
     private final PowerUpSpawner powerUpSpawner;
 
     public enum gameStatus {
-        PLAYING, LEVEL_COMPLETED, GAME_OVER, GAME_WON
+        PLAYING, PAUSED, LEVEL_COMPLETED, GAME_OVER, GAME_WON
     }
     private gameStatus status = gameStatus.PLAYING;
+
+    public void togglePause() {
+        if (status == gameStatus.PLAYING) {
+            status = gameStatus.PAUSED;
+        } else if (status == gameStatus.PAUSED) {
+            status = gameStatus.PLAYING;
+        }
+    }
+    
     private int actualLevel = 1;
     private final int totalLevels = 3;
 

@@ -2,6 +2,7 @@ package controller;
 
 import model.Player;
 import model.Bullet;
+//import model.Enemy;
 import view.GamePanel;
 
 import java.awt.event.KeyAdapter;
@@ -10,19 +11,29 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener; 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
     private final Player player;
+    //private List<Enemy> zombies;
     private List<Bullet> proyectiles;
 
     private final GamePanel gamePanel;
 
-    public GameController( Player player, List<Bullet> proyectiles, GamePanel gamePanel) {
+    public GameController(Player player, List<Bullet> bullets, GamePanel gamePanel) {
         this.player = player;
-        this.proyectiles = proyectiles;
+        this.proyectiles = bullets;
         this.gamePanel = gamePanel;
+
+        this.gamePanel.addKeyListener(this);
+        this.gamePanel.addMouseListener(this);
+        this.gamePanel.addMouseMotionListener(this);
+    }
+    // Obtener el gamePanel (para el MenuController)
+    public GamePanel getGamePanel() {
+        return this.gamePanel;
     }
 
     // TECLADO
@@ -37,7 +48,9 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_ENTER -> gamePanel.nextLevel();
             case KeyEvent.VK_Q -> player.swapWeapon();
             case KeyEvent.VK_E -> gamePanel.playerInteract();
-            default -> {}
+            case KeyEvent.VK_ESCAPE -> gamePanel.togglePause();
+            default -> {
+            }
         }
     }
 
@@ -67,6 +80,8 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void mousePressed(MouseEvent e) {
+        gamePanel.requestFocusInWindow();
+        
         if (e.getButton() == MouseEvent.BUTTON1) {
             List<Bullet> bullets = player.shoot();
             proyectiles.addAll(bullets);
