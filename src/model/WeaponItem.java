@@ -1,7 +1,5 @@
 package model;
 
-import java.lang.classfile.attribute.StackMapFrameInfo;
-
 public class WeaponItem extends Entity {
 
     private final FireArm weapon;

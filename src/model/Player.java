@@ -50,6 +50,10 @@ public class Player extends Character {
         this.moveRight = moveRight;
     }
 
+    public boolean isMoving() {
+        return moveUp || moveDown || moveRight || moveLeft;
+    }
+
     public double getAngle() {
         return angle;
     }
