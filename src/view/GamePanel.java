@@ -1,12 +1,6 @@
 package view;
 
-import model.Enemy;
-import model.EnemySpawner;
-import model.Player;
-import model.Bullet;
-import model.NormalZombie;
-import model.PowerUp;          // [POWERUP]
-import model.PowerUpSpawner;   // [POWERUP]
+import model.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList; // [POWERUP]
 
@@ -23,17 +18,18 @@ public class GamePanel extends JPanel {
     private final Player player;
     private final List<Enemy> enemies;
     private final List<Bullet> bullets;
+    private final List<WeaponItem> groundWeapons;
     private EnemySpawner spawner;
 
     // [POWERUP] CopyOnWriteArrayList porque el game loop modifica la lista mientras el hilo de Swing dibuja
     private final List<PowerUp> powerUps = new CopyOnWriteArrayList<>();
     private final PowerUpSpawner powerUpSpawner;
 
-
     private BufferedImage playerSprite;
     private BufferedImage zombieSprite;
-    
+
     private gameStatus status = gameStatus.PLAYING;
+
     public enum gameStatus {
         PLAYING,
         LEVEL_COMPLETED,
@@ -48,17 +44,39 @@ public class GamePanel extends JPanel {
     private int actualLevel = 1;
     private final int totalLevels = 3;//a modificar(cantidad de niveles que agreguemos a futuro)
 
-    public  GamePanel(Player player, List<Enemy> enemies, List<Bullet> bullets) {
+    public GamePanel(Player player, List<Enemy> enemies, List<Bullet> bullets, List<WeaponItem> groundWeapons) {
         this.player = player;
         this.enemies = enemies;
         this.bullets = bullets;
+        this.groundWeapons = groundWeapons;
         this.spawner = new EnemySpawner(this.enemies, 2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(powerUps, 8000, 3); // [POWERUP] uno cada 8 s, máximo 3 en el mapa
         setPreferredSize(new Dimension(1280, 720));
-        setBackground(new Color(30,30, 35));
+        setBackground(new Color(30, 30, 35));
         setFocusable(true);
         loadSprites();
-        
+
+    }
+
+    public void playerInteract() {
+        if (status != gameStatus.PLAYING) return;
+
+        for (int i = 0; i < this.groundWeapons.size(); i++) {
+            WeaponItem item = this.groundWeapons.get(i);
+
+            if (this.player.collidesWith(item)) {
+                FireArm oldWeapon = this.player.getPrimaryWeapon();
+                this.player.equipWeapon(item.getWeapon());
+                this.groundWeapons.remove(i);
+
+                if (oldWeapon != null) {
+                    WeaponItem droppedWeapon = new WeaponItem(this.player.getX(), this.player.getY(), oldWeapon);
+                    this.groundWeapons.add(droppedWeapon);
+                }
+
+                break;
+            }
+        }
     }
 
     private void loadSprites() {
@@ -77,11 +95,11 @@ public class GamePanel extends JPanel {
             }
             zombieSprite = ImageIO.read(in);
         } catch (IOException e) {
-            System.err.println("Error cargando sprite del zombie: " + e.getMessage()); 
+            System.err.println("Error cargando sprite del zombie: " + e.getMessage());
         }
     }
 
-  public void update() {
+    public void update() {
         if (status != gameStatus.PLAYING) return;
 
         if (!player.isAlive()) {
@@ -102,23 +120,23 @@ public class GamePanel extends JPanel {
         }
         powerUps.removeIf(p -> !p.isActive());
 
-        boolean todosMuertos = true; 
+        boolean todosMuertos = true;
 
         for (Enemy zombie : enemies) {
-          if (zombie.isAlive()) {
-              todosMuertos = false;
-              zombie.update(player);
+            if (zombie.isAlive()) {
+                todosMuertos = false;
+                zombie.update(player);
 
-              for (Bullet bullet : bullets) {
-                  bullet.update(getWidth(), getHeight());
-                  if (bullet.isActive() && bullet.collidesWith(zombie)) {
-                      bullet.setActive(false);
-                      zombie.takeDamage((int) bullet.getDamage());
-                      System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
-                  }
-              }
-          }
-      }
+                for (Bullet bullet : bullets) {
+                    bullet.update(getWidth(), getHeight());
+                    if (bullet.isActive() && bullet.collidesWith(zombie)) {
+                        bullet.setActive(false);
+                        zombie.takeDamage((int) bullet.getDamage());
+                        System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth());
+                    }
+                }
+            }
+        }
 
         bullets.removeIf(b -> !b.isActive());
 
@@ -131,7 +149,7 @@ public class GamePanel extends JPanel {
         }
 
     }
-    
+
     // [POWERUP] dibujo provisional sin sprites: círculo de color + texto
     private void drawPowerUps(Graphics2D g2) {
         g2.setFont(new Font("Monospaced", Font.BOLD, 11));
@@ -151,15 +169,15 @@ public class GamePanel extends JPanel {
     }
 
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
-    g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
-    g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
+        g2.fillRect(0, 0, getWidth(), getHeight());
 
-    g2.setColor(color);
-    g2.setFont(new Font("Monospaced", Font.BOLD, 40));
-    FontMetrics fm = g2.getFontMetrics();
-    int textX = (getWidth() - fm.stringWidth(texto)) / 2;
-    int textY = getHeight() / 2;
-    g2.drawString(texto, textX, textY);
+        g2.setColor(color);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 40));
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = (getWidth() - fm.stringWidth(texto)) / 2;
+        int textY = getHeight() / 2;
+        g2.drawString(texto, textX, textY);
     }
 
     @Override
@@ -171,8 +189,8 @@ public class GamePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         drawPowerUps(g2); // [POWERUP] primero, para que queden debajo de zombies y jugador
-      
-        
+
+
         for (Enemy zombie : enemies) {
 
             if (zombie.isAlive()) {
@@ -255,16 +273,45 @@ public class GamePanel extends JPanel {
         } else if (status == gameStatus.GAME_WON) {
             showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
         }
+
+        // -- Dibujo las armas en el suelo
+        for (WeaponItem item : this.groundWeapons) {
+            int x = (int) item.getX();
+            int y = (int) item.getY();
+
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.fillRect(x, y, item.getWidth(), item.getHeight());
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            String weaponName = item.getWeapon().getClass().getSimpleName();
+            g2.drawString(weaponName, x,  y - 5);
+        }
+
+        // Dibujar munición y arma activa
+        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+        Weapon activeWeapon = player.getActiveWeapon();
+
+        if (activeWeapon instanceof FireArm) {
+            FireArm fa = (FireArm) activeWeapon;
+            String ammoText = "Arma: " + fa.getClass().getSimpleName() + " - Balas: " + fa.getActualMunition() + " / " + fa.getMaxMunition();
+            g2.setColor(Color.WHITE);
+            // Lo dibujamos debajo de los textos de Vida, Escudo y Daño
+            g2.drawString(ammoText, 20, 105);
+        } else if (activeWeapon instanceof MeleeWeapon) {
+            g2.setColor(Color.WHITE);
+            g2.drawString("Arma: Cuchillo", 20, 105);
+        }
     }
 
-        public void nextLevel() {
-            if (status != gameStatus.LEVEL_COMPLETED) return;
+    public void nextLevel() {
+        if (status != gameStatus.LEVEL_COMPLETED) return;
 
-            actualLevel++;
-            enemies.clear();
-            enemies.add(createZombieEnemy(actualLevel));
-            bullets.clear();
-            powerUps.clear(); // [POWERUP]
-            status = gameStatus.PLAYING;
-        }
+        actualLevel++;
+        enemies.clear();
+        enemies.add(createZombieEnemy(actualLevel));
+        bullets.clear();
+        powerUps.clear(); // [POWERUP]
+        status = gameStatus.PLAYING;
+    }
 }

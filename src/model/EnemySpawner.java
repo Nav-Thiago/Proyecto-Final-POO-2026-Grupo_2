@@ -28,6 +28,6 @@ public class EnemySpawner {
     }
 
     public boolean isWaveComplete(){
-        return zombieSpawned >=waveLimit;
+        return zombieSpawned >= waveLimit;
     }
 }

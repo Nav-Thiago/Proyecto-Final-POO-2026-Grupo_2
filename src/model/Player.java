@@ -23,10 +23,15 @@ public class Player extends Character {
 
     private double angle; // Ángulo en radianes hacia el cursor
 
-    private FireArm actualWeapon;
+    private final MeleeWeapon knife;
+    private FireArm primaryWeapon; // Arma de fuego equipada
+    private Weapon activeWeapon; // Puntero al arma que tiene en la mano actualmente
 
     public Player(double x, double y) {
         super(x, y, 64, 64, 5.5, 100, 100);
+
+        this.knife = new MeleeWeapon(50, 200);
+        this.activeWeapon = this.knife;
     }
 
     public void setMoveUp(boolean moveUp) {
@@ -43,6 +48,18 @@ public class Player extends Character {
 
     public void setMoveRight(boolean moveRight) {
         this.moveRight = moveRight;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public FireArm getPrimaryWeapon() {
+        return primaryWeapon;
+    }
+
+    public Weapon getActiveWeapon() {
+        return activeWeapon;
     }
 
     public void update(int mapWidth, int mapHeight) {
@@ -73,29 +90,36 @@ public class Player extends Character {
 
         this.angle = Math.atan2(deltaY, deltaX);
     }
-    //Getter para obtener el ángulo
-    public double getAngle() {
-        return angle;
+
+    public void swapWeapon() {
+        if (this.activeWeapon == this.knife && this.primaryWeapon != null) {
+            this.activeWeapon = this.primaryWeapon;
+            this.setAmmoHolder(this.primaryWeapon);
+        } else {
+            this.activeWeapon = this.knife;
+            this.setAmmoHolder(null);
+        }
+    }
+
+    public void equipWeapon(FireArm weapon){
+        this.primaryWeapon = weapon;
+        this.activeWeapon = this.primaryWeapon;
+        this.setAmmoHolder(weapon);
     }
 
     public List<Bullet> shoot() {
-        if (this.actualWeapon != null) {
+        if (this.activeWeapon!= null) {
             double centerX = this.getX() + (this.getWidth() / 2.0);
             double centerY = this.getY() + (this.getHeight() / 2.0);
 
-            return this.actualWeapon.shoot(centerX, centerY, this.angle);
+            return this.activeWeapon.shoot(centerX, centerY, this.angle);
         }
 
         return List.of();
     }
 
-    public void equipWeapon(FireArm weapon){
-        this.actualWeapon = weapon;
-        this.setAmmoHolder(weapon);
-    }
 
     // ---------- [POWERUP] efectos ----------
-
     public void addEffect(Effect effect) {
         effect.apply(this);
         effects.add(effect);

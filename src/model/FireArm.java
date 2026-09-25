@@ -42,4 +42,12 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
     public void refillAmmo() {
         this.actualMunition = this.maxMunition;
     }
+
+    public int getActualMunition() {
+        return actualMunition;
+    }
+
+    public int getMaxMunition() {
+        return maxMunition;
+    }
 }

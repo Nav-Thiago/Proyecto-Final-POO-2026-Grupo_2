@@ -35,8 +35,9 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_A, KeyEvent.VK_LEFT -> player.setMoveLeft(true);
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> player.setMoveRight(true);
             case KeyEvent.VK_ENTER -> gamePanel.nextLevel();
-            default -> {
-            }
+            case KeyEvent.VK_Q -> player.swapWeapon();
+            case KeyEvent.VK_E -> gamePanel.playerInteract();
+            default -> {}
         }
     }
 

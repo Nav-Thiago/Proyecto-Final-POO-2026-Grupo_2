@@ -10,18 +10,23 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
 
-    List<Bullet> bullets = new ArrayList<>();
-
     public MainFrame() {
         super("Cazador de zombies"); // Configura el título superior de la pantalla
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Asegura que el programa muera al cerrar la ventana
         this.setResizable(false); // Bloquea el redimensionamiento
 
         Player player = new Player(384, 284);
-        player.equipWeapon(new ShotGun(20, 400, 15, 15));
+        player.equipWeapon(new Gun(20, 400, 15, 15));
+
         List<Enemy> enemies = new  ArrayList<>();
         enemies.add(new NormalZombie(50, 50));
-        GamePanel gamePanel = new GamePanel(player, enemies, bullets);
+
+        List<Bullet> bullets = new ArrayList<>();
+
+        List<WeaponItem> groundWeapons = new ArrayList<>();
+        groundWeapons.add(new WeaponItem(500, 600, new ShotGun(30, 800, 5, 5)));
+
+        GamePanel gamePanel = new GamePanel(player, enemies, bullets, groundWeapons);
         add(gamePanel);
         pack();
         setLocationRelativeTo(null);
