@@ -1,0 +1,127 @@
+package view;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import controller.MenuController;
+
+public class MenuPanel extends JPanel {
+    
+    private Image backgroundImage;
+    private MenuController controller;
+
+    /////////////////////////////////////////////////////////////////////////
+    // 1. Pon esto arriba junto a tus otras variables (backgroundImage, controller, etc.)
+    private java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
+    private javax.swing.Timer particleTimer;
+
+    // 2. Pon esto al final del archivo MenuPanel
+    private class Ceniza {
+        int x, y, size, speed;
+        
+        public Ceniza(int width, int height) {
+            x = (int) (Math.random() * width);
+            y = (int) (Math.random() * height);
+            size = (int) (Math.random() * 4) + 2; // Tamaño entre 2 y 5 píxeles
+            speed = (int) (Math.random() * 3) + 1; // Velocidad de caída
+        }
+        
+        public void update(int width, int height) {
+            y += speed;
+            x -= 1; // Viento suave hacia la izquierda
+            
+            // Si sale de la pantalla, reaparece arriba
+            if (y > height) y = 0;
+            if (x < 0) x = width;
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
+
+    public MenuPanel(MenuController controller) {
+        this.controller = controller;
+
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 0));
+
+        backgroundImage = new ImageIcon("Resources/imagenes/fondo_menu_principal.png").getImage();
+        
+        JLabel titleLabel = new JLabel("NO WAY BACK");
+        try {
+            // Cargamos el archivo de la fuente
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Resources/fonts/Nosifer-Regular.ttf"));
+        
+            // damos el estilo y el tamaño deseado (el 60f es un float que representa los píxeles)
+            Font titleFont = customFont.deriveFont(Font.BOLD, 60f);
+        
+            // aplicamos
+            titleLabel.setForeground(new Color(149,6 ,6));
+            titleLabel.setFont(titleFont);
+            titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+        } catch (Exception e) {
+            System.out.println("Error al cargar la fuente, usando Arial por defecto.");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 60));
+        }   
+
+        MenuButton playButton = new MenuButton("Jugar");
+        MenuButton optionButton = new MenuButton("Opciones");
+        MenuButton exitButton = new MenuButton("Salir");
+
+        playButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        optionButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        exitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        playButton.addActionListener(e -> {this.controller.startGame();;});
+        optionButton.addActionListener(e -> {this.controller.optionMenu();});
+        exitButton.addActionListener(e -> {System.exit(0);});
+
+        add(Box.createVerticalStrut(150));
+        add(titleLabel);
+        add(Box.createVerticalStrut(80));
+        add(playButton);
+        add(Box.createVerticalStrut(20));
+        add(optionButton);
+        add(Box.createVerticalStrut(20));
+        add(exitButton);
+
+        /////////////////////////////////////////////////////////////////////////
+        // Generar 70 partículas iniciales (asumiendo un ancho base de 1920x1080 para esparcirlas)
+        for (int i = 0; i < 70; i++) {
+            particulas.add(new Ceniza(1920, 1080));
+        }
+
+        // Bucle de animación (se actualiza cada 16ms = ~60 FPS)
+        particleTimer = new javax.swing.Timer(16, e -> {
+            int currentWidth = getWidth() > 0 ? getWidth() : 1920;
+            int currentHeight = getHeight() > 0 ? getHeight() : 1080;
+            
+            for (Ceniza c : particulas) {
+                c.update(currentWidth, currentHeight);
+            }
+            repaint(); // Obliga a redibujar el panel con las nuevas posiciones
+        });
+        particleTimer.start();
+        /////////////////////////////////////////////////////////////////////////
+    }
+
+    @Override 
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+            g.setColor(new Color(10, 12, 18, 140));
+            g.fillRect(0, 0, getWidth(), getHeight());
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
+
+        // Dibujar las partículas de ceniza/nieve
+        g.setColor(new Color(200, 200, 200, 150)); // Gris claro semitransparente
+        for (Ceniza c : particulas) {
+            g.fillOval(c.x, c.y, c.size, c.size);
+        }
+    }
+}
+

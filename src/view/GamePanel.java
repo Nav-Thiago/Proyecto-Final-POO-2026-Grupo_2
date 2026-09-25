@@ -28,6 +28,7 @@ public class GamePanel extends JPanel {
     private gameStatus status = gameStatus.PLAYING;
     public enum gameStatus {
         PLAYING,
+        PAUSED,
         LEVEL_COMPLETED,
         GAME_OVER,
         GAME_WON
@@ -71,7 +72,18 @@ public class GamePanel extends JPanel {
         }
     }
 
-  public void update() {
+    public void togglePause() {
+        if (status == gameStatus.PLAYING) {
+            status = gameStatus.PAUSED;
+        } else if (status == gameStatus.PAUSED) {
+            status = gameStatus.PLAYING;
+        }
+    }
+
+    public void update() {
+
+        if (getWidth() == 0 || getHeight() == 0) return;
+        
         if (status != gameStatus.PLAYING) return;
 
         if (!player.isAlive()) {
@@ -204,7 +216,37 @@ public class GamePanel extends JPanel {
             showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
         } else if (status == gameStatus.GAME_WON) {
             showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+        } else if (status == gameStatus.PAUSED) {
+            showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
         }
+
+        // HITBOXES
+        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
+
+            // Hitbox del jugador (Verde)
+            g2.setColor(Color.GREEN);
+            Rectangle pBounds = player.getBounds();
+            g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
+
+            // Hitboxes de los zombies (Rojo)
+            g2.setColor(Color.RED);
+            for (Enemy zombie : enemies) {
+                if (zombie.isAlive()) {
+                    Rectangle zBounds = zombie.getBounds();
+                    g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
+                }
+            }
+
+            // Hitboxes de las balas (Cian)
+            g2.setColor(Color.CYAN);
+            for (Bullet bullet : bullets) {
+                if (bullet.isActive()) {
+                    Rectangle bBounds = bullet.getBounds();
+                    g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
+                }
+            }
+            
+            g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
     }
 
         public void nextLevel() {

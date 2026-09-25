@@ -1,13 +1,10 @@
-import view.MainFrame;
-
-import javax.swing.*;
+import controller.MenuController;
 
 public class Main {
 
-    static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> { // Crea un bloque de código para ponerlo en la fila del EDT
-            MainFrame window = new MainFrame();
-            window.setVisible(true); // Le indica a la ventana que debe dibujarse en pantalla
-        });
+    MenuController controller;
+
+    public static void main(String[] args) {
+        new MenuController();
     }
 }

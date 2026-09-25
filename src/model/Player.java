@@ -7,10 +7,6 @@ public class Player extends Character {
     private boolean moveLeft;
     private boolean moveRight;
 
-    // Constantes para el límite del mapa
-    private final int mapWidth = 1080;
-    private final int mapHeight = 720;
-
     private double angle; // Ángulo en radianes hacia el cursor 
 
     public Player(double x, double y) {
