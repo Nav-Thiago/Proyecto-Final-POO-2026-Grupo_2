@@ -3,7 +3,7 @@ package model;
 public class FastZombie  extends Enemy {
     
     public FastZombie(int x, int y){
-     super(x, y, 48, 48, 5.0, 50,50);
+     super(x, y, 48, 48, 3.0, 50,50);
     }
 
     @Override 

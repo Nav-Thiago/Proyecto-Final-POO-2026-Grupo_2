@@ -5,7 +5,7 @@ public class WeaponItem extends Entity {
     private final FireArm weapon;
 
     public WeaponItem(double x, double y, FireArm weapon) {
-        super(x, y, 32, 32);
+        super(x, y, 48, 32);
         this.weapon = weapon;
     }
 

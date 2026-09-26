@@ -1,9 +1,5 @@
 package view;
 
-import controller.GameController;
-import controller.GameLoopThread;
-import model.*;
-
 import javax.swing.*;
 
 public class MainFrame extends JFrame {

@@ -11,18 +11,22 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList; // [POWERUP]
-
 
 public class GamePanel extends JPanel {
 
 
     private final GameModel model;
 
+    private Animation playerWalkAnimation;
+    private Animation zombieWalkAnimation;
+    private BufferedImage gunSprite;
+    private BufferedImage shotGunsprite;
 
-    private BufferedImage playerSprite;
-    private BufferedImage zombieSprite;
+    private BufferedImage healSprite;
+    private BufferedImage shieldSprite;
+    private BufferedImage damageSprite;
+    private BufferedImage ammoSprite;
+    private BufferedImage maxAmmoSprite;
 
     public  GamePanel(GameModel model) {
         this.model = model;
@@ -44,44 +48,127 @@ public class GamePanel extends JPanel {
 
 
     private void loadSprites() {
-        try (InputStream in = getClass().getResourceAsStream("/Resources/imagenes/player_idle.png")) {
-            if (in != null) {
-                playerSprite = ImageIO.read(in);
+        try {
+            int frameQuantity = 19;
+            BufferedImage[] frames = new BufferedImage[frameQuantity];
+
+            for (int i = 0; i < frameQuantity; i++) {
+                String route = "/Resources/imagenes/entitys/player/survivor-move_handgun_" + (i+1) + ".png";
+                InputStream in = getClass().getResourceAsStream(route);
+
+                if (in != null) {
+                    frames[i] = ImageIO.read(in);
+                } else {
+                    System.err.println("Advertencia: No se encontró la imagen " + route);
+                }
+            }
+
+            playerWalkAnimation = new Animation(150, true, frames);
+        } catch (Exception e) {
+            System.err.println("Error cargando animación del zombie: " + e.getMessage());
+        }
+
+        /*try (InputStream inPlayer = getClass().getResourceAsStream("/Resources/imagenes/player_idle.png")) {
+            if (inPlayer != null) {
+                playerSprite = ImageIO.read(inPlayer);
             }
         } catch (IOException e) {
             System.err.println("Error cargando sprite del jugador: " + e.getMessage());
+        }*/
+
+        try {
+            InputStream inGun = getClass().getResourceAsStream("/Resources/imagenes/weapons/gun.png");
+            if (inGun != null) gunSprite = ImageIO.read(inGun);
+
+            InputStream inShotgun = getClass().getResourceAsStream("/Resources/imagenes/weapons/shotgun.png");
+            if (inShotgun != null) shotGunsprite = ImageIO.read(inShotgun);
+        } catch (IOException e) {
+            System.err.println("Error cargando sprites de armas: " + e.getMessage());
         }
 
+        
+        try {
+            InputStream inHeal = getClass().getResourceAsStream("/Resources/imagenes/powerups/heal.png");
+            if (inHeal != null) healSprite = ImageIO.read(inHeal);
 
-        try (InputStream in = getClass().getResourceAsStream("/Resources/imagenes/zombie_idle.png")) {
-            if (in != null) {
-                zombieSprite = ImageIO.read(in);
+            InputStream inShield = getClass().getResourceAsStream("/Resources/imagenes/powerups/shield.png");
+            if (inShield != null) shieldSprite = ImageIO.read(inShield);
+
+            InputStream inDamage = getClass().getResourceAsStream("/Resources/imagenes/powerups/damage.png");
+            if (inDamage != null) damageSprite = ImageIO.read(inDamage);
+
+            InputStream inAmmo = getClass().getResourceAsStream("/Resources/imagenes/powerups/ammo.png");
+            if (inAmmo != null) ammoSprite = ImageIO.read(inAmmo);
+
+            InputStream inMaxAmmo = getClass().getResourceAsStream("/Resources/imagenes/powerups/max_ammo.png");
+            if (inMaxAmmo != null) maxAmmoSprite = ImageIO.read(inMaxAmmo);
+        } catch (IOException e) {
+            System.err.println("Error cargando sprites de power-ups: " + e.getMessage());
+        }
+
+        try {
+            int frameQuantity = 16;
+            BufferedImage[] frames = new BufferedImage[frameQuantity];
+
+            for (int i = 0; i < frameQuantity; i++) {
+                String route = "/Resources/imagenes/entitys/zombie_normal/skeleton-move_" + (i+1) + ".png";
+                InputStream in = getClass().getResourceAsStream(route);
+
+                if (in != null) {
+                    frames[i] = ImageIO.read(in);
+                } else {
+                    System.err.println("Advertencia: No se encontró la imagen " + route);
+                }
+            }
+
+            zombieWalkAnimation = new Animation(150, true, frames);
+        } catch (Exception e) {
+            System.err.println("Error cargando animación del zombie: " + e.getMessage());
+        }
+        
+        /*try (InputStream inZombie = getClass().getResourceAsStream("/Resources/imagenes/zombie_idle.png")) {
+            if (inZombie != null) {
+                zombieSprite = ImageIO.read(inZombie);
             }
         } catch (IOException e) {
             System.err.println("Error cargando sprite del zombie: " + e.getMessage());
-        }
+        }*/
     }
-
 
     // [POWERUP] dibujo provisional sin sprites: círculo de color + texto
     private void drawPowerUps(Graphics2D g2) {
-        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
-        FontMetrics fm = g2.getFontMetrics();
         for (PowerUp p : this.model.getPowerUps()) {
             int x = (int) p.getX();
             int y = (int) p.getY();
-            g2.setColor(p.getColor());
-            g2.fillOval(x, y, p.getWidth(), p.getHeight());
-            g2.setColor(Color.BLACK);
-            g2.drawOval(x, y, p.getWidth(), p.getHeight());
-            String label = p.getLabel();
-            g2.drawString(label,
-                    x + (p.getWidth() - fm.stringWidth(label)) / 2,
-                    y + (p.getHeight() + fm.getAscent()) / 2 - 2);
-            }
 
+            BufferedImage pSprite = null;
+            
+            // Identifica el powerup
+            if (p instanceof Heal) pSprite = healSprite;
+            else if (p instanceof Shield) pSprite = shieldSprite;
+            else if (p instanceof DamageBoost) pSprite = damageSprite;
+            else if (p instanceof Ammo) pSprite = ammoSprite;
+            else if (p instanceof MaxAmmo) pSprite = maxAmmoSprite;
+
+            if (pSprite != null) {
+                g2.drawImage(pSprite, x, y, p.getWidth(), p.getHeight(), null);
+            } else {
+                // Circulos de color
+                g2.setColor(p.getColor());
+                g2.fillOval(x, y, p.getWidth(), p.getHeight());
+                g2.setColor(Color.BLACK);
+                g2.drawOval(x, y, p.getWidth(), p.getHeight());
+                
+                g2.setFont(new Font("Monospaced", Font.BOLD, 11));
+                FontMetrics fm = g2.getFontMetrics();
+                String label = p.getLabel();
+                g2.drawString(label,
+                        x + (p.getWidth() - fm.stringWidth(label)) / 2,
+                        y + (p.getHeight() + fm.getAscent()) / 2 - 2);
+            }
         }
-    
+    }
+
     public void togglePause() {
         this.model.togglePause();
     }
@@ -117,61 +204,60 @@ public class GamePanel extends JPanel {
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWERUP] primero, para que queden debajo de zombies y jugador
 
-
         // Dibuja Armas en el suelo
         for (WeaponItem item : this.model.getGroundWeapons()) {
             int x = (int) item.getX();
             int y = (int) item.getY();
 
+            BufferedImage weaponImg = null;
 
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.fillRect(x, y, item.getWidth(), item.getHeight());
+            if (item.getWeapon() instanceof Gun) weaponImg = gunSprite;
+            else if (item.getWeapon() instanceof ShotGun) weaponImg = shotGunsprite;
 
-
-            g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            String weaponName = item.getWeapon().getClass().getSimpleName();
-            g2.drawString(weaponName, x, y - 5);
+            if (weaponImg != null) {
+                g2.drawImage(weaponImg, x, y, item.getWidth(), item.getHeight(), null);
+            } else {
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(x, y, item.getWidth(), item.getHeight());
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
+            }
         }
 
 
         // Dibuja a los enemigos
+        if (zombieWalkAnimation != null) {
+            zombieWalkAnimation.update();
+        }
+
         for (Enemy zombie : this.model.getEnemies()) {
-
-
             if (zombie.isAlive()) {
-                if (zombieSprite != null) {
+                if (zombieWalkAnimation != null && zombieWalkAnimation.getCurrentFrame() != null) {
                     AffineTransform transformOriginal = g2.getTransform();
-
 
                     double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
                     double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
-
                     g2.translate(centerX, centerY);
                     g2.rotate(zombie.getAngle());
 
-
                     int w = (int) zombie.getWidth();
                     int h = (int) zombie.getHeight();
-                    g2.drawImage(zombieSprite, -w / 2, -h / 2, w, h, null);
-
+                    BufferedImage actualFrame = zombieWalkAnimation.getCurrentFrame();
+                    g2.drawImage(actualFrame, -w / 2, -h / 2, w, h, null);
 
                     g2.setTransform(transformOriginal);
 
-
                 } else {
-
 
                     g2.setColor(Color.RED);
                     g2.fillOval((int) zombie.getX(), (int) zombie.getY(), zombie.getWidth(), zombie.getHeight());
                 }
 
-
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Monospaced", Font.BOLD, 20));
                 String lifeText = "HP: " + zombie.getHealth();
-
 
                 int textX = (int) zombie.getX();
                 int textY = (int) zombie.getY();
@@ -181,9 +267,9 @@ public class GamePanel extends JPanel {
 
 
         // Dibuja las balas del jugador
-        g2.setColor(Color.YELLOW);
+        g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.model.getPlayerBullets()) {
-            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth(), bullet.getHeight());
+            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth()-2, bullet.getHeight()-2);
         }
 
 
@@ -195,7 +281,33 @@ public class GamePanel extends JPanel {
 
 
         // Dibuja al jugador
-        if (playerSprite != null) {
+        if (playerWalkAnimation != null) {
+            playerWalkAnimation.update();
+        }
+        if (player.isAlive()) {
+            if (playerWalkAnimation != null && playerWalkAnimation.getCurrentFrame() != null) {
+                AffineTransform transformOriginal = g2.getTransform();
+
+                double centerX = player.getX() + (player.getWidth() / 2.0);
+                double centerY = player.getY() + (player.getHeight() / 2.0);
+
+                g2.translate(centerX, centerY);
+                g2.rotate(player.getAngle());
+
+                int w = (int) player.getWidth();
+                int h = (int) player.getHeight();
+                BufferedImage actualFrame = playerWalkAnimation.getCurrentFrame();
+                g2.drawImage(actualFrame, -w / 2, -h / 2, w, h, null);
+
+                g2.setTransform(transformOriginal);
+
+            } else {
+
+                g2.setColor(Color.RED);
+                g2.fillOval((int) player.getX(), (int) player.getY(), player.getWidth(), player.getHeight());
+            }
+        }
+        /*if (playerSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
 
 
@@ -212,7 +324,7 @@ public class GamePanel extends JPanel {
         } else {
             g2.setColor(Color.BLUE);
             g2.fillOval((int) player.getX(), (int) player.getY(), player.getWidth(), player.getHeight());
-        }
+        }*/
 
 
         // Dibuja la interfaz
@@ -256,7 +368,7 @@ public class GamePanel extends JPanel {
         }
 
         // HITBOXES
-        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
+        /*g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
 
             // Hitbox del jugador (Verde)
             g2.setColor(Color.GREEN);
@@ -282,5 +394,5 @@ public class GamePanel extends JPanel {
             }
             
             g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
-    }
+    */}
 }

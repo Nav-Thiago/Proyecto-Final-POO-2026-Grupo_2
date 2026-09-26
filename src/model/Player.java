@@ -17,10 +17,6 @@ public class Player extends Character {
     private int shield = 0;
     private AmmoHolder ammoHolder; // arma actual (puede ser null hasta que exista Weapon)
 
-    // Constantes para el límite del mapa
-    private final int mapWidth = 1080;
-    private final int mapHeight = 720;
-
     private double angle; // Ángulo en radianes hacia el cursor
 
     private final MeleeWeapon knife;

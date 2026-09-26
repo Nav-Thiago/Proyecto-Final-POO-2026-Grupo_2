@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import model.Bullet;
