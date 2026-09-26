@@ -32,7 +32,6 @@ public class MenuController implements MenuActions{
 
     public MenuController() {
         mainFrame = new MainFrame();
-
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
 
@@ -56,7 +55,7 @@ public class MenuController implements MenuActions{
     }
 
     private void showUniversitySplash() {
-        AudioManager.playMusic("Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
         cardLayout.show(mainContainer, "SPLASH_UNI");
 

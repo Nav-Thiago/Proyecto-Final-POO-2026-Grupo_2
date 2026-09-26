@@ -57,37 +57,20 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 
 #### **Prototipo de la IGU (Wireframe)**
 
-*Idea gráfica*
+*Fondo menu principal*
+![Imagen 1](src/Resources/imagenes/fondo_menu_principal4.png)
 
-![Imagen 1](src/Resources/imagenes/imagen1.png) 
-
-
-
-![Imagen 2](src/Resources/imagenes/imagen2.png) 
-
-
-
-![Imagen 3](src/Resources/imagenes/imagen3.png)     
 *Mapa del bosque (posible diseño)*
+![Imagen 2](src/Resources/imagenes/mapa_bosque.png)
+
+*Jugador*
+![Imagen 3](src/Resources/imagenes/player_idle.png)
+
+*Zombie*
+![Imagen 4](src/Resources/imagenes/zombie_idle.png)
 
 
-![Imagen 4](src/Resources/imagenes/imagen4.png)     
-*Mapa del edificio (posible diseño)*
-
-
-![Imagen 5](src/Resources/imagenes/imagen5.png)     
-*Jefe final / por nivel -> Policia SWAT*
-
-
-![Imagen 6](src/Resources/imagenes/imagen6.png)     
-*Cientifico loco*
-
-
-![Imagen 7](src/Resources/imagenes/imagen7.png)     
-*Zombie gigante*
-
-
-## 4. Stack Tecnológico 
+## 4. Stack Tecnológico  
 
 - **Lenguaje:** Java 26
 - **IDE:** Visual Studio Code & Intellij IDEA
@@ -104,18 +87,25 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 **Character (abstracta, extiende de Entity) --> Player, Enemy:**
 -  El jugador y los enemigos comparten algo que las demás clases no tienen, vida y la capacidad de recibir daño y morir. Por eso se guardó en una clase, de tal manera que no se reutilize código.
 
-**Enemy (abstracta, extiende Character) --> ZombieNormal:**
-- Todo enemigo persigue al jugador de la misma forma (update (Player target)), lo que ya está escrito una vez en Enemy, además que ataca por contacto con un mecanismo de cooldown. Lo único que cada tipo de zombie define es cuanto daño hace si ataque, por eso el método attack() es abstracto.
+**Enemy (abstracta, extiende Character) --> NormalZombie, FastZombie, TankZombie, PoisonZombie:**
+- Todo enemigo persigue al jugador de la misma forma (update (Player target)), lo que ya está escrito una vez en Enemy, además que ataca por contacto con un mecanismo de cooldown. Lo único que cada tipo de zombie define es cuanto daño hace mediante el método abstracto attack() o, en su defecto, define mecánicas especiales como disparar veneno.
 
-**Implementaciones futuras:**
-- Se van a agregar más tipos de zombies que hereden de Enemy, solo cambiando los valores que se pasen por el constructor y su propia versión de attack().
-- Se va a crear una clase padre abstracta Weapon para que otros tipos de armas puedan heredar de ella, todas son un arma, pero cada una define como dispara.
-- Se va a crear una clase padre abstracta PowerUp, con subclases de distintos tipos de power-up, como la munición o una mejora de velocidad, todas son power-up que el jugador puede recoger del piso, pero cada una define su comportamiento.
+**Weapon (abstracta) --> FireArm, MeleeWeapon:**
+- Se creó una jerarquía abstracta para las armas. Todas comparten el daño y el tiempo de recarga (cooldown) en la clase padre Weapon. Las armas de fuego (FireArm) añaden la gestión de munición, y de ella heredan armas específicas como Gun, ShotGun y Rifle. El cuchillo hereda directamente como arma cuerpo a cuerpo (MeleeWeapon).
+
+**PowerUp (abstracta, extiende de Entity) --> Ammo, Heal, Shield, DamageBoost, MaxAmmo:**
+- Todos los potenciadores que el jugador puede recoger del suelo son una entidad y comparten el estado activo y la lógica base de recolección (collect). Cada subclase define su propio comportamiento específico mediante el método abstracto apply(Player player).
+
 
 ## Polimorfismo 
 **Enemy.attack():**
 - Enemy.update() llama a attack() sin saber ni importarle que tipo de zombi es, más adelante cuando se agreguen más tipos de zombies esto va a ser más visible. Pero el mecanismo ya es polimórfico, cuando se agregue otro tipo de zombie, Enemy.update() no va a tener que cambiar ninguna línea de código para que el ataque sea distinto. El código que lo usa no sabe cuantas variantes existen, y no le hace falta saberlo.
 
+**Weapon.shoot()**
+- Al tener distintos tipos de armas equipadas, el jugador (Player) simplemente delega la acción llamando a activeWeapon.shoot(...) sin saber cuál arma tiene en la mano. A través de este mismo llamado polimórfico, el cuchillo genera una caja de colisión (MeleeHitbox), la pistola genera una sola bala, y la escopeta (ShotGun) genera múltiples perdigones dispersos.
+
+**PowerUp.apply()**
+- Cuando el jugador choca con un power-up en el piso, el GameModel llama al método collect(player). El juego no necesita usar condicionales para averiguar qué tipo de power-up levantó, cada objeto se encarga de aplicar su propio efecto (curar, dar escudo, recargar munición o aumentar el daño) sin afectar a los demás.
 **Implementaciones futuras:**
 - Al agregarse más tipos de zombies, el método attack() se va a seguir utilizando. Cuando hayan varios tipos de zombies en la misma partida, Enemy.update() va a llamar a attack() sobre zombies mezclados en la misma lista, sin preguntar de qué tipo es cada uno, y cada uno va a responder con su propio daño.
 - Cuando se agreguen más tipos de armas, el controller va a poder llamar algo como armaActual.disparar()... sin saber cuál arma tiene equipada el jugador, cada una va a crear distintos proyectiles a través del mismo llamado.
