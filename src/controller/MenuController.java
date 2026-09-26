@@ -41,7 +41,6 @@ public class MenuController implements MenuActions{
         SplashSubject subjectSplash = new SplashSubject();
         MenuPanel menu = new MenuPanel(this);
         OptionsPanel option = new OptionsPanel(this);
-        
 
         mainContainer.add(uniSplash, "SPLASH_UNI");
         mainContainer.add(subjectSplash, "SPLASH_SUB");
@@ -57,7 +56,7 @@ public class MenuController implements MenuActions{
     }
 
     private void showUniversitySplash() {
-        AudioManager.playMusic("Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
         cardLayout.show(mainContainer, "SPLASH_UNI");
 

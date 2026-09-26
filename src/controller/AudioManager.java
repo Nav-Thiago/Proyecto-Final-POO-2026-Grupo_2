@@ -16,25 +16,23 @@ public class AudioManager {
             if (bgmClip != null && bgmClip.isRunning()) {
                 return;
             }
-            
-            File audioFile = new File(filePath);
-            if (!audioFile.exists()) {
-                System.out.println("No se encontró el archivo de audio: " + filePath);
+
+            java.net.URL audioUrl = AudioManager.class.getResource(filePath);
+            if (audioUrl == null) {
+                System.err.println("No se encontró el archivo de audio: " + filePath);
                 return;
             }
 
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioUrl);
 
             bgmClip = AudioSystem.getClip();
             bgmClip.open(audioStream);
 
             volumeControl = (FloatControl) bgmClip.getControl(FloatControl.Type.MASTER_GAIN);
-
             setVolume(currentVolume);
 
             bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
             bgmClip.start();
-
 
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.err.println("Error al reproducir audio: " + e.getMessage());

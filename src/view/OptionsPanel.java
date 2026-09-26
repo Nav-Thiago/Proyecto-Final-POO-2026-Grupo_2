@@ -23,20 +23,27 @@ public class OptionsPanel extends JPanel {
         gbc.gridy = 0;
         gbc.insets = new Insets(20, 20, 20, 20);
 
-        backgroundImage = new ImageIcon("Resources/imagenes/fondo_menu_principal.png").getImage();
+        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_principal.png");
+        if (imgUrl != null) {
+            this.backgroundImage = new ImageIcon(imgUrl).getImage();
+        }
 
         JLabel titleLabel = new JLabel("OPCIONES");
         try {
             // Cargamos el archivo de la fuente
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Resources/fonts/Nosifer-Regular.ttf"));
-        
-            // damos el estilo y el tamaño deseado (el 60f es un float que representa los píxeles)
-            Font titleFont = customFont.deriveFont(Font.BOLD, 60f);
-        
-            // aplicamos
-            titleLabel.setForeground(new Color(149, 6, 6));
-            titleLabel.setFont(titleFont);
-            titleLabel.setAlignmentX(CENTER_ALIGNMENT);
+            java.io.InputStream fontStream = getClass().getResourceAsStream("/Resources/fonts/Nosifer-Regular.ttf");
+            if (fontStream != null) {
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+
+                // damos el estilo y el tamaño deseado (el 60f es un float que representa los píxeles)
+                Font titleFont = customFont.deriveFont(Font.BOLD, 60f);
+
+                // aplicamos
+                titleLabel.setForeground(new Color(149, 6, 6));
+                titleLabel.setFont(titleFont);
+                titleLabel.setAlignmentX(CENTER_ALIGNMENT);
+            }
+
         } catch (Exception e) {
             System.out.println("Error al cargar la fuente, usando Arial por defecto.");
             titleLabel.setFont(new Font("Arial", Font.BOLD, 60));
@@ -65,7 +72,7 @@ public class OptionsPanel extends JPanel {
 
         gbc.gridy = 3;
         gbc.insets = new Insets(15, 20, 5, 20);
-        JLabel resLabel = new JLabel("Resolucion", SwingConstants.CENTER);
+        JLabel resLabel = new JLabel("Resolución", SwingConstants.CENTER);
         resLabel.setFont(new Font("Arial", Font.BOLD, 20));
         resLabel.setForeground(Color.WHITE);
         add(resLabel, gbc);
