@@ -17,7 +17,12 @@ public class SplashUniversity extends SplashPanel {
 
     @Override 
     protected void initializeComponents() {
-        logo = new ImageIcon("Resources/imagenes/universidad.png").getImage();
+        java.net.URL logoUrl = getClass().getResource("/Resources/imagenes/universidad.png");
+        if (logoUrl != null) {
+            logo = new ImageIcon(logoUrl).getImage();
+        } else {
+            System.err.println("No se encontró el logo de la universidad");
+        }
     }
 
     @Override 

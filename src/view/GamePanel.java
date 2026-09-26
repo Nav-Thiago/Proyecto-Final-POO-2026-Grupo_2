@@ -14,7 +14,6 @@ import java.io.InputStream;
 
 public class GamePanel extends JPanel {
 
-
     private final GameModel model;
 
     private Animation playerWalkAnimation;
@@ -36,16 +35,13 @@ public class GamePanel extends JPanel {
         loadSprites();
     }
 
-
     public void playerInteract() {
         this.model.playerInteract();
     }
 
-
     public void nextLevel() {
         this.model.nextLevel();
     }
-
 
     private void loadSprites() {
         try {
@@ -129,6 +125,9 @@ public class GamePanel extends JPanel {
         /*try (InputStream inZombie = getClass().getResourceAsStream("/Resources/imagenes/zombie_idle.png")) {
             if (inZombie != null) {
                 zombieSprite = ImageIO.read(inZombie);
+        try (InputStream in = getClass().getResourceAsStream("/Resources/imagenes/zombie_idle.png")) {
+            if (in != null) {
+                zombieSprite = ImageIO.read(in);
             }
         } catch (IOException e) {
             System.err.println("Error cargando sprite del zombie: " + e.getMessage());
@@ -173,11 +172,9 @@ public class GamePanel extends JPanel {
         this.model.togglePause();
     }
 
-
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
         g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
         g2.fillRect(0, 0, getWidth(), getHeight());
-
 
         g2.setColor(color);
         g2.setFont(new Font("Monospaced", Font.BOLD, 40));
@@ -193,13 +190,10 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-
         Player player = this.model.getPlayer();
-
 
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWERUP] primero, para que queden debajo de zombies y jugador
@@ -225,13 +219,13 @@ public class GamePanel extends JPanel {
             }
         }
 
-
         // Dibuja a los enemigos
         if (zombieWalkAnimation != null) {
             zombieWalkAnimation.update();
         }
 
         for (Enemy zombie : this.model.getEnemies()) {
+
             if (zombie.isAlive()) {
                 if (zombieWalkAnimation != null && zombieWalkAnimation.getCurrentFrame() != null) {
                     AffineTransform transformOriginal = g2.getTransform();
@@ -265,20 +259,17 @@ public class GamePanel extends JPanel {
             }
         }
 
-
         // Dibuja las balas del jugador
         g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.model.getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth()-2, bullet.getHeight()-2);
         }
 
-
         // Dibuja balas de veneno
         g2.setColor(new Color(50, 205, 50));
         for (Bullet poison : this.model.getPoisonBullets()) {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
-
 
         // Dibuja al jugador
         if (playerWalkAnimation != null) {
@@ -310,28 +301,23 @@ public class GamePanel extends JPanel {
         /*if (playerSprite != null) {
             AffineTransform transformOriginal = g2.getTransform();
 
-
             double centerX = player.getX() + (player.getWidth() / 2.0);
             double centerY = player.getY() + (player.getHeight() / 2.0);
-
 
             g2.translate(centerX, centerY);
             g2.rotate(player.getAngle());
             g2.drawImage(playerSprite, -player.getWidth() / 2, -player.getHeight() / 2, player.getWidth(), player.getHeight(), null);
             g2.setTransform(transformOriginal);
 
-
         } else {
             g2.setColor(Color.BLUE);
             g2.fillOval((int) player.getX(), (int) player.getY(), player.getWidth(), player.getHeight());
         }*/
 
-
         // Dibuja la interfaz
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
         g2.drawString("Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth(), 20, 30); // Dibuja el texto en la esquina superior izquierda
-
 
         if (player.getShield() > 0) {
             g2.setColor(Color.CYAN);
@@ -341,7 +327,6 @@ public class GamePanel extends JPanel {
             g2.setColor(Color.RED);
             g2.drawString("Daño +" + Math.round(player.getDamageBonus()), 20, 80);
         }
-
 
         // Texto de arma activa y munición
         Weapon activeWeapon = player.getActiveWeapon();
@@ -353,7 +338,6 @@ public class GamePanel extends JPanel {
             g2.setColor(Color.WHITE);
             g2.drawString("Arma: Cuchillo", 20, 105);
         }
-
 
         // Mensaje de estados
         GameModel.gameStatus status = model.getStatus();

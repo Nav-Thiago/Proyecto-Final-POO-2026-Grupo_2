@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import controller.MenuController;
 
 public class MenuPanel extends JPanel {
@@ -10,12 +9,9 @@ public class MenuPanel extends JPanel {
     private Image backgroundImage;
     private MenuController controller;
 
-    /////////////////////////////////////////////////////////////////////////
-    // 1. Pon esto arriba junto a tus otras variables (backgroundImage, controller, etc.)
     private java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
     private javax.swing.Timer particleTimer;
 
-    // 2. Pon esto al final del archivo MenuPanel
     private class Ceniza {
         int x, y, size, speed;
         
@@ -35,7 +31,6 @@ public class MenuPanel extends JPanel {
             if (x < 0) x = width;
         }
     }
-    /////////////////////////////////////////////////////////////////////////
 
     public MenuPanel(MenuController controller) {
         this.controller = controller;
@@ -43,20 +38,31 @@ public class MenuPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 0));
 
-        backgroundImage = new ImageIcon("Resources/imagenes/fondo_menu_principal4.png").getImage();
+        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_principal4.png");
+        if (imgUrl != null) {
+            this.backgroundImage = new ImageIcon(imgUrl).getImage();
+        } else {
+            System.err.println("No se encontró el fondo del menú principal");
+        }
         
         JLabel titleLabel = new JLabel("NO WAY BACK");
         try {
             // Cargamos el archivo de la fuente
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Resources/fonts/RubikBurned-Regular.ttf")); //Nosifer-Regular.ttf
-        
-            // damos el estilo y el tamaño deseado (el 60f es un float que representa los píxeles)
-            Font titleFont = customFont.deriveFont(Font.BOLD, 60f);
-        
-            // aplicamos
-            titleLabel.setForeground(new Color(149,6 ,6));
-            titleLabel.setFont(titleFont);
-            titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+            java.io.InputStream fontStream = getClass().getResourceAsStream("/Resources/fonts/RubikBurned-Regular.ttf");
+            if (fontStream != null) {
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream); //Nosifer-Regular.ttf
+
+                // damos el estilo y el tamaño deseado (el 60f es un float que representa los píxeles)
+                Font titleFont = customFont.deriveFont(Font.BOLD, 60f);
+
+                // aplicamos
+                titleLabel.setForeground(new Color(149,6 ,6));
+                titleLabel.setFont(titleFont);
+                titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+            } else {
+                System.err.println("No se encontró la fuente tipográfica");
+            }
+
         } catch (Exception e) {
             System.out.println("Error al cargar la fuente, usando Arial por defecto.");
             titleLabel.setFont(new Font("Arial", Font.BOLD, 60));
@@ -83,7 +89,6 @@ public class MenuPanel extends JPanel {
         add(Box.createVerticalStrut(20));
         add(exitButton);
 
-        /////////////////////////////////////////////////////////////////////////
         // Generar 70 partículas iniciales (asumiendo un ancho base de 1920x1080 para esparcirlas)
         for (int i = 0; i < 70; i++) {
             particulas.add(new Ceniza(1920, 1080));
@@ -100,7 +105,6 @@ public class MenuPanel extends JPanel {
             repaint(); // Obliga a redibujar el panel con las nuevas posiciones
         });
         particleTimer.start();
-        /////////////////////////////////////////////////////////////////////////
     }
 
     @Override 
