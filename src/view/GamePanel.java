@@ -59,7 +59,7 @@ public class GamePanel extends JPanel {
                 }
             }
 
-            playerWalkAnimation = new Animation(150, true, frames);
+            playerWalkAnimation = new Animation(40, true, frames);
         } catch (Exception e) {
             System.err.println("Error cargando animación del zombie: " + e.getMessage());
         }
