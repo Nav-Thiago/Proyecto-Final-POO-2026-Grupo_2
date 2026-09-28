@@ -8,7 +8,7 @@ public class Animation {
     private long lastTime;
     private final int delay; // Milisegundos entre cada fotograma
 
-    public Animation(int delay, boolean isAlive, BufferedImage... frames) {
+    public Animation(int delay, BufferedImage... frames) {
         this.delay = delay;
         this.frames = frames;
         this.lastTime = System.currentTimeMillis();

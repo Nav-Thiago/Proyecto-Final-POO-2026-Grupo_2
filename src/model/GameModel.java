@@ -40,7 +40,7 @@ public class GameModel {
         this.groundWeapons = groundWeapons;
         
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(this.enemies, this.poisonBullets, 2000, 10);
+        this.spawner = new EnemySpawner(this.enemies, this.poisonBullets, 2000, 1);
         this.powerUpSpawner = new PowerUpSpawner(this.powerUps, 8000, 3); // [POWERUP] 
     }
 

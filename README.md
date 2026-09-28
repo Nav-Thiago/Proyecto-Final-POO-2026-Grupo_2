@@ -81,21 +81,29 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 ## Herencia y Polimorfismo
 
 ## Herencia
-**Entity (abstracta) --> Character:**
+**Entity (abstracta) → Character, Bullet, WeaponItem, PowerUp:**
 - Todo lo que existe en el mapa (jugador, zombies, etc.) tiene una posición en el mapa (x, y) y un tamaño (width, height), y necesita poder calcular su rectángulo de colisión. En lugar de repetir esos métodos y atributos en cada clase, se los guarda una vez en Entity.
 
-**Character (abstracta, extiende de Entity) --> Player, Enemy:**
+**Character (abstracta, extiende de Entity) → Player, Enemy:**
 -  El jugador y los enemigos comparten algo que las demás clases no tienen, vida y la capacidad de recibir daño y morir. Por eso se guardó en una clase, de tal manera que no se reutilize código.
 
-**Enemy (abstracta, extiende Character) --> NormalZombie, FastZombie, TankZombie, PoisonZombie:**
+**Enemy (abstracta, extiende Character) → NormalZombie, FastZombie, TankZombie, PoisonZombie:**
 - Todo enemigo persigue al jugador de la misma forma (update (Player target)), lo que ya está escrito una vez en Enemy, además que ataca por contacto con un mecanismo de cooldown. Lo único que cada tipo de zombie define es cuanto daño hace mediante el método abstracto attack() o, en su defecto, define mecánicas especiales como disparar veneno.
 
-**Weapon (abstracta) --> FireArm, MeleeWeapon:**
-- Se creó una jerarquía abstracta para las armas. Todas comparten el daño y el tiempo de recarga (cooldown) en la clase padre Weapon. Las armas de fuego (FireArm) añaden la gestión de munición, y de ella heredan armas específicas como Gun, ShotGun y Rifle. El cuchillo hereda directamente como arma cuerpo a cuerpo (MeleeWeapon).
+**Weapon (abstracta) → FireArm(abstracta), MeleeWeapon:**
+- Se creó una jerarquía abstracta para las armas. Todas comparten el daño y el tiempo de recarga (cooldown) en la clase padre Weapon. El cuchillo hereda directamente como arma cuerpo a cuerpo (MeleeWeapon).
 
-**PowerUp (abstracta, extiende de Entity) --> Ammo, Heal, Shield, DamageBoost, MaxAmmo:**
+**FireArm (abstracta, extiende Weapon) → Gun, ShotGun, Rifle**
+- Las armas de fuego extienden de Weapon, pero le agregan la lógica de la munición (balas actuales y capacidad máxima) e implementan la interfaz AmmoHolder. De ella heredan armas concretas que definen su propio comportamiento de disparo.
+
+**Bullet (extiende de Entity) → MeleeHitbox:**
+- El ataque cuerpo a cuerpo reutiliza el sistema de proyectiles, pero en lugar de ser una bala que viaja por el mapa, se anula su movimiento y se configura un año de daño más grande que desaparece después de pocos fotogramas.
+
+**PowerUp (abstracta, extiende de Entity) → Ammo, Heal, Shield, DamageBoost, MaxAmmo:**
 - Todos los potenciadores que el jugador puede recoger del suelo son una entidad y comparten el estado activo y la lógica base de recolección (collect). Cada subclase define su propio comportamiento específico mediante el método abstracto apply(Player player).
 
+**SplashPanel (abstracta, extiende de JPanel) → SplashUniversity, SplashSubject:**
+- En el sistema de menús, se creó un panel base que configura el layout y el color de fondo para las pantallas de carga. De ella heredan las vistas que solo se encargan de inicializar y dibujar sus componentes específicos (logo de la universidad y título de la materia.).
 
 ## Polimorfismo 
 **Enemy.attack():**
@@ -105,8 +113,4 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 - Al tener distintos tipos de armas equipadas, el jugador (Player) simplemente delega la acción llamando a activeWeapon.shoot(...) sin saber cuál arma tiene en la mano. A través de este mismo llamado polimórfico, el cuchillo genera una caja de colisión (MeleeHitbox), la pistola genera una sola bala, y la escopeta (ShotGun) genera múltiples perdigones dispersos.
 
 **PowerUp.apply()**
-- Cuando el jugador choca con un power-up en el piso, el GameModel llama al método collect(player). El juego no necesita usar condicionales para averiguar qué tipo de power-up levantó, cada objeto se encarga de aplicar su propio efecto (curar, dar escudo, recargar munición o aumentar el daño) sin afectar a los demás.
-**Implementaciones futuras:**
-- Al agregarse más tipos de zombies, el método attack() se va a seguir utilizando. Cuando hayan varios tipos de zombies en la misma partida, Enemy.update() va a llamar a attack() sobre zombies mezclados en la misma lista, sin preguntar de qué tipo es cada uno, y cada uno va a responder con su propio daño.
-- Cuando se agreguen más tipos de armas, el controller va a poder llamar algo como armaActual.disparar()... sin saber cuál arma tiene equipada el jugador, cada una va a crear distintos proyectiles a través del mismo llamado.
-- Cuando se agreguen los power-up, se va a utilizar un método como aplicar(Player), cuando el jugador toque el power-up en el piso, el código que lo recoge va a llamar a powerUp.aplicar(Player) sin importarle que tipo de power-up es, cada uno hace su efecto propio a través del mismo método. 
+- Cuando el jugador choca con un power-up en el piso, se llama al método collect(player). No se necesita usar condicionales para averiguar qué tipo de power-up levantó, cada objeto se encarga de aplicar su propio efecto (curar, dar escudo, recargar munición o aumentar el daño) con un único mensaje.
