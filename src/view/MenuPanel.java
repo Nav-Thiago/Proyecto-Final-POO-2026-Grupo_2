@@ -48,7 +48,7 @@ public class MenuPanel extends JPanel {
         JLabel titleLabel = new JLabel("NO WAY BACK");
         try {
             // Cargamos el archivo de la fuente
-            java.io.InputStream fontStream = getClass().getResourceAsStream("/Resources/fonts/RubikBurned-Regular.ttf");
+            java.io.InputStream fontStream = getClass().getResourceAsStream("/Resources/fonts/Nosifer-Regular.ttf");
             if (fontStream != null) {
                 Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream); //Nosifer-Regular.ttf
 

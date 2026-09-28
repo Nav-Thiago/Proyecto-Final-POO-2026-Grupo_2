@@ -55,7 +55,7 @@ public class MenuController implements MenuActions{
     }
 
     private void showUniversitySplash() {
-        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
         AudioManager.setVolume(50);
         cardLayout.show(mainContainer, "SPLASH_UNI");
 
