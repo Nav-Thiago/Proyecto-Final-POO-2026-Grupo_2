@@ -86,36 +86,76 @@ public class GameModel {
         }
         powerUps.removeIf(p -> !p.isActive());
 
-        for (Enemy zombie : enemies) {
-            if (zombie.isAlive()) {
-                zombie.update(player);
+        for (Enemy zombie : enemies) { 
+            if (zombie.isAlive()) { 
+                zombie.update(player); 
 
-                for (Bullet bullet : playerBullets) {
-                    bullet.update(screenWidth, screenHeight);
-                    if (bullet.isActive() && bullet.collidesWith(zombie)) {
-                        bullet.setActive(false);
-                        zombie.takeDamage((int) bullet.getDamage());
+                if (zombie.getBounds().intersects(player.getBounds())) {
+                    
+                    double dx = zombie.getX() - player.getX();
+                    double dy = zombie.getY() - player.getY();
+                    
+                    if (dx == 0 && dy == 0) {
+                        dx = Math.random() - 0.5;
+                        dy = Math.random() - 0.5;
+                    }
+                    
+                    double distancia = Math.sqrt(dx * dx + dy * dy);
+                    double repulsionJugador = 2.5; 
+                    
+                    zombie.setX(zombie.getX() + (dx / distancia) * repulsionJugador);
+                    zombie.setY(zombie.getY() + (dy / distancia) * repulsionJugador);
+                }
+
+                for (Enemy otroZombie : enemies) { 
+                    if (zombie != otroZombie && otroZombie.isAlive()) { 
+                        
+                        if (zombie.getBounds().intersects(otroZombie.getBounds())) { 
+                            
+                            double dx = zombie.getX() - otroZombie.getX(); 
+                            double dy = zombie.getY() - otroZombie.getY(); 
+                            
+                            if (dx == 0 && dy == 0) { 
+                                dx = Math.random() - 0.5; 
+                                dy = Math.random() - 0.5; 
+                            }
+                            
+                            double distancia = Math.sqrt(dx * dx + dy * dy); 
+                            double repulsion = 2.0; 
+                            
+                            zombie.setX(zombie.getX() + (dx / distancia) * repulsion); 
+                            zombie.setY(zombie.getY() + (dy / distancia) * repulsion); 
+                        }
+                    }
+                }
+
+                for (Bullet bullet : playerBullets) { 
+                    bullet.update(screenWidth, screenHeight); 
+                    if (bullet.isActive() && bullet.collidesWith(zombie)) { 
+                        bullet.setActive(false); 
+                        zombie.takeDamage((int) bullet.getDamage()); 
+                        System.out.println("Zombie impactado, vida del zombie: " + zombie.getHealth()); 
                     }
                 }
             }
         }
 
-        for (Bullet poison : poisonBullets) {
-            poison.update(screenWidth, screenHeight);
+        for (Bullet poison : poisonBullets) { 
+            poison.update(screenWidth, screenHeight); 
 
-            if (poison.isActive() && player.isAlive() && poison.getBounds().intersects(player.getBounds())) {
-                poison.setActive(false);
-                player.takeDamage((int) poison.getDamage());
+            if (poison.isActive() && player.isAlive() && poison.getBounds().intersects(player.getBounds())) { 
+                poison.setActive(false); 
+                player.addEffect(new PoisonEffect(4000)); 
             }
         }
 
-        playerBullets.removeIf(b -> !b.isActive());
-        poisonBullets.removeIf(b -> !b.isActive());
-        enemies.removeIf(z -> !z.isAlive());
+        playerBullets.removeIf(b -> !b.isActive()); 
+        poisonBullets.removeIf(b -> !b.isActive()); 
+        enemies.removeIf(z -> !z.isAlive()); 
 
-        if (enemies.isEmpty() && spawner.isWaveComplete()) {
+        if (enemies.isEmpty() && spawner.isWaveComplete()) { 
             if (actualLevel < totalLevels) {
-                status = gameStatus.LEVEL_COMPLETED;
+                status = gameStatus.LEVEL_COMPLETED; 
             } else {
                 status = gameStatus.GAME_WON;
             }

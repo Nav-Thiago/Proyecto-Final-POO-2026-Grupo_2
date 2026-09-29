@@ -2,14 +2,23 @@ package model;
 
 public abstract class Enemy extends Character {
 
-    private static final long ATTACK_COOLDOWN = 800; // Constante de tiempo de espera
-    private long lastAttack = 0; // Lo incializo en 0 para que pueda atacar inmediatamente la primera vez
-    protected double angle; 
+    protected double angle;
+    private long lastAttackTime = 0;
+    private final int meeleCooldown = 2000; 
 
     public Enemy(double x, double y, int width, int height, double speed, int health, int maxHealth) {
         super(x, y, width, height, speed, health, maxHealth);
         this.angle = 0.0;
     }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
 
     public double getAngle() {
         return angle;
@@ -28,9 +37,9 @@ public abstract class Enemy extends Character {
         move(dx, dy);
 
         long currentTime = System.currentTimeMillis();
-        if (this.getBounds().intersects(target.getBounds()) && currentTime - lastAttack >= ATTACK_COOLDOWN) {
+        if (this.getBounds().intersects(target.getBounds()) && currentTime - lastAttackTime >= meeleCooldown) {
             target.takeDamage(attack());
-            lastAttack = currentTime;
+            lastAttackTime = currentTime; 
         }
     }
 

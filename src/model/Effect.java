@@ -5,4 +5,6 @@ public interface Effect {
     void apply(Player player);
     void remove(Player player);
     boolean isExpired();
+
+    default void update (Player player){}
 }

@@ -128,6 +128,7 @@ public class Player extends Character {
         Iterator<Effect> it = effects.iterator();
         while (it.hasNext()) {
             Effect e = it.next();
+            e.update(this);
             if (e.isExpired()) {
                 e.remove(this);
                 it.remove();
