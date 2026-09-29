@@ -35,10 +35,8 @@ public class ShotGun extends FireArm{
 
                 pellets.add(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
             }
-
             return pellets;
         }
-
         return List.of();
     }
 }

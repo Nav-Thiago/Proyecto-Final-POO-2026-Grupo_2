@@ -21,7 +21,6 @@ public class MeleeWeapon extends Weapon {
 
             return List.of(new MeleeHitbox(x, y, dirX, dirY, this.getDamage()));
         }
-
         return List.of();
     }
 }

@@ -19,8 +19,8 @@ El sistema será un juego funcional y extensible. El diseño aplicará rigurosam
  El objetivo del juego es eliminar al jefe final. Para esto debe encontrar una llave por cada nivel para acceder al siguiente. Al llegar a una determinada cantidad de salas completadas, se encuentra con un jefe al que tiene que eliminar.
 
 ### Idea general
-El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en 2D de perspectiva top-down donde aparecen justamente zombies que le quieren quitar vidas y él se tiene que defender, para eso cuenta con una pistola y un cuchillo. La pistola tiene balas y cooldown, en cada nivel aparece con una cantidad default de balas y se puede ir encontrando más de las mismas, además de otros potenciadores o power ups como por ejemplo de velocidad o cooldown. También podría encontrarse otras armas mejores que sean más eficientes y faciliten la jugabilidad. Todo esto el jugador lo utiliza para derrotar a los enemigos de cada etapa, y al llegar a la última debe derrotar a un jefe final para pasar el nivel. 
- El juego cuenta con varios escenarios en donde se desarrollaran los niveles del juego y también con variedad en cuanto a los enemigos como posibles jefes que tendrán mecánicas propias que los hagan únicos a comparación de los enemigos comunes que se encontrarán dispersos por distintas zonas del mapa.
+El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en 2D de perspectiva top-down donde aparecen justamente zombies que le quieren hacer daño y él se tiene que defender, para eso cuenta con un arma de fuego y un cuchillo. El arma de fuego tiene balas y cooldown, en cada nivel aparece con una cantidad default de balas y se puede ir encontrando más de las mismas, además de otros potenciadores o power ups como por ejemplo de velocidad o escudo. También podría encontrarse otras armas mejores que sean más eficientes y faciliten la jugabilidad. Todo esto el jugador lo utiliza para derrotar a los enemigos de cada nivel, y al eliminarlos a todos debe derrotar a un jefe final para pasar al siguiente nivel. 
+ El juego cuenta con varios escenarios en donde se desarrollaran los niveles del juego y también con variedad en cuanto a los enemigos como distintos tipos de zombies que tendrán mecánicas propias que los hagan únicos.
 
 ### Funcionalidades Principales (Features)
 
@@ -57,17 +57,27 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 
 #### **Prototipo de la IGU (Wireframe)**
 
-*Fondo menu principal*
-![Imagen 1](src/Resources/imagenes/fondo_menu_principal4.png)
+*Menu principal*
+![Imagen 1](src/Resources/imagenes/menu.png)
 
-*Mapa del bosque (posible diseño)*
-![Imagen 2](src/Resources/imagenes/mapa_bosque.png)
+*Opciones menu principal*
+![Imagen 2](src/Resources/imagenes/opciones.png)
+
+*Jugabilidad*
+![Imagen 3](src/Resources/imagenes/jugabilidad.png)
+En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en el suelo y varios power-ups que se pueden recoger. Falta pulir el diseño e implementar el mapa.
+
+*Mapa del bosque (posible diseño nivel 1)*
+![Imagen 4](src/Resources/imagenes/mapa_bosque.png)
+
+*Mapa de la ciudad (posible diseño nivel 2)*
+![Imagen 5](src/Resources/imagenes/mapa_ciudad.png)
 
 *Jugador*
-![Imagen 3](src/Resources/imagenes/player_idle.png)
+![Imagen 6](src/Resources/imagenes/player_idle.png)
 
 *Zombie*
-![Imagen 4](src/Resources/imagenes/zombie_idle.png)
+![Imagen 7](src/Resources/imagenes/zombie_idle.png)
 
 
 ## 4. Stack Tecnológico  

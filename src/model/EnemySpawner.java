@@ -22,7 +22,7 @@ public class EnemySpawner {
     
     public void update(){
         long currentTime = System.currentTimeMillis();
-        
+
         if (currentTime - lastSpawnTime >= spawnInterval && zombieSpawned < waveLimit) {
             Random random = new Random();
             int tipoZombie = random.nextInt(4);
@@ -37,7 +37,7 @@ public class EnemySpawner {
                 newZombie = new PoisonZombie(1000, 300, poisonList);
             } else {
                 newZombie = new NormalZombie(1000, 300);
-        }   
+            }
 
             enemyList.add(newZombie);
             lastSpawnTime = currentTime;

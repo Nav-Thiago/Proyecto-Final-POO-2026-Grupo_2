@@ -28,7 +28,6 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
 
             return List.of(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
         }
-
         return List.of();
     }
 
