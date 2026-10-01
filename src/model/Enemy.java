@@ -4,7 +4,7 @@ public abstract class Enemy extends Character {
 
     protected double angle;
     private long lastAttackTime = 0;
-    private final int meeleCooldown = 2000; 
+    private final int meeleCooldown = 1000; 
 
     public Enemy(double x, double y, int width, int height, double speed, int health, int maxHealth) {
         super(x, y, width, height, speed, health, maxHealth);
