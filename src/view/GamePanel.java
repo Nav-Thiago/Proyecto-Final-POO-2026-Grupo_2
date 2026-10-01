@@ -11,6 +11,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.HashMap;
 
 public class GamePanel extends JPanel {
 
@@ -18,8 +20,14 @@ public class GamePanel extends JPanel {
 
     private Animation playerWalkAnimation;
     private Animation zombieWalkAnimation;
+    private BufferedImage tankIdleSprite;
+    private Animation tankWalkAnimation;
     private BufferedImage gunSprite;
     private BufferedImage shotGunSprite;
+
+    // Mapas para asociar la clase del modelo con su recurso visual
+    private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
+    private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
 
     private BufferedImage healSprite;
     private BufferedImage shieldSprite;
@@ -105,6 +113,45 @@ public class GamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error cargando animación del zombie: " + e.getMessage());
         }
+
+        try{
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/tank_idle.png");
+            if (in != null) {
+                tankIdleSprite = ImageIO.read(in);
+            }
+        }catch (IOException e){
+            System.out.println("Error cargando sprite del tanque en reposo: " + e.getMessage());
+        }
+
+        try{
+            int tankFrameQuantity = 36;
+            BufferedImage[] tankFrames = new BufferedImage[tankFrameQuantity];
+
+            for (int i = 0; i < tankFrameQuantity; i++){
+                String route = "/Resources/imagenes/entitys/tank_zombie/tank_walk_" + (i + 1) + ".png";
+                InputStream in = getClass().getResourceAsStream(route);
+
+                if (in != null) {
+                    tankFrames[i] = ImageIO.read(in);
+                }else{
+                    System.out.println("Advertencia: No se encontro la imagen " + route);
+                }
+            }
+            tankWalkAnimation = new Animation(100, tankFrames);
+        }catch (Exception e){
+            System.out.println("Error cargando animacion del tanque: " + e.getMessage());
+        }
+        if(zombieWalkAnimation != null){
+            zombieAnimations.put(NormalZombie.class, zombieWalkAnimation);
+            zombieAnimations.put(FastZombie.class, zombieWalkAnimation);
+            zombieAnimations.put(PoisonZombie.class, zombieWalkAnimation);
+        }
+        if (tankWalkAnimation != null) {
+            zombieAnimations.put(TankZombie.class, tankWalkAnimation);
+        }
+        if (tankIdleSprite != null) {
+            zombieIdleSprites.put(TankZombie.class, tankIdleSprite);
+        }
     }
 
     @Override
@@ -145,31 +192,40 @@ public class GamePanel extends JPanel {
         if (zombieWalkAnimation != null) {
             zombieWalkAnimation.update();
         }
+        //Dibuja Zombie Tanque
+        if (tankWalkAnimation != null) {
+            tankWalkAnimation.update();
+        }
+
+        for(Animation anim: zombieAnimations.values()){
+            anim.update();
+        }
 
         for (Enemy zombie : this.model.getEnemies()) {
-
             if (zombie.isAlive()) {
-                if (zombieWalkAnimation != null && zombieWalkAnimation.getCurrentFrame() != null) {
-                    AffineTransform transformOriginal = g2.getTransform();
+                AffineTransform transformOriginal = g2.getTransform();
+                double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
+                double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
-                    double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
-                    double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
+                g2.translate(centerX, centerY);
+                g2.rotate(zombie.getAngle());
 
-                    g2.translate(centerX, centerY);
-                    g2.rotate(zombie.getAngle());
+                int w = zombie.getWidth();
+                int h = zombie.getHeight();
 
-                    int w = zombie.getWidth();
-                    int h = zombie.getHeight();
-                    BufferedImage actualFrame = zombieWalkAnimation.getCurrentFrame();
-                    g2.drawImage(actualFrame, -w / 2, -h / 2, w, h, null);
+                Animation anim = zombieAnimations.get(zombie.getClass());
+                BufferedImage idle = zombieIdleSprites.get(zombie.getClass());
 
-                    g2.setTransform(transformOriginal);
-
+                if (anim != null && anim.getCurrentFrame() != null) {
+                    g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
+                } else if (idle != null) {
+                    g2.drawImage(idle, -w / 2, -h / 2, w, h, null);
                 } else {
                     g2.setColor(Color.RED);
-                    g2.fillOval((int) zombie.getX(), (int) zombie.getY(), zombie.getWidth(), zombie.getHeight());
+                    g2.fillOval(-w / 2, -h / 2, w, h);
                 }
 
+                g2.setTransform(transformOriginal);
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Monospaced", Font.BOLD, 20));
                 String lifeText = "HP: " + zombie.getHealth();
