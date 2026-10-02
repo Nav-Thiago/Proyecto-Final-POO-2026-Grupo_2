@@ -257,7 +257,6 @@ public class GamePanel extends JPanel {
         for(Animation anim: zombieAnimations.values()){
             anim.update();
         }
-
         for (Enemy zombie : this.model.getState().getEnemies()) {
 
             if (zombie.isAlive()) {
