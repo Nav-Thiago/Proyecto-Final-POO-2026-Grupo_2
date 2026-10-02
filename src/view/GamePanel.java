@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 public class GamePanel extends JPanel {
 
+    private final GameState state;
     private final GameModel model;
 
     private Animation playerWalkAnimation;
@@ -27,7 +28,8 @@ public class GamePanel extends JPanel {
     private BufferedImage ammoSprite;
     private BufferedImage maxAmmoSprite;
 
-    public  GamePanel(GameModel model) {
+    public  GamePanel(GameState state, GameModel model) {
+        this.state = state;
         this.model = model;
         setPreferredSize(new Dimension(1280, 720));
         setBackground(new Color(30,30, 35));
@@ -115,13 +117,13 @@ public class GamePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        Player player = this.model.getPlayer();
+        Player player = this.state.getPlayer();
 
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWER-UP] primero, para que queden debajo de zombies y jugador
 
         // Dibuja Armas en el suelo
-        for (WeaponItem item : this.model.getGroundWeapons()) {
+        for (WeaponItem item : this.state.getGroundWeapons()) {
             int x = (int) item.getX();
             int y = (int) item.getY();
 
@@ -146,7 +148,7 @@ public class GamePanel extends JPanel {
             zombieWalkAnimation.update();
         }
 
-        for (Enemy zombie : this.model.getEnemies()) {
+        for (Enemy zombie : this.state.getEnemies()) {
 
             if (zombie.isAlive()) {
                 if (zombieWalkAnimation != null && zombieWalkAnimation.getCurrentFrame() != null) {
@@ -182,13 +184,13 @@ public class GamePanel extends JPanel {
 
         // Dibuja las balas del jugador
         g2.setColor(Color.ORANGE);
-        for (Bullet bullet : this.model.getPlayerBullets()) {
+        for (Bullet bullet : this.state.getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth()-2, bullet.getHeight()-2);
         }
 
         // Dibuja balas de veneno
         g2.setColor(new Color(50, 205, 50));
-        for (Bullet poison : this.model.getPoisonBullets()) {
+        for (Bullet poison : this.state.getPoisonBullets()) {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
 
@@ -267,7 +269,7 @@ public class GamePanel extends JPanel {
 
         // Hitboxes de los zombies (Rojo)
         g2.setColor(Color.RED);
-        for (Enemy zombie : this.model.getEnemies()) {
+        for (Enemy zombie : this.state.getEnemies()) {
             if (zombie.isAlive()) {
                 Rectangle zBounds = zombie.getBounds();
                 g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
@@ -276,7 +278,7 @@ public class GamePanel extends JPanel {
 
         // Hitboxes de las balas (Cian)
         g2.setColor(Color.CYAN);
-        for (Bullet bullet : this.model.getPlayerBullets()) {
+        for (Bullet bullet : this.state.getPlayerBullets()) {
             if (bullet.isActive()) {
                 Rectangle bBounds = bullet.getBounds();
                 g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
@@ -287,7 +289,7 @@ public class GamePanel extends JPanel {
     }
 
     private void drawPowerUps(Graphics2D g2) {
-        for (PowerUp p : this.model.getPowerUps()) {
+        for (PowerUp p : this.state.getPowerUps()) {
             int x = (int) p.getX();
             int y = (int) p.getY();
 

@@ -18,13 +18,16 @@ public class GameState {
 
     public GameState(Player player, int mapWidth, int mapHeight) {
         this.player = player;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
         this.enemies = new ArrayList<>();
         this.playerBullets = new ArrayList<>();
         this.poisonBullets = new ArrayList<>();
         this.groundWeapons = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+    }
+
+    public void setMapDimensions(int width, int height) {
+        this.mapWidth = width;
+        this.mapHeight = height;
     }
 
     // getters
@@ -63,7 +66,6 @@ public class GameState {
     public void addEnemy (Enemy e) {
         this.enemies.add(e);
     }
-
 
     public void purgeInactive() {
         enemies.clear();
