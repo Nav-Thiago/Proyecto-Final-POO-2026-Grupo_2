@@ -6,21 +6,17 @@ import java.util.Random;
 public class EnemySpawner {
     private long lastSpawnTime;
     private int spawnInterval;
-    private List<Enemy> enemyList;
-    private List<Bullet> poisonList;
     private int zombieSpawned;
     private final int waveLimit;
 
-    public EnemySpawner(List<Enemy> enemyList, List<Bullet> poisonList, int spawnInterval, int waveLimit){
-        this.enemyList = enemyList;
-        this.poisonList = poisonList;
+    public EnemySpawner(int spawnInterval, int waveLimit){
         this.spawnInterval = spawnInterval;
         this.waveLimit = waveLimit;
         this.lastSpawnTime = System.currentTimeMillis();
         this.zombieSpawned = 0;
     }
     
-    public void update(){
+    public void update(GameState state){
         long currentTime = System.currentTimeMillis();
 
         if (currentTime - lastSpawnTime >= spawnInterval && zombieSpawned < waveLimit) {
@@ -34,12 +30,12 @@ public class EnemySpawner {
             } else if (tipoZombie == 1) {
                 newZombie = new FastZombie(1000, 300);
             } else if (tipoZombie == 2) {
-                newZombie = new PoisonZombie(1000, 300, poisonList);
+                newZombie = new PoisonZombie(1000, 300, state.getPoisonBullets());
             } else {
                 newZombie = new NormalZombie(1000, 300);
             }
 
-            enemyList.add(newZombie);
+            state.addEnemy(newZombie);
             lastSpawnTime = currentTime;
             zombieSpawned++;
         }

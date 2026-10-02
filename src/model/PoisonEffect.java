@@ -17,7 +17,6 @@ public class PoisonEffect extends TimedEffect {
         if (currentTime - lastTickTime >= tickInterval) {
             player.takeDamage(damagePerTick);
             lastTickTime = currentTime;
-            System.out.println("El veneno hace efecto. Vida actual: " + player.getHealth());
         }
     }
     @Override

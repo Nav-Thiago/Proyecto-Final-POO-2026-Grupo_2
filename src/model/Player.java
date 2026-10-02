@@ -107,18 +107,12 @@ public class Player extends Character {
         this.setAmmoHolder(weapon);
     }
 
-    public List<Bullet> shoot() {
+    public void attack(GameState state) {
         if (this.activeWeapon != null) {
-            double centerX = this.getX() + (this.getWidth() / 2.0);
-            double centerY = this.getY() + (this.getHeight() / 2.0);
-
-            return this.activeWeapon.shoot(centerX, centerY, this.angle);
+            this.activeWeapon.attack(this, state);
         }
-
-        return List.of();
     }
 
-    // ---------- [POWERUP] efectos ----------
     public void addEffect(Effect effect) {
         effect.apply(this);
         effects.add(effect);
@@ -144,8 +138,6 @@ public class Player extends Character {
         this.damageBonus = damageBonus;
     }
 
-    // ---------- [POWERUP] curación y escudo ----------
-
     public void heal(int amount) {
         setHealth(Math.min(getHealth() + amount, getMaxHealth()));
     }
@@ -166,7 +158,6 @@ public class Player extends Character {
         super.takeDamage(amount - absorbed);
     }
 
-    // ---------- [POWERUP] munición ----------
     public void setAmmoHolder(AmmoHolder ammoHolder) {
         this.ammoHolder = ammoHolder;
     }

@@ -36,12 +36,12 @@ public abstract class Entity {
         return new Rectangle((int) x, (int) y, width, height);
     }
 
-    public boolean collidesWith(Entity otra) {
-        if (otra == null) return false;
+    public boolean collidesWith(Entity e) {
+        if (e == null) return false;
 
-        return this.x < otra.getX() + otra.getWidth() &&
-           this.x + this.width > otra.getX() &&
-           this.y < otra.getY() + otra.getHeight() &&
-           this.y + this.height > otra.getY();
+        return this.x < e.getX() + e.getWidth() &&
+           this.x + this.width > e.getX() &&
+           this.y < e.getY() + e.getHeight() &&
+           this.y + this.height > e.getY();
     }
 }

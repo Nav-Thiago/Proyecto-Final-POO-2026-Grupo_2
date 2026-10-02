@@ -4,23 +4,45 @@ import java.util.List;
 
 public class MeleeWeapon extends Weapon {
 
+    private final double range = 60.0; // Píxeles de alcance del cuchillo
+    private final double arcAngle = Math.toRadians(90); // 90 grados de arco de ataque
+
     public MeleeWeapon(int damage, long cooldown) {
         super(damage);
         this.cooldown = cooldown;
     }
 
     @Override
-    public List<Bullet> shoot(double x, double y, double angle) {
+    public boolean attack(Player player, GameState state) {
         long currentTime = System.currentTimeMillis();
 
         if (currentTime - this.lastShoot >= this.cooldown) {
             this.lastShoot = currentTime;
 
-            double dirX = Math.cos(angle);
-            double dirY = Math.sin(angle);
+            double totalDamage = this.getDamage() + player.getDamageBonus();
+            boolean hitSomething = false;
 
-            return List.of(new MeleeHitbox(x, y, dirX, dirY, this.getDamage()));
+            for (Enemy zombie : state.getEnemies()) {
+                if (!zombie.isAlive()) continue;
+
+                double dx = zombie.getX() - player.getX();
+                double dy = zombie.getY() - player.getY();
+                double distance = Math.hypot(dx, dy);
+
+                if (distance <= range) {
+                    double angleToZombie = Math.atan2(dy, dx); // Calculo el ángulo hacia el zombie
+
+                    double angleDiff = angleToZombie - player.getAngle();
+                    angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+
+                    if (Math.abs(angleDiff) <= this.arcAngle / 2.0) {
+                        zombie.takeDamage((int) totalDamage);
+                        hitSomething = true;
+                    }
+                }
+            }
+            return hitSomething;
         }
-        return List.of();
+        return false;
     }
 }

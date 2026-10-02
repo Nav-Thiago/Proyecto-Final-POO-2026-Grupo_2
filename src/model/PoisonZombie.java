@@ -19,14 +19,14 @@ public class PoisonZombie extends Enemy {
     }
     
     @Override 
-    public void update(Player player){
+    public void update(Player player, GameState state){
         
         double dx = player.getX() - this.getX();
         double dy = player.getY() - this.getY();
         double distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance > 300) {
-            super.update(player);
+            super.update(player, state);
         }else {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastShootTime >= 1500) {
