@@ -8,7 +8,7 @@ public class PoisonZombie extends Enemy {
     private long lastShootTime;
 
     public PoisonZombie(double x, double y, List<Bullet> poisonList){
-        super(x, y, 48, 48, 2.0, 80, 80);
+        super(x, y, 40, 64, 2.0, 80, 80);
         this.poisonList = poisonList;
         this.lastShootTime = System.currentTimeMillis();
     }
@@ -52,5 +52,10 @@ public class PoisonZombie extends Enemy {
 
         Bullet poison = new Bullet(this.getX(), this.getY(), dirX, dirY, 4.0, 10.0);
         poisonList.add(poison);
+    }
+
+    @Override 
+    public double getAngle(){
+        return super.getAngle() + (Math.PI / 2);
     }
 }
