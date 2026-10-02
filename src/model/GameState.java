@@ -31,12 +31,6 @@ public class GameState {
     }
 
     // getters
-    public int getMapWidth() {
-        return mapWidth;
-    }
-    public int getMapHeight() {
-        return mapHeight;
-    }
     public Player getPlayer() {
         return player;
     }
@@ -68,9 +62,9 @@ public class GameState {
     }
 
     public void purgeInactive() {
-        enemies.clear();
-        playerBullets.clear();
-        poisonBullets.clear();
-        powerUps.clear();
+        enemies.removeIf(zombie -> !zombie.isAlive());
+        playerBullets.removeIf(bullet -> !bullet.isActive());
+        poisonBullets.removeIf(bullet -> !bullet.isActive());
+        powerUps.removeIf(powerUp -> !powerUp.isActive());
     }
 }

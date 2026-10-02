@@ -20,7 +20,7 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(state.getEnemies(), state.getPoisonBullets(), 2000, 3);
+        this.spawner = new EnemySpawner(2000, 3);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
     }
 
@@ -36,12 +36,14 @@ public class GameModel {
             return;
         }
 
+        player.update(screenWidth, screenHeight);
+
         // Mover balas
         for (Bullet b : state.getPlayerBullets()) b.update(screenWidth, screenHeight);
         for (Bullet p: state.getPoisonBullets()) p.update(screenWidth, screenHeight);
 
         // Spawners
-        spawner.update();
+        spawner.update(state);
         powerUpSpawner.update(screenWidth, screenHeight);
 
         // Mover zombies

@@ -13,12 +13,12 @@ public class ShotGun extends FireArm{
     }
 
     @Override
-    public void attack(double x, double y, double angle, List<Bullet> pellets, List<Enemy> enemies) {
+    public boolean attack(Player player, GameState state) {
         long currentTime = System.currentTimeMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
 
-            this.actualMunition -= 1;
+            this.actualMunition--;
             this.lastShoot = currentTime;
 
             for (int i = 0; i < 4; i++) {
@@ -26,13 +26,19 @@ public class ShotGun extends FireArm{
                 // Al restar 0.5 queda entre -0.5 y 0.5.
                 // Multiplicado por 0.6 genera una dispersión máxima de +/- 0.3 radianes.
                 double offset = (random.nextDouble() * 0.5) * 0.6;
-                double spreadAngle = angle + offset;
+                double spreadAngle = player.getAngle() + offset;
 
                 double dirX = Math.cos(spreadAngle);
                 double dirY = Math.sin(spreadAngle);
 
-                pellets.add(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
+                double centerX = player.getX() + (player.getWidth() / 2.0);
+                double centerY = player.getY() + (player.getHeight() / 2.0);
+
+                Bullet pellet = new Bullet(centerX, centerY, dirX, dirY, 12.0, this.getDamage());
+                state.addPlayerBullet(pellet);
             }
+            return true;
         }
+        return false;
     }
 }

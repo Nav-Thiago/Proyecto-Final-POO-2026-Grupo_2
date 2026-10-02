@@ -107,12 +107,9 @@ public class Player extends Character {
         this.setAmmoHolder(weapon);
     }
 
-    public void attack(List<Bullet> bullets, List<Enemy> enemies) {
+    public void attack(GameState state) {
         if (this.activeWeapon != null) {
-            double centerX = this.getX() + (this.getWidth() / 2.0);
-            double centerY = this.getY() + (this.getHeight() / 2.0);
-
-            this.activeWeapon.attack(centerX, centerY, this.angle, bullets, enemies);
+            this.activeWeapon.attack(this, state);
         }
     }
 

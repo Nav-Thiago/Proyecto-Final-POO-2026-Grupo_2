@@ -16,5 +16,5 @@ public abstract class Weapon {
         return damage;
     }
 
-    public abstract void attack(double x, double y, double angle, List<Bullet> bullets, List<Enemy> enemies);
+    public abstract boolean attack(Player player, GameState state);
 }

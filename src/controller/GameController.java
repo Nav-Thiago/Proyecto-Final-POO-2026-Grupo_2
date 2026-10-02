@@ -73,10 +73,13 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         gamePanel.requestFocusInWindow();
         
         if (e.getButton() == MouseEvent.BUTTON1) {
-            this.model.getState().getPlayerBullets().addAll(this.model.getState().getPlayer().attack());
+            this.model.getState().getPlayer().attack(model.getState());
         }
     }
-    
+
+    private void pla() {
+    }
+
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
     // public class GameController extends MouseAdapter implements KeyListener {
     // Investigar.

@@ -5,7 +5,7 @@ import java.util.List;
 public abstract class FireArm extends Weapon implements AmmoHolder {
 
     protected int actualMunition;
-    private int maxMunition;
+    private final int maxMunition;
 
     public FireArm(int damage, long cooldown, int actualMunition, int maxMunition){
         super(damage);
@@ -14,17 +14,29 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
         this.maxMunition = maxMunition;
     }
 
-    public void attack(double x, double y, double angle, List<Bullet> bullets, List<Enemy> enemies){
+    @Override
+    public boolean attack(Player player, GameState state){
         long currentTime = System.currentTimeMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
 
-            this.actualMunition -= 1;
+            this.actualMunition--;
             this.lastShoot = currentTime;
 
-            double dirX = Math.cos(angle);
-            double dirY = Math.sin(angle);
+            double dirX = Math.cos(player.getAngle());
+            double dirY = Math.sin(player.getAngle());
+
+            double centerX = player.getX() + (player.getWidth() / 2.0);
+            double centerY = player.getY() + (player.getHeight() / 2.0);
+
+            double totalDamage = this.getDamage() + player.getDamageBonus();
+            Bullet bullet = new Bullet(centerX, centerY, dirX, dirY, 12.0, totalDamage);
+
+            state.addPlayerBullet(bullet);
+
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -41,7 +53,6 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
     public int getActualMunition() {
         return actualMunition;
     }
-
     public int getMaxMunition() {
         return maxMunition;
     }

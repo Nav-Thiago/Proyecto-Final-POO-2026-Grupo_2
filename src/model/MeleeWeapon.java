@@ -4,31 +4,45 @@ import java.util.List;
 
 public class MeleeWeapon extends Weapon {
 
+    private final double range = 60.0; // Píxeles de alcance del cuchillo
+    private final double arcAngle = Math.toRadians(90); // 90 grados de arco de ataque
+
     public MeleeWeapon(int damage, long cooldown) {
         super(damage);
         this.cooldown = cooldown;
     }
 
-    public void attack(double x, double y, double angle, List<Bullet> bullets, List<Enemy> enemies) {
+    @Override
+    public boolean attack(Player player, GameState state) {
         long currentTime = System.currentTimeMillis();
 
         if (currentTime - this.lastShoot >= this.cooldown) {
             this.lastShoot = currentTime;
 
-            double range = 70.0;
+            double totalDamage = this.getDamage() + player.getDamageBonus();
+            boolean hitSomething = false;
 
-            for (Enemy enemy : enemies) {
-                if (enemy.isAlive()) {
-                    double enemyCenterX = enemy.getX() + (enemy.getWidth() / 2.0);
-                    double enemyCenterY = enemy.getY() + (enemy.getHeight() / 2.0);
+            for (Enemy zombie : state.getEnemies()) {
+                if (!zombie.isAlive()) continue;
 
-                    double distance = Math.hypot(enemyCenterX - x, enemyCenterY - y);
-                    if (distance <= range) {
-                        enemy.takeDamage(this.getDamage());
-                        break;
+                double dx = zombie.getX() - player.getX();
+                double dy = zombie.getY() - player.getY();
+                double distance = Math.hypot(dx, dy);
+
+                if (distance <= range) {
+                    double angleToZombie = Math.atan2(dy, dx); // Calculo el ángulo hacia el zombie
+
+                    double angleDiff = angleToZombie - player.getAngle();
+                    angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+
+                    if (Math.abs(angleDiff) <= this.arcAngle / 2.0) {
+                        zombie.takeDamage((int) totalDamage);
+                        hitSomething = true;
                     }
                 }
             }
+            return hitSomething;
         }
+        return false;
     }
 }
