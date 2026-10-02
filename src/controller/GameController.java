@@ -27,23 +27,18 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         this.gamePanel.addMouseListener(this);
         this.gamePanel.addMouseMotionListener(this);
     }
-    // Obtener el gamePanel (para el MenuController)
-    public GamePanel getGamePanel() {
-        return this.gamePanel;
-    }
 
     // TECLADO
-
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getPlayer().setMoveUp(true);
-            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getPlayer().setMoveDown(true);
-            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getPlayer().setMoveLeft(true);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getPlayer().setMoveRight(true);
-            case KeyEvent.VK_Q -> this.model.getPlayer().swapWeapon();
-            case KeyEvent.VK_E -> this.gamePanel.playerInteract();
-            case KeyEvent.VK_ESCAPE -> this.gamePanel.togglePause();
+            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(true);
+            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(true);
+            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getState().getPlayer().setMoveLeft(true);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(true);
+            case KeyEvent.VK_Q -> this.model.getState().getPlayer().swapWeapon();
+            case KeyEvent.VK_E -> this.model.playerInteract();
+            case KeyEvent.VK_ESCAPE -> this.model.togglePause();
             default -> {
             }
         }
@@ -52,10 +47,10 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getPlayer().setMoveUp(false);
-            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getPlayer().setMoveDown(false);
-            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getPlayer().setMoveLeft(false);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getPlayer().setMoveRight(false);
+            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(false);
+            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(false);
+            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getState().getPlayer().setMoveLeft(false);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(false);
             default -> {}
         }
     }
@@ -64,13 +59,13 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        this.model.getPlayer().aimAt(e.getX(), e.getY());
+        this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
     }
 
     @Override
     // Manteniendo algún botón pulsado
     public void mouseDragged(MouseEvent e) {
-        this.model.getPlayer().aimAt(e.getX(), e.getY());
+        this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
     }
 
     @Override
@@ -78,7 +73,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         gamePanel.requestFocusInWindow();
         
         if (e.getButton() == MouseEvent.BUTTON1) {
-            this.model.getPlayer().attack(this.model.getPlayerBullets(), this.model.getEnemies());
+            this.model.getState().getPlayerBullets().addAll(this.model.getState().getPlayer().attack());
         }
     }
     
@@ -87,13 +82,10 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     // Investigar.
     @Override
     public void mouseClicked(MouseEvent e) {}
-
     @Override
     public void mouseReleased(MouseEvent e) {}
-
     @Override
     public void mouseEntered(MouseEvent e) {}
-
     @Override
     public void mouseExited(MouseEvent e) {}
 }

@@ -1,5 +1,6 @@
 package controller;
 
+import model.*;
 import view.GamePanel;
 import view.MainFrame;
 import view.SplashUniversity;
@@ -13,15 +14,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import model.Bullet;
-import model.Enemy;
-import model.GameModel;
-import model.Gun;
-import model.NormalZombie;
-import model.Player;
-import model.ShotGun;
-import model.WeaponItem;
 
 public class MenuController implements MenuActions{
 
@@ -81,6 +73,7 @@ public class MenuController implements MenuActions{
         //AudioManager.playMusic("Resources/audio/soundtrack1.wav");
         //AudioManager.setVolume(50);
     }
+
     // Implemento el método de la interfaz "MenuActions" para poder utilizarlo en "MenuPanel"
     @Override 
     public void backToMenu() {
@@ -90,6 +83,7 @@ public class MenuController implements MenuActions{
     private void showOptionsMenu() {
         cardLayout.show(mainContainer, "OPTIONS");
     }
+
     @Override 
     public void optionMenu() {
         showOptionsMenu();
@@ -101,19 +95,13 @@ public class MenuController implements MenuActions{
         Player player = new Player(384, 284);
         player.equipWeapon(new Gun(20, 400, 15, 15));
 
-        List<Enemy> enemies = new  ArrayList<>();
-        enemies.add(new NormalZombie(50, 50));
+        GameState state = new GameState(player, 1280, 720);
+        state.getGroundWeapons().add(new WeaponItem(500, 600, new ShotGun(30, 800, 5, 5)));
 
-        List<Bullet> playerBullets = new ArrayList<>();
-        List<Bullet> poisonBullets = new ArrayList<>();
-
-        List<WeaponItem> groundWeapons = new ArrayList<>();
-        groundWeapons.add(new WeaponItem(500, 600, new ShotGun(30, 800, 5, 5)));
-
-        GameModel model = new GameModel(player, enemies, playerBullets, poisonBullets, groundWeapons);
+        GameModel model = new GameModel(state);
         GamePanel gamePanel = new GamePanel(model);
 
-        new GameController(model, gamePanel);
+        GameController controller = new GameController(model, gamePanel);
         //gamePanel.addKeyListener(controller);
         //gamePanel.addMouseMotionListener(controller);
         //gamePanel.addMouseListener(controller);
@@ -123,7 +111,7 @@ public class MenuController implements MenuActions{
         cardLayout.show(mainContainer, "GAME");
 
         gamePanel.setFocusable(true);
-        gamePanel.requestFocus();
+        gamePanel.requestFocusInWindow();
 
         gamePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override 

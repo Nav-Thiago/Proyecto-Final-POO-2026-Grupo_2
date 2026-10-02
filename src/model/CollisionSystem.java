@@ -35,7 +35,20 @@ public class CollisionSystem {
     }
 
     private void checkZombiePlayerCollision(GameState state) {
+        Player player = state.getPlayer();
+        if (!player.isAlive()) return;
 
+        for (Enemy zombie : state.getEnemies()) {
+            if (!zombie.isAlive()) continue;
+
+            if (zombie.collidesWith(player)) {
+
+                if (zombie.canAttack()) {
+                    player.takeDamage(zombie.attack());
+                    zombie.resetAttackCooldown();
+                }
+            }
+        }
     }
 
 }
