@@ -22,6 +22,10 @@ public class GamePanel extends JPanel {
     private Animation zombieWalkAnimation;
     private BufferedImage tankIdleSprite;
     private Animation tankWalkAnimation;
+    private BufferedImage fastIdleSprite;
+    private Animation fastWalkAnimation;
+    private BufferedImage poisonIdleSprite;
+    private Animation poisonWalkAnimation;
     private BufferedImage gunSprite;
     private BufferedImage shotGunSprite;
 
@@ -138,13 +142,53 @@ public class GamePanel extends JPanel {
                 }
             }
             tankWalkAnimation = new Animation(100, tankFrames);
+
         }catch (Exception e){
             System.out.println("Error cargando animacion del tanque: " + e.getMessage());
         }
+
+        try{
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/fast_idle.png");
+            if (in != null) fastIdleSprite = ImageIO.read(in); 
+        }catch (IOException e){
+            System.out.println("Error cargando srpite del fast zombie en reposo: " + e.getMessage());
+        }
+
+        try{
+            int fastFrameQuantity = 16;
+            BufferedImage[] fastFrames = new BufferedImage[fastFrameQuantity];
+            for (int i = 0; i < fastFrameQuantity; i++){
+                String route = "/Resources/imagenes/entitys/fast_zombie/fast_walk_" + (i + 1) + ".png";
+                InputStream in = getClass().getResourceAsStream(route);
+                if (in != null) fastFrames[i] = ImageIO.read(in); 
+            }
+            fastWalkAnimation = new Animation(80, fastFrames);
+        }catch (Exception e){
+            System.out.println("Error cargando animacion del zombie rapido: " + e.getMessage());
+        }
+
+        try{
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/poison_idle_png");
+            if (in != null) poisonIdleSprite = ImageIO.read(in);
+        }catch (IOException e){
+            System.out.println("Error cargando sprite del poison zombie en reposo: " + e.getMessage());
+        }
+
+        try{
+            int poisonFrameQuantity = 16;
+            BufferedImage[] poisonFrames = new BufferedImage[poisonFrameQuantity];
+            for(int i = 0; i < poisonFrameQuantity; i++){
+                String route = "/Resources/imagenes/entitys/poison_zombie/poison_walk_" + (i + 1) + ".png";
+                InputStream in = getClass().getResourceAsStream(route);
+                if(in != null) poisonFrames[i] = ImageIO.read(in);
+            }
+            poisonWalkAnimation = new Animation(150, poisonFrames);
+        }catch (Exception e){
+            System.out.println("Error cargando animacion del zombie venenoso: " + e.getMessage());
+        }
+
         if(zombieWalkAnimation != null){
             zombieAnimations.put(NormalZombie.class, zombieWalkAnimation);
-            zombieAnimations.put(FastZombie.class, zombieWalkAnimation);
-            zombieAnimations.put(PoisonZombie.class, zombieWalkAnimation);
         }
         if (tankWalkAnimation != null) {
             zombieAnimations.put(TankZombie.class, tankWalkAnimation);
@@ -152,7 +196,20 @@ public class GamePanel extends JPanel {
         if (tankIdleSprite != null) {
             zombieIdleSprites.put(TankZombie.class, tankIdleSprite);
         }
+        if (fastWalkAnimation != null) {
+            zombieAnimations.put(FastZombie.class, fastWalkAnimation);
+        }
+        if (fastIdleSprite != null) {
+            zombieIdleSprites.put(FastZombie.class, fastIdleSprite);
+        }
+        if (poisonWalkAnimation != null) {
+            zombieAnimations.put(PoisonZombie.class, poisonWalkAnimation);
+        }
+        if (poisonIdleSprite != null) {
+            zombieAnimations.put(PoisonZombie.class, poisonWalkAnimation);
+        }
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
