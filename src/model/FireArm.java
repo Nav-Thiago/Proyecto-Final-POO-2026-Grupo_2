@@ -1,7 +1,5 @@
 package model;
 
-import java.util.List;
-
 public abstract class FireArm extends Weapon implements AmmoHolder {
 
     protected int actualMunition;

@@ -1,9 +1,7 @@
 package controller;
 
 import model.GameModel;
-import model.Player;
-import model.Bullet;
-//import model.Enemy;
+
 import view.GamePanel;
 
 import java.awt.event.KeyAdapter;
@@ -11,8 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener; 
-
-import java.util.List;
 
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
@@ -75,9 +71,6 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         if (e.getButton() == MouseEvent.BUTTON1) {
             this.model.getState().getPlayer().attack(model.getState());
         }
-    }
-
-    private void pla() {
     }
 
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 

@@ -9,8 +9,6 @@ import view.MenuPanel;
 import view.OptionsPanel;
 
 import java.awt.CardLayout;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;

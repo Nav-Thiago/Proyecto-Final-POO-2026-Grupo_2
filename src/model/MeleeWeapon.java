@@ -1,7 +1,5 @@
 package model;
 
-import java.util.List;
-
 public class MeleeWeapon extends Weapon {
 
     private final double range = 60.0; // Píxeles de alcance del cuchillo
