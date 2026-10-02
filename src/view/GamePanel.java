@@ -286,7 +286,6 @@ public class GamePanel extends JPanel {
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
     }
 
-    // [POWER-UP] dibujo provisional sin sprites: círculo de color + texto
     private void drawPowerUps(Graphics2D g2) {
         for (PowerUp p : this.model.getPowerUps()) {
             int x = (int) p.getX();

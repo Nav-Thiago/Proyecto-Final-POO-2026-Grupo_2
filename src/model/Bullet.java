@@ -18,7 +18,6 @@ public class Bullet extends Entity {
         this.active = true;
     }
 
-    
     public boolean isActive() {
         return active;
     }

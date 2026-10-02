@@ -14,8 +14,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
         this.maxMunition = maxMunition;
     }
 
-    @Override
-    public List<Bullet> shoot(double x, double y, double angle){
+    public void attack(double x, double y, double angle, List<Bullet> bullets, List<Enemy> enemies){
         long currentTime = System.currentTimeMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
@@ -25,10 +24,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
 
             double dirX = Math.cos(angle);
             double dirY = Math.sin(angle);
-
-            return List.of(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
         }
-        return List.of();
     }
 
     @Override

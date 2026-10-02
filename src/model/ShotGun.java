@@ -13,15 +13,13 @@ public class ShotGun extends FireArm{
     }
 
     @Override
-    public List<Bullet> shoot(double x, double y, double angle) {
+    public void attack(double x, double y, double angle, List<Bullet> pellets, List<Enemy> enemies) {
         long currentTime = System.currentTimeMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
 
             this.actualMunition -= 1;
             this.lastShoot = currentTime;
-
-            List<Bullet> pellets = new ArrayList<>();
 
             for (int i = 0; i < 4; i++) {
                 // random.nextDouble() da un valor entre 0.0 y 1.0.
@@ -35,8 +33,6 @@ public class ShotGun extends FireArm{
 
                 pellets.add(new Bullet(x, y, dirX, dirY, 12.0, this.getDamage()));
             }
-            return pellets;
         }
-        return List.of();
     }
 }

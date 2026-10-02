@@ -16,6 +16,5 @@ public abstract class Weapon {
         return damage;
     }
 
-    public abstract List<Bullet> shoot(double x, double y, double angle);
-
+    public abstract void attack(double x, double y, double angle, List<Bullet> bullets, List<Enemy> enemies);
 }

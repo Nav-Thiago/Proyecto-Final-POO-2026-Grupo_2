@@ -113,7 +113,7 @@ public class MenuController implements MenuActions{
         GameModel model = new GameModel(player, enemies, playerBullets, poisonBullets, groundWeapons);
         GamePanel gamePanel = new GamePanel(model);
 
-        new GameController(player, playerBullets, gamePanel);
+        new GameController(model, gamePanel);
         //gamePanel.addKeyListener(controller);
         //gamePanel.addMouseMotionListener(controller);
         //gamePanel.addMouseListener(controller);
