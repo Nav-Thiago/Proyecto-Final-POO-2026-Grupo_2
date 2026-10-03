@@ -19,8 +19,10 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 10);
+        this.spawner = new EnemySpawner(2000, 0);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
+        System.out.println("GameModel NUEVO cargado");
+        state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
     }
 
     public void update(int screenWidth, int screenHeight) {
@@ -117,4 +119,6 @@ public class GameModel {
         return state;
     }
     public gameStatus getStatus() {return status;}
+
+    
 }

@@ -9,7 +9,7 @@ public class GameState {
     private final Player player;
     private final List<Enemy> enemies;
     private final List<Bullet> playerBullets;
-    private final List<Bullet> poisonBullets;
+    private final List<PoisonBullet> poisonBullets;
     private final List<WeaponItem> groundWeapons;
     private final List<PowerUp> powerUps;
 
@@ -40,7 +40,7 @@ public class GameState {
     public List<Bullet> getPlayerBullets() {
         return playerBullets;
     }
-    public List<Bullet> getPoisonBullets() {
+    public List<PoisonBullet> getPoisonBullets() {
         return poisonBullets;
     }
     public List<WeaponItem> getGroundWeapons() {
@@ -54,7 +54,7 @@ public class GameState {
     public void addPlayerBullet (Bullet b) {
         this.playerBullets.add(b);
     }
-    public void addPoisonBullet (Bullet b) {
+    public void addPoisonBullet (PoisonBullet b) {
         this.poisonBullets.add(b);
     }
     public void addEnemy (Enemy e) {
