@@ -19,7 +19,7 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 3);
+        this.spawner = new EnemySpawner(2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
     }
 

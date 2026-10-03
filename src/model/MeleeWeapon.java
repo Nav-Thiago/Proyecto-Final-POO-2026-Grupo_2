@@ -2,7 +2,7 @@ package model;
 
 public class MeleeWeapon extends Weapon {
 
-    private final double range = 60.0; // Píxeles de alcance del cuchillo
+    private final double range = 100.0; // Píxeles de alcance del cuchillo
     private final double arcAngle = Math.toRadians(90); // 90 grados de arco de ataque
 
     public MeleeWeapon(int damage, long cooldown) {
@@ -23,8 +23,15 @@ public class MeleeWeapon extends Weapon {
             for (Enemy zombie : state.getEnemies()) {
                 if (!zombie.isAlive()) continue;
 
-                double dx = zombie.getX() - player.getX();
-                double dy = zombie.getY() - player.getY();
+                double playerCenterX = player.getX() + (player.getWidth() / 2.0);
+                double playerCenterY = player.getY() + (player.getHeight() / 2.0);
+
+                double zombieCenterX = zombie.getX() + (zombie.getWidth() / 2.0);
+                double zombieCenterY = zombie.getY() + (zombie.getHeight() / 2.0);
+
+                double dx = zombieCenterX - playerCenterX;
+                double dy = zombieCenterY - playerCenterY;
+
                 double distance = Math.hypot(dx, dy);
 
                 if (distance <= range) {

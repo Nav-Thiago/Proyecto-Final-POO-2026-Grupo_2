@@ -78,7 +78,6 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando sprites de armas: " + e.getMessage());
         }
 
-        
         try {
             InputStream inHeal = getClass().getResourceAsStream("/Resources/imagenes/powerups/heal.png");
             if (inHeal != null) healSprite = ImageIO.read(inHeal);
@@ -442,17 +441,5 @@ public class GamePanel extends JPanel {
         int textX = (getWidth() - fm.stringWidth(texto)) / 2;
         int textY = getHeight() / 2;
         g2.drawString(texto, textX, textY);
-    }
-
-    public void togglePause() {
-        this.model.togglePause();
-    }
-
-    public void playerInteract() {
-        this.model.playerInteract();
-    }
-
-    public void nextLevel() {
-        this.model.nextLevel();
     }
 }

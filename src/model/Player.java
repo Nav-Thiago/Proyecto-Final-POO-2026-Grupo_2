@@ -26,7 +26,7 @@ public class Player extends Character {
     public Player(double x, double y) {
         super(x, y, 64, 64, 5.5, 100, 100);
 
-        this.knife = new MeleeWeapon(50, 200);
+        this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
 
