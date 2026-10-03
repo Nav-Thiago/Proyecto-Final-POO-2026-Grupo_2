@@ -7,7 +7,7 @@ public class Shield extends PowerUp {
     private final int shieldPoints;
 
     public Shield(double x, double y, int shieldPoints) {
-        super(x, y);
+        super(32, 32);
         this.shieldPoints = shieldPoints;
     }
 
