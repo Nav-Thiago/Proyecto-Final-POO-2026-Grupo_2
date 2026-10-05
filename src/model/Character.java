@@ -24,12 +24,35 @@ public abstract class Character extends Entity {
         return maxHealth;
     }
 
-    protected void move(double dx, double dy) {
+    protected void move(double dx, double dy, GameState state) {
         if (dx != 0 || dy != 0) {
             double length = Math.sqrt(dx * dx + dy * dy);
-            x += (dx/length * speed);
-            y += (dy/length * speed);
+            double moveX = (dx / length) * speed;
+            double moveY = (dy / length) * speed;
+
+            if (!isCollidingWithMap(x + moveX, y, state)) x += moveX;
+            if (!isCollidingWithMap(x, y + moveY, state)) y += moveY;
         }
+    }
+
+    private boolean isCollidingWithMap(double nextX, double nextY, GameState state) {
+        boolean[][] map = state.getCollisionMatrix();
+        if (map == null) return false;
+
+        int tile_size = GameState.TILE_SIZE;
+
+        // Hitbox lógica (más chica que sprite visual)
+        int leftTile = (int) (nextX + 15) / tile_size;
+        int rightTile = (int) (nextX + width - 15) / tile_size;
+        int topTile = (int) (nextY + 30) / tile_size; 
+        int bottomTile = (int) (nextY + height - 5) / tile_size;
+
+        if (leftTile < 0 || rightTile >= map.length || topTile < 0 || bottomTile >= map[0].length) {
+            return true;
+        }
+
+        return map[leftTile][topTile] || map[rightTile][topTile] ||
+           map[leftTile][bottomTile] || map[rightTile][bottomTile];
     }
 
     public double getSpeed() {

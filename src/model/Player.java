@@ -24,7 +24,7 @@ public class Player extends Character {
     private Weapon activeWeapon; // Puntero al arma que tiene en la mano actualmente
 
     public Player(double x, double y) {
-        super(x, y, 64, 64, 5.5, 100, 100);
+        super(x, y, 64, 64,3.5 , 100, 100);
 
         this.knife = new MeleeWeapon(50, 200);
         this.activeWeapon = this.knife;
@@ -62,7 +62,7 @@ public class Player extends Character {
         return activeWeapon;
     }
 
-    public void update(int mapWidth, int mapHeight) {
+    public void update(GameState state) {
         updateEffects(); // [POWERUP] vence los efectos temporales
 
         double dx = 0;
@@ -72,12 +72,13 @@ public class Player extends Character {
         if (moveLeft) dx -= 1;
         if (moveRight) dx += 1;
 
-        move(dx, dy);
+        move(dx, dy, state);
 
+        // Bordes del mapa calculados 
         if (x < 0) x = 0;
-        if (x + width > mapWidth) x = mapWidth - width;
+        if (x + width > state.getMapWidth()) x = state.getMapWidth() - width;
         if (y < 0) y = 0;
-        if (y + height > mapHeight) y = mapHeight - height;
+        if (y + height > state.getMapHeight()) y = state.getMapHeight() - height;
     }
 
     public void aimAt(double mouseX, double mouseY) {

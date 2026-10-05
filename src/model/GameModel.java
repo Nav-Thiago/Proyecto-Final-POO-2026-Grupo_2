@@ -19,14 +19,12 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 3);
+        this.spawner = new EnemySpawner(2000, 2);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
     }
 
     public void update(int screenWidth, int screenHeight) {
         if (status != gameStatus.PLAYING) return;
-
-        state.setMapDimensions(screenWidth, screenHeight);
 
         // Mover jugador
         Player player = state.getPlayer();
@@ -35,11 +33,14 @@ public class GameModel {
             return;
         }
 
-        player.update(screenWidth, screenHeight);
+        player.update(state);
+
+        int mapWidth = state.getMapWidth();
+        int mapHeight = state.getMapHeight();
 
         // Mover balas
-        for (Bullet b : state.getPlayerBullets()) b.update(screenWidth, screenHeight);
-        for (Bullet p: state.getPoisonBullets()) p.update(screenWidth, screenHeight);
+        for (Bullet b : state.getPlayerBullets()) b.update(mapWidth, mapHeight);
+        for (Bullet p: state.getPoisonBullets()) p.update(mapWidth, mapHeight);
 
         // Spawners
         spawner.update(state);

@@ -2,7 +2,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameState {
 
@@ -16,6 +15,9 @@ public class GameState {
     private int mapWidth;
     private int mapHeight;
 
+    public static final int TILE_SIZE = 32;
+    private boolean[][] collisionMatrix;
+
     public GameState(Player player, int mapWidth, int mapHeight) {
         this.player = player;
         this.enemies = new ArrayList<>();
@@ -23,6 +25,8 @@ public class GameState {
         this.poisonBullets = new ArrayList<>();
         this.groundWeapons = new ArrayList<>();
         this.powerUps = new ArrayList<>();
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
     }
 
     public void setMapDimensions(int width, int height) {
@@ -49,8 +53,23 @@ public class GameState {
     public List<PowerUp> getPowerUps() {
         return powerUps;
     }
+    public int getMapWidth() {
+        return mapWidth;
+    }
+    public int getMapHeight(){
+        return mapHeight;
+    }
 
 
+    public void setCollisionMatrix(boolean[][] matrix) {
+        this.collisionMatrix = matrix;
+    }
+
+    public boolean[][] getCollisionMatrix() {
+        return collisionMatrix;
+    }
+
+    
     public void addPlayerBullet (Bullet b) {
         this.playerBullets.add(b);
     }

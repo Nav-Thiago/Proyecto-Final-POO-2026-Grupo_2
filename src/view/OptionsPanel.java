@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 
 import controller.AudioManager;
 import controller.MenuController;

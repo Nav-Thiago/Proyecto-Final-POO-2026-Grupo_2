@@ -14,11 +14,18 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.HashMap;
 
+import java.awt.geom.Area;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+
 public class GamePanel extends JPanel {
 
     private final GameModel model;
 
     private Animation playerWalkAnimation;
+    private Animation playersFeetAnimation;
+
     private Animation zombieWalkAnimation;
     private BufferedImage tankIdleSprite;
     private Animation tankWalkAnimation;
@@ -28,6 +35,9 @@ public class GamePanel extends JPanel {
     private Animation poisonWalkAnimation;
     private BufferedImage gunSprite;
     private BufferedImage shotGunSprite;
+
+    private BufferedImage backgroundForest;
+    private BufferedImage firstLayer;
 
     // Mapas para asociar la clase del modelo con su recurso visual
     private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
@@ -41,31 +51,61 @@ public class GamePanel extends JPanel {
 
     public  GamePanel(GameModel model) {
         this.model = model;
-        setPreferredSize(new Dimension(1280, 720));
-        setBackground(new Color(30,30, 35));
+        setPreferredSize(new Dimension(1920, 1080));
         setFocusable(true);
         loadSprites();
     }
 
     private void loadSprites() {
         try {
+            InputStream inBackground = getClass().getResourceAsStream("/Resources/mapa_bosque/fondo_bosque.png");
+            if (inBackground != null) {
+                backgroundForest = ImageIO.read(inBackground);
+            } else {
+                System.out.println("No se encontró el png del mapa");
+            }
+            InputStream inFirstLayer = getClass().getResourceAsStream("/Resources/mapa_bosque/primer_plano.png");
+            if (inFirstLayer != null) firstLayer = ImageIO.read(inFirstLayer);
+        } catch (Exception e) {
+            System.err.println("Error cargando mapas: " + e.getMessage());
+        }
+
+        try {
             int frameQuantity = 19;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/player/survivor-move_handgun_" + (i+1) + ".png";
-                InputStream in = getClass().getResourceAsStream(route);
+                InputStream inHandgun = getClass().getResourceAsStream(route);
 
-                if (in != null) {
-                    frames[i] = ImageIO.read(in);
+                if (inHandgun != null) {
+                    frames[i] = ImageIO.read(inHandgun);
                 } else {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
             }
-
             playerWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {
-            System.err.println("Error cargando animación del zombie: " + e.getMessage());
+            System.err.println("Error cargando animación del player: " + e.getMessage());
+        }
+
+        try {
+            int frameQuantity = 19;
+            BufferedImage[] frames = new BufferedImage[frameQuantity];
+
+            for (int i = 0; i < frameQuantity; i++) {
+                String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i+1) + ".png";
+                InputStream inHandgun = getClass().getResourceAsStream(route);
+
+                if (inHandgun != null) {
+                    frames[i] = ImageIO.read(inHandgun);
+                } else {
+                    System.err.println("Advertencia: No se encontró la imagen " + route);
+                }
+            }
+            playersFeetAnimation = new Animation(150, frames);
+        } catch (Exception e) {
+            System.err.println("Error cargando animación del player: " + e.getMessage());
         }
 
         try {
@@ -221,10 +261,37 @@ public class GamePanel extends JPanel {
 
         Player player = this.model.getState().getPlayer();
 
+        ///////////////////////////////////////
+        // SEGUIMIENTO DE CAMARA A PERSONAJE //
+        ///////////////////////////////////////
+
+        int screenWidth = getWidth();
+        int screenHeight = getHeight();
+
+        int mapWidth = this.model.getState().getMapWidth();
+        int mapHeight = this.model.getState().getMapHeight();
+
+        // Calculo de camara
+        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
+        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
+
+        // Calculo para no irse del mapa
+        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
+        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
+
+        g2.translate(-camX, -camY);
+
+        if (backgroundForest != null) {
+            g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
+        }
+
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWER-UP] primero, para que queden debajo de zombies y jugador
 
-        // Dibuja Armas en el suelo
+        ////////////////////////////////////////
+        //    Dibuja Armas en el suelo       //
+        ///////////////////////////////////////
+        
         for (WeaponItem item : this.model.getState().getGroundWeapons()) {
             int x = (int) item.getX();
             int y = (int) item.getY();
@@ -244,8 +311,10 @@ public class GamePanel extends JPanel {
                 g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
             }
         }
-
-        // Dibuja a los enemigos
+        ///////////////////////////////////////
+        //       Dibuja a los enemigos       //
+        ///////////////////////////////////////
+        
         if (zombieWalkAnimation != null) {
             zombieWalkAnimation.update();
         }
@@ -292,48 +361,141 @@ public class GamePanel extends JPanel {
                 g2.drawString(lifeText, textX, textY);
             }
         }
-
-        // Dibuja las balas del jugador
+        ///////////////////////////////////////
+        //   Dibuja las balas del jugador    //
+        ///////////////////////////////////////
+        
         g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.model.getState().getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth()-2, bullet.getHeight()-2);
         }
 
-        // Dibuja balas de veneno
+        ///////////////////////////////////////
+        //   Dibuja las balas venenosas      //
+        ///////////////////////////////////////
+        
         g2.setColor(new Color(50, 205, 50));
         for (Bullet poison : this.model.getState().getPoisonBullets()) {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
 
-        // Dibuja al jugador
+        
+        ///////////////////////////////////////
+        //          Dibuja al jugador        //
+        ///////////////////////////////////////
+
         if (playerWalkAnimation != null) {
             playerWalkAnimation.update();
         }
+        if (playersFeetAnimation != null) {
+            playersFeetAnimation.update();
+        }
         if (player.isAlive()) {
+            AffineTransform transformOriginal = g2.getTransform();
+
+            double centerX = player.getX() + (player.getWidth() / 2.0);
+            double centerY = player.getY() + (player.getHeight() / 2.0);
+
+            g2.translate(centerX, centerY);
+            g2.rotate(player.getAngle());
+
+            int w = player.getWidth();
+            int h = player.getHeight();
+
+            if (player.isMoving() && playersFeetAnimation != null && playersFeetAnimation.getCurrentFrame() != null) {
+                BufferedImage feetFrame = playersFeetAnimation.getCurrentFrame();
+
+                AffineTransform transformFeet = g2.getTransform();
+                g2.scale(0.6, 0.6);
+                g2.drawImage(feetFrame, -w / 2, -h / 2, w, h, null);
+                g2.setTransform(transformFeet);
+            }
+
             if (playerWalkAnimation != null && playerWalkAnimation.getCurrentFrame() != null) {
-                AffineTransform transformOriginal = g2.getTransform();
-
-                double centerX = player.getX() + (player.getWidth() / 2.0);
-                double centerY = player.getY() + (player.getHeight() / 2.0);
-
-                g2.translate(centerX, centerY);
-                g2.rotate(player.getAngle());
-
-                int w = player.getWidth();
-                int h = player.getHeight();
-                BufferedImage actualFrame = playerWalkAnimation.getCurrentFrame();
-                g2.drawImage(actualFrame, -w / 2, -h / 2, w, h, null);
-
-                g2.setTransform(transformOriginal);
-
+                BufferedImage bodyFrame = playerWalkAnimation.getCurrentFrame();
+                g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
             } else {
-
                 g2.setColor(Color.RED);
-                g2.fillOval((int) player.getX(), (int) player.getY(), player.getWidth(), player.getHeight());
+                g2.fillOval(-w / 2, -h / 2, w, h);
+            }
+            g2.setTransform(transformOriginal);
+        }
+
+        if (firstLayer != null) {
+            g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
+        }
+
+        ///////////////////////////////////////
+        //             HITBOXES              //
+        ///////////////////////////////////////
+        
+        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
+
+        // Hitbox del jugador (Verde)
+        g2.setColor(Color.GREEN);
+        Rectangle pBounds = player.getBounds();
+        g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
+
+        // Hitboxes de los zombies (Rojo)
+        g2.setColor(Color.RED);
+        for (Enemy zombie : this.model.getState().getEnemies()) {
+            if (zombie.isAlive()) {
+                Rectangle zBounds = zombie.getBounds();
+                g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
             }
         }
 
-        // Dibuja la interfaz
+        // Hitboxes de las balas (Cian)
+        g2.setColor(Color.CYAN);
+        for (Bullet bullet : this.model.getState().getPlayerBullets()) {
+            if (bullet.isActive()) {
+                Rectangle bBounds = bullet.getBounds();
+                g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
+            }
+        }
+
+        ///////////////////////////////////////
+        //          EFECTO OSCURIDAD         //
+        ///////////////////////////////////////
+        
+        double centerX = player.getX() + (player.getWidth() / 2);
+        double centerY = player.getY() + (player.getHeight() / 2);
+
+        Area darkness = new Area(new Rectangle2D.Double(0, 0, mapWidth, mapHeight));
+
+        double lightRadius = 700.0; // Define distancia 
+        double fovAngle = 85.0; // Define ángulo 
+
+        double angleDegrees = -Math.toDegrees(player.getAngle());
+
+        Arc2D.Double lightCone = new Arc2D.Double(
+            centerX - lightRadius, centerY - lightRadius,
+            lightRadius * 2, lightRadius * 2,
+            angleDegrees - (fovAngle / 2.0), fovAngle,
+            Arc2D.PIE
+        );
+
+        double personalRadius = 90.0; // Circulo personal donde se va a ver 
+        Ellipse2D.Double personalCircle = new Ellipse2D.Double(
+                centerX - personalRadius, centerY - personalRadius,
+                personalRadius * 2, personalRadius * 2
+        );
+
+        darkness.subtract(new Area(lightCone)); // Substrae el cono de iluminación
+        darkness.subtract(new Area(personalCircle)); // Substrae el circulo personal
+
+        g2.setColor(new Color(0, 0, 0, 220)); // 245 = opacidad
+        g2.fill(darkness);
+
+        g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
+
+        g2.translate(camX, camY);
+
+        
+        ///////////////////////////////////////
+        //             INTERFAZ              //
+        ///////////////////////////////////////
+
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
         g2.drawString("Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth(), 20, 30); // Dibuja el texto en la esquina superior izquierda
@@ -370,33 +532,6 @@ public class GamePanel extends JPanel {
             showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
         }
 
-        // HITBOXES
-        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
-
-        // Hitbox del jugador (Verde)
-        g2.setColor(Color.GREEN);
-        Rectangle pBounds = player.getBounds();
-        g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
-
-        // Hitboxes de los zombies (Rojo)
-        g2.setColor(Color.RED);
-        for (Enemy zombie : this.model.getState().getEnemies()) {
-            if (zombie.isAlive()) {
-                Rectangle zBounds = zombie.getBounds();
-                g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
-            }
-        }
-
-        // Hitboxes de las balas (Cian)
-        g2.setColor(Color.CYAN);
-        for (Bullet bullet : this.model.getState().getPlayerBullets()) {
-            if (bullet.isActive()) {
-                Rectangle bBounds = bullet.getBounds();
-                g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
-            }
-        }
-
-        g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
     }
 
     private void drawPowerUps(Graphics2D g2) {

@@ -25,13 +25,13 @@ public class EnemySpawner {
             Enemy newZombie;
 
             if (tipoZombie == 0) {
-                newZombie = new TankZombie(1000, 300);
+                newZombie = new TankZombie(1184, 96);
             } else if (tipoZombie == 1) {
-                newZombie = new FastZombie(1000, 300);
+                newZombie = new FastZombie(1184, 96);
             } else if (tipoZombie == 2) {
-                newZombie = new PoisonZombie(1000, 300, state.getPoisonBullets());
+                newZombie = new PoisonZombie(1184, 96, state.getPoisonBullets());
             } else {
-                newZombie = new NormalZombie(1000, 300);
+                newZombie = new NormalZombie(1184, 96);
             }
 
             state.addEnemy(newZombie);

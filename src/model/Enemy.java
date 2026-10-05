@@ -35,7 +35,7 @@ public abstract class Enemy extends Character {
         double distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance > 30) {
-            move(dx, dy);
+            move(dx, dy, state);
         }
 
         avoidOverlap(state);

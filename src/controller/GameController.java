@@ -53,15 +53,39 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     // MOUSE
 
+    private void aimWithCamera(int screenmouseX, int screenmouseY) {
+        model.Player player = this.model.getState().getPlayer();
+
+        int screenWidth = gamePanel.getWidth();
+        int screenHeight = gamePanel.getHeight();
+
+        int mapWidth = this.model.getState().getMapWidth();
+        int mapHeight = this.model.getState().getMapHeight();
+
+        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
+        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
+
+        // Calculo para no irse del mapa
+        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
+        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
+
+        double worldMouseX = screenmouseX + camX;
+        double worldMouseY = screenmouseY + camY;
+
+        player.aimAt(worldMouseX, worldMouseY);
+    }
+
     @Override
     public void mouseMoved(MouseEvent e) {
-        this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
+        //this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
+        aimWithCamera(e.getX(), e.getY());
     }
 
     @Override
     // Manteniendo algún botón pulsado
     public void mouseDragged(MouseEvent e) {
-        this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
+        //this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
+        aimWithCamera(e.getX(), e.getY());
     }
 
     @Override
