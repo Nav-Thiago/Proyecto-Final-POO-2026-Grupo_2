@@ -26,10 +26,10 @@ public class CollisionSystem {
         Player player = state.getPlayer();
         if (!player.isAlive()) return;
 
-        for (Bullet poison : state.getPoisonBullets()) {
+        for (PoisonBullet poison : state.getPoisonBullets()) {
             if (poison.isActive() && poison.collidesWith(player)) {
                 poison.setActive(false);
-                player.addEffect(new PoisonEffect(4000));
+                poison.applyTo(player);//POLIMORFISMO: cada bala sabe que hacer
             }
         }
     }

@@ -15,6 +15,7 @@ public class Player extends Character {
     private final List<Effect> effects = new ArrayList<>();
     private double damageBonus = 0; // daño extra que se suma a cada bala
     private int shield = 0;
+    private static final int MAX_SHIELD = 100;
     private AmmoHolder ammoHolder; // arma actual (puede ser null hasta que exista Weapon)
 
     private double angle; // Ángulo en radianes hacia el cursor
@@ -26,7 +27,7 @@ public class Player extends Character {
     public Player(double x, double y) {
         super(x, y, 64, 64,3.5 , 100, 100);
 
-        this.knife = new MeleeWeapon(50, 200);
+        this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
 
@@ -144,7 +145,7 @@ public class Player extends Character {
     }
 
     public void addShield(int points) {
-        shield += points;
+        shield = Math.min(shield + points, MAX_SHIELD);
     }
 
     public int getShield() {

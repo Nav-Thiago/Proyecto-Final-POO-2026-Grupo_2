@@ -43,11 +43,11 @@ public class GamePanel extends JPanel {
     private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
     private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
 
-    private BufferedImage healSprite;
-    private BufferedImage shieldSprite;
-    private BufferedImage damageSprite;
-    private BufferedImage ammoSprite;
-    private BufferedImage maxAmmoSprite;
+    private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
+    
+   
+   
+   
 
     public  GamePanel(GameModel model) {
         this.model = model;
@@ -55,6 +55,21 @@ public class GamePanel extends JPanel {
         setFocusable(true);
         loadSprites();
     }
+
+    private BufferedImage loadImage(String route) {
+    try (InputStream in = getClass().getResourceAsStream(route)) {
+        if (in == null) {
+            System.err.println("NO SE ENCONTRO: " + route);
+            return null;
+        }
+        BufferedImage img = ImageIO.read(in);
+        if (img == null) System.err.println("FORMATO NO SOPORTADO: " + route);
+        return img;
+    } catch (IOException e) {
+        System.err.println("Error leyendo " + route + ": " + e.getMessage());
+        return null;
+    }
+}
 
     private void loadSprites() {
         try {
@@ -118,25 +133,12 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando sprites de armas: " + e.getMessage());
         }
 
-        
-        try {
-            InputStream inHeal = getClass().getResourceAsStream("/Resources/imagenes/powerups/heal.png");
-            if (inHeal != null) healSprite = ImageIO.read(inHeal);
-
-            InputStream inShield = getClass().getResourceAsStream("/Resources/imagenes/powerups/shield.png");
-            if (inShield != null) shieldSprite = ImageIO.read(inShield);
-
-            InputStream inDamage = getClass().getResourceAsStream("/Resources/imagenes/powerups/damage.png");
-            if (inDamage != null) damageSprite = ImageIO.read(inDamage);
-
-            InputStream inAmmo = getClass().getResourceAsStream("/Resources/imagenes/powerups/ammo.png");
-            if (inAmmo != null) ammoSprite = ImageIO.read(inAmmo);
-
-            InputStream inMaxAmmo = getClass().getResourceAsStream("/Resources/imagenes/powerups/max_ammo.png");
-            if (inMaxAmmo != null) maxAmmoSprite = ImageIO.read(inMaxAmmo);
-        } catch (IOException e) {
-            System.err.println("Error cargando sprites de power-ups: " + e.getMessage());
-        }
+        String base = "/Resources/imagenes/powerups/";
+        powerUpSprites.put(Heal.class, loadImage(base + "heal.png"));
+        powerUpSprites.put(Shield.class, loadImage(base + "shield.png"));
+        powerUpSprites.put(DamageBoost.class, loadImage(base + "damage.png"));
+        powerUpSprites.put(Ammo.class, loadImage(base + "ammo.png"));
+        powerUpSprites.put(MaxAmmo.class, loadImage(base + "max_ammo.png"));
 
         try {
             int frameQuantity = 16;
@@ -535,37 +537,54 @@ public class GamePanel extends JPanel {
     }
 
     private void drawPowerUps(Graphics2D g2) {
-        for (PowerUp p : this.model.getState().getPowerUps()) {
-            int x = (int) p.getX();
-            int y = (int) p.getY();
+    double t = System.currentTimeMillis() / 1000.0;
 
-            BufferedImage pSprite = null;
-            
-            // Identifica el powerup
-            if (p instanceof Heal) pSprite = healSprite;
-            else if (p instanceof Shield) pSprite = shieldSprite;
-            else if (p instanceof DamageBoost) pSprite = damageSprite;
-            else if (p instanceof Ammo) pSprite = ammoSprite;
-            else if (p instanceof MaxAmmo) pSprite = maxAmmoSprite;
+    for (PowerUp p : this.model.getState().getPowerUps()) {
+        int w = p.getWidth();
+        int h = p.getHeight();
 
-            if (pSprite != null) {
-                g2.drawImage(pSprite, x, y, p.getWidth(), p.getHeight(), null);
-            } else {
-                // Círculos de color
-                g2.setColor(p.getColor());
-                g2.fillOval(x, y, p.getWidth(), p.getHeight());
-                g2.setColor(Color.BLACK);
-                g2.drawOval(x, y, p.getWidth(), p.getHeight());
-                
-                g2.setFont(new Font("Monospaced", Font.BOLD, 11));
-                FontMetrics fm = g2.getFontMetrics();
-                String label = p.getLabel();
-                g2.drawString(label,
-                        x + (p.getWidth() - fm.stringWidth(label)) / 2,
-                        y + (p.getHeight() + fm.getAscent()) / 2 - 2);
-            }
+        // Desfase para que no se muevan todos sincronizados
+        double phase = p.getX() * 0.05;
+
+        double bob = Math.sin(t * 3.0 + phase) * 4;              // sube y baja 4 px
+        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;   // pulso de +-6%
+        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40); // brillo 30..110
+
+       // BufferedImage pSprite = null;
+        BufferedImage pSprite = powerUpSprites.get(p.getClass());
+
+        AffineTransform old = g2.getTransform();
+
+        // Origen en el centro del power up, más el desplazamiento de flotar
+        g2.translate(p.getX() + w / 2.0, p.getY() + h / 2.0 + bob);
+
+        // Brillo de color detrás
+        Color c = p.getColor();
+        g2.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), glowAlpha));
+        g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+
+        // Pulso de tamaño
+        g2.scale(scale, scale);
+
+        if (pSprite != null) {
+            g2.drawImage(pSprite, -w / 2, -h / 2, w, h, null);
+        } else {
+            g2.setColor(c);
+            g2.fillOval(-w / 2, -h / 2, w, h);
+            g2.setColor(Color.BLACK);
+            g2.drawOval(-w / 2, -h / 2, w, h);
+
+            g2.setFont(new Font("Monospaced", Font.BOLD, 11));
+            FontMetrics fm = g2.getFontMetrics();
+            String label = p.getLabel();
+            g2.drawString(label,
+                    -fm.stringWidth(label) / 2,
+                    (fm.getAscent() / 2) - 2);
         }
+
+        g2.setTransform(old);
     }
+}
 
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
         g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
@@ -577,17 +596,5 @@ public class GamePanel extends JPanel {
         int textX = (getWidth() - fm.stringWidth(texto)) / 2;
         int textY = getHeight() / 2;
         g2.drawString(texto, textX, textY);
-    }
-
-    public void togglePause() {
-        this.model.togglePause();
-    }
-
-    public void playerInteract() {
-        this.model.playerInteract();
-    }
-
-    public void nextLevel() {
-        this.model.nextLevel();
     }
 }
