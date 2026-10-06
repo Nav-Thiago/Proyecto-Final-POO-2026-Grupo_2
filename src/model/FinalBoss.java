@@ -2,9 +2,9 @@ package model;
 
 import java.util.List;
 
-public class FinalBoss extends RangedEnemy {
+public class FinalBoss extends RangedEnemy{
 
-    private static final long SPIT_COOLDOWN = 10000;
+    private static final long SPIT_COOLDOWN = 5000;
     private static final int SPIT_DAMAGE = 50;
     private static final double SPIT_SPEED = 4.0;
 
@@ -17,7 +17,7 @@ public class FinalBoss extends RangedEnemy {
 
     @Override
     public int attack() {
-        return 15; // mismo daño que TankZombie
+        return 30; // mismo daño que TankZombie
     }
 
     @Override

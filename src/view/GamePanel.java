@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.HashMap;
 
 import java.awt.geom.Area;
@@ -33,8 +34,7 @@ public class GamePanel extends JPanel {
     private Animation fastWalkAnimation;
     private BufferedImage poisonIdleSprite;
     private Animation poisonWalkAnimation;
-    private BufferedImage gunSprite;
-    private BufferedImage shotGunSprite;
+    
 
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
@@ -70,6 +70,9 @@ public class GamePanel extends JPanel {
         return null;
     }
 }
+private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
+
+
 
     private void loadSprites() {
         try {
@@ -98,6 +101,8 @@ public class GamePanel extends JPanel {
                 } else {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
+                weaponSprites.put(Gun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
+weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
             }
             playerWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {
@@ -123,16 +128,7 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando animación del player: " + e.getMessage());
         }
 
-        try {
-            InputStream inGun = getClass().getResourceAsStream("/Resources/imagenes/weapons/gun.png");
-            if (inGun != null) gunSprite = ImageIO.read(inGun);
-
-            InputStream inShotgun = getClass().getResourceAsStream("/Resources/imagenes/weapons/shotgun.png");
-            if (inShotgun != null) shotGunSprite = ImageIO.read(inShotgun);
-        } catch (IOException e) {
-            System.err.println("Error cargando sprites de armas: " + e.getMessage());
-        }
-
+       
         String base = "/Resources/imagenes/powerups/";
         powerUpSprites.put(Heal.class, loadImage(base + "heal.png"));
         powerUpSprites.put(Shield.class, loadImage(base + "shield.png"));
@@ -290,33 +286,10 @@ public class GamePanel extends JPanel {
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWER-UP] primero, para que queden debajo de zombies y jugador
 
-        ////////////////////////////////////////
-        //    Dibuja Armas en el suelo       //
-        ///////////////////////////////////////
-        
-        for (WeaponItem item : this.model.getState().getGroundWeapons()) {
-            int x = (int) item.getX();
-            int y = (int) item.getY();
+        // Dibuja Armas en el suelo
+        drawGroundWeapons(g2); // [ARMAS] segundo, para que queden debajo de zombies y jugador
 
-            BufferedImage weaponImg = null;
-
-            if (item.getWeapon() instanceof Gun) weaponImg = gunSprite;
-            else if (item.getWeapon() instanceof ShotGun) weaponImg = shotGunSprite;
-
-            if (weaponImg != null) {
-                g2.drawImage(weaponImg, x, y, item.getWidth(), item.getHeight(), null);
-            } else {
-                g2.setColor(Color.LIGHT_GRAY);
-                g2.fillRect(x, y, item.getWidth(), item.getHeight());
-                g2.setColor(Color.WHITE);
-                g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
-            }
-        }
-        ///////////////////////////////////////
-        //       Dibuja a los enemigos       //
-        ///////////////////////////////////////
-        
+        // Dibuja a los enemigos
         if (zombieWalkAnimation != null) {
             zombieWalkAnimation.update();
         }
@@ -532,57 +505,52 @@ public class GamePanel extends JPanel {
             showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
         } else if (status == GameModel.gameStatus.PAUSED) {
             showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
+        } else if (status == GameModel.gameStatus.BOSS_INTRO) {
+            drawBossIntro(g2);
         }
 
     }
-
-    private void drawPowerUps(Graphics2D g2) {
+    private void drawFloating(Graphics2D g2, Entity e, Color glowColor, Consumer<Graphics2D> content) {
     double t = System.currentTimeMillis() / 1000.0;
+    double phase = e.getX() * 0.05;                               // desfase por objeto
+    double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
+    double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
+    int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
 
+    int w = e.getWidth();
+    int h = e.getHeight();
+
+    AffineTransform old = g2.getTransform();
+    g2.translate(e.getX() + w / 2.0, e.getY() + h / 2.0 + bob);
+
+    g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
+    g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+
+    g2.scale(scale, scale);
+    content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
+
+    g2.setTransform(old);
+}
+
+   private void drawPowerUps(Graphics2D g2) {
     for (PowerUp p : this.model.getState().getPowerUps()) {
+        BufferedImage sprite = powerUpSprites.get(p.getClass());
         int w = p.getWidth();
         int h = p.getHeight();
 
-        // Desfase para que no se muevan todos sincronizados
-        double phase = p.getX() * 0.05;
-
-        double bob = Math.sin(t * 3.0 + phase) * 4;              // sube y baja 4 px
-        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;   // pulso de +-6%
-        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40); // brillo 30..110
-
-       // BufferedImage pSprite = null;
-        BufferedImage pSprite = powerUpSprites.get(p.getClass());
-
-        AffineTransform old = g2.getTransform();
-
-        // Origen en el centro del power up, más el desplazamiento de flotar
-        g2.translate(p.getX() + w / 2.0, p.getY() + h / 2.0 + bob);
-
-        // Brillo de color detrás
-        Color c = p.getColor();
-        g2.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), glowAlpha));
-        g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
-
-        // Pulso de tamaño
-        g2.scale(scale, scale);
-
-        if (pSprite != null) {
-            g2.drawImage(pSprite, -w / 2, -h / 2, w, h, null);
-        } else {
-            g2.setColor(c);
-            g2.fillOval(-w / 2, -h / 2, w, h);
-            g2.setColor(Color.BLACK);
-            g2.drawOval(-w / 2, -h / 2, w, h);
-
-            g2.setFont(new Font("Monospaced", Font.BOLD, 11));
-            FontMetrics fm = g2.getFontMetrics();
-            String label = p.getLabel();
-            g2.drawString(label,
-                    -fm.stringWidth(label) / 2,
-                    (fm.getAscent() / 2) - 2);
-        }
-
-        g2.setTransform(old);
+        drawFloating(g2, p, p.getColor(), g -> {
+            if (sprite != null) {
+                g.drawImage(sprite, -w / 2, -h / 2, w, h, null);
+            } else {
+                g.setColor(p.getColor());
+                g.fillOval(-w / 2, -h / 2, w, h);
+                g.setColor(Color.BLACK);
+                g.drawOval(-w / 2, -h / 2, w, h);
+                g.setFont(new Font("Monospaced", Font.BOLD, 11));
+                FontMetrics fm = g.getFontMetrics();
+                g.drawString(p.getLabel(), -fm.stringWidth(p.getLabel()) / 2, fm.getAscent() / 2 - 2);
+            }
+        });
     }
 }
 
@@ -597,4 +565,74 @@ public class GamePanel extends JPanel {
         int textY = getHeight() / 2;
         g2.drawString(texto, textX, textY);
     }
+    private void drawGroundWeapons(Graphics2D g2) {
+    for (WeaponItem item : this.model.getState().getGroundWeapons()) {
+        BufferedImage sprite = weaponSprites.get(item.getWeapon().getClass());
+        int x = (int) item.getX();
+        int y = (int) item.getY();
+        int w = item.getWidth();
+        int h = item.getHeight();
+
+        if (sprite != null) {
+            g2.drawImage(sprite, x, y, w, h, null);
+        } else {
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.fillRect(x, y, w, h);
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
+        }
+    }
+}
+private void drawBossIntro(Graphics2D g2) {
+    int step = model.getBossIntroStep();
+    double p = model.getBossIntroProgress();
+
+    // el texto aparece y se desvanece de a poco
+    double fade = Math.max(0.0, Math.min(1.0, Math.min(p / 0.25, (1.0 - p) / 0.25)));
+    int alpha = (int) (255 * fade);
+
+    // fondo oscuro
+    g2.setColor(new Color(0, 0, 0, 215));
+    g2.fillRect(0, 0, getWidth(), getHeight());
+
+    String text;
+    Color color;
+    int size;
+    if (step == 0) {
+        text = "Felicidades, sobreviviste a la primer oleada, buen trabajo";
+        color = new Color(190, 190, 190);
+        size = 32;
+    } else {
+        text = "Preparate para el Jefe";
+        color = new Color(190, 0, 0);
+        size = 54;
+    }
+
+    // si el texto no entra en pantalla, se achica la letra
+    Font font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
+    FontMetrics fm = g2.getFontMetrics(font);
+    while (fm.stringWidth(text) > getWidth() - 80 && size > 12) {
+        size--;
+        font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
+        fm = g2.getFontMetrics(font);
+    }
+    g2.setFont(font);
+
+    int x = (getWidth() - fm.stringWidth(text)) / 2;
+    int y = getHeight() / 2;
+
+    // temblor leve solo en "Preparate para el Jefe"
+    if (step == 1) {
+        x += (int) (Math.random() * 5) - 2;
+        y += (int) (Math.random() * 5) - 2;
+    }
+
+    // sombra rojo oscuro y texto encima
+    g2.setColor(new Color(70, 0, 0, alpha));
+    g2.drawString(text, x + 3, y + 3);
+    g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+    g2.drawString(text, x, y);
+}
+   
 }

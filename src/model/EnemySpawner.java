@@ -39,6 +39,10 @@ public class EnemySpawner {
             zombieSpawned++;
         }
     }
+    public void reset() {
+    this.zombieSpawned = 0;
+    this.lastSpawnTime = System.currentTimeMillis();
+}
 
     public boolean isWaveComplete(){
         return zombieSpawned >= waveLimit;

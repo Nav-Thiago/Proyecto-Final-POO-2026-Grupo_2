@@ -18,6 +18,16 @@ public class Bullet extends Entity {
         this.active = true;
     }
 
+    public Bullet(double x, double y, int width, int height,
+              double dirX, double dirY, double speed, double damage) {
+    super(x, y, width, height);
+    this.dirX = dirX;
+    this.dirY = dirY;
+    this.speed = speed;
+    this.damage = damage;
+    this.active = true;
+}
+
     public boolean isActive() {
         return active;
     }
