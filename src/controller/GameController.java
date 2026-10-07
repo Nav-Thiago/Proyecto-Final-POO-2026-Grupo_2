@@ -1,9 +1,5 @@
 package controller;
 
-import model.GameModel;
-
-import view.GamePanel;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;

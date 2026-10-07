@@ -25,15 +25,9 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-<<<<<<< Updated upstream
         this.spawner = new EnemySpawner(2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
-        System.out.println("GameModel NUEVO cargado");
-=======
-        this.spawner = new EnemySpawner(2000, 5);
-        this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
        // state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
->>>>>>> Stashed changes
     }
 
     public void update(int screenWidth, int screenHeight) {
@@ -170,12 +164,7 @@ public class GameModel {
     public GameState getState() {
         return state;
     }
-<<<<<<< Updated upstream
-
     public gameStatus getStatus() {
         return status;
     }
-=======
-    public gameStatus getStatus() {return status;}
->>>>>>> Stashed changes
 }

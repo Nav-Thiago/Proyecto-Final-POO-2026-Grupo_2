@@ -1,9 +1,6 @@
 package controller;
 
-import view.GamePanel;
 import javax.swing.*;
-
-import model.GameModel;
 
 public class GameLoopThread extends Thread {
 

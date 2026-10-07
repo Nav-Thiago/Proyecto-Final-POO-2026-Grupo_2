@@ -1,7 +1,6 @@
 package controller;
 
 import model.*;
-import view.GamePanel;
 import view.MainFrame;
 import view.SplashUniversity;
 import view.SplashSubject;

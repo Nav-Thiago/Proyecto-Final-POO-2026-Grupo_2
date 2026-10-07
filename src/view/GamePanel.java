@@ -101,8 +101,8 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
                 } else {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
-                weaponSprites.put(Gun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
-weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
+                weaponSprites.put(FireArm.class, loadImage("/Resources/imagenes/weapons/gun.png"));
+                weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
             }
             playerWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {
@@ -634,5 +634,4 @@ private void drawBossIntro(Graphics2D g2) {
     g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
     g2.drawString(text, x, y);
 }
-   
 }
