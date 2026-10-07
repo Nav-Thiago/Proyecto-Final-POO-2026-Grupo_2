@@ -51,5 +51,4 @@ public class Bullet extends Entity {
     public Rectangle getBounds(){
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
     }
-
 }

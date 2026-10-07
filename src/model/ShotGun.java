@@ -1,42 +1,4 @@
 package model;
 
-import java.util.Random;
-
-public class ShotGun extends FireArm{
-
-    private final Random random = new Random();
-
-    public ShotGun(int damage, int cooldown, int actualMunition, int maxMunition) {
-        super(damage, cooldown, actualMunition, maxMunition);
-    }
-
-    @Override
-    public boolean attack(Player player, GameState state) {
-        long currentTime = System.currentTimeMillis();
-
-        if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
-
-            this.actualMunition--;
-            this.lastShoot = currentTime;
-
-            for (int i = 0; i < 4; i++) {
-                // random.nextDouble() da un valor entre 0.0 y 1.0.
-                // Al restar 0.5 queda entre -0.5 y 0.5.
-                // Multiplicado por 0.6 genera una dispersión máxima de +/- 0.3 radianes.
-                double offset = (random.nextDouble() * 0.5) * 0.6;
-                double spreadAngle = player.getAngle() + offset;
-
-                double dirX = Math.cos(spreadAngle);
-                double dirY = Math.sin(spreadAngle);
-
-                double centerX = player.getX() + (player.getWidth() / 2.0);
-                double centerY = player.getY() + (player.getHeight() / 2.0);
-
-                Bullet pellet = new Bullet(centerX, centerY, dirX, dirY, 12.0, this.getDamage());
-                state.addPlayerBullet(pellet);
-            }
-            return true;
-        }
-        return false;
-    }
+public class ShotGun {
 }

@@ -60,16 +60,13 @@ public class GameState {
         return mapHeight;
     }
 
-
     public void setCollisionMatrix(boolean[][] matrix) {
         this.collisionMatrix = matrix;
     }
-
     public boolean[][] getCollisionMatrix() {
         return collisionMatrix;
     }
 
-    
     public void addPlayerBullet (Bullet b) {
         this.playerBullets.add(b);
     }
