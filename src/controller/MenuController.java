@@ -1,11 +1,7 @@
 package controller;
 
 import model.*;
-import view.MainFrame;
-import view.SplashUniversity;
-import view.SplashSubject;
-import view.MenuPanel;
-import view.OptionsPanel;
+import view.*;
 
 import java.awt.CardLayout;
 
@@ -15,6 +11,7 @@ import javax.swing.Timer;
 public class MenuController implements MenuActions{
 
     private MainFrame mainFrame;
+    private GameController controller;
 
     private CardLayout cardLayout;
     private JPanel mainContainer;
@@ -90,7 +87,7 @@ public class MenuController implements MenuActions{
     public void startGame() {
         AudioManager.stopMusic();
         Player player = new Player(128, 3040);
-        player.equipWeapon(new Gun(20, 400, 20, 20));
+        player.equipWeapon(new FireArm(20, 400, 20, 20));
 
         // Dimensiones del mapa 
         int mapCols = 100;
@@ -101,13 +98,13 @@ public class MenuController implements MenuActions{
         GameState state = new GameState(player, widthPixels, heightPixels);
         boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque/mapa_bosque_NWB.tmj", mapCols, mapRows);
         state.setCollisionMatrix(matrix);
-
         state.getGroundWeapons().add(new WeaponItem(500, 600, new ShotGun(30, 800, 5, 5)));
 
         GameModel model = new GameModel(state);
-        GamePanel gamePanel = new GamePanel(model);
+        this.controller = new GameController(model);
+        GamePanel gamePanel = new GamePanel(this.controller);
+        this.controller.setGamePanel(gamePanel);
 
-        GameController controller = new GameController(model, gamePanel);
         //gamePanel.addKeyListener(controller);
         //gamePanel.addMouseMotionListener(controller);
         //gamePanel.addMouseListener(controller);

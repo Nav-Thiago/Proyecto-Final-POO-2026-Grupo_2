@@ -1,5 +1,9 @@
 package controller;
 
+import model.GameModel;
+import model.GameState;
+import view.GamePanel;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -9,12 +13,14 @@ import java.awt.event.MouseMotionListener;
 public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
 
     private final GameModel model;
-    private final GamePanel gamePanel;
+    private GamePanel gamePanel;
 
-    public GameController(GameModel model, GamePanel gamePanel) {
+    public GameController(GameModel model) {
         this.model = model;
-        this.gamePanel = gamePanel;
+    }
 
+    public void setGamePanel (GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
         this.gamePanel.addKeyListener(this);
         this.gamePanel.addMouseListener(this);
         this.gamePanel.addMouseMotionListener(this);
@@ -104,4 +110,28 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
+
+    public GameState getState() {
+        return this.model.getState();
+    }
+
+    public GameModel.gameStatus getStatus() {
+        return this.model.getStatus();
+    }
+
+    public int getBossIntroStep() {
+        return this.model.getBossIntroStep();
+    }
+
+    public double getBossIntroProgress() {
+        return this.model.getBossIntroProgress();
+    }
+
+    public GameModel getModel() {
+        return model;
+    }
+
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
 }

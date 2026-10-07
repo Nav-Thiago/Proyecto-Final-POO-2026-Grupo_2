@@ -1,6 +1,7 @@
 package view;
 
 
+import controller.GameController;
 import model.*;
 
 
@@ -22,7 +23,7 @@ import java.awt.geom.Rectangle2D;
 
 public class GamePanel extends JPanel {
 
-    private final GameModel model;
+    private final GameController controller;
 
     private Animation playerWalkAnimation;
     private Animation playersFeetAnimation;
@@ -34,7 +35,7 @@ public class GamePanel extends JPanel {
     private Animation fastWalkAnimation;
     private BufferedImage poisonIdleSprite;
     private Animation poisonWalkAnimation;
-    
+
 
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
@@ -44,34 +45,31 @@ public class GamePanel extends JPanel {
     private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
 
     private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
-    
-   
-   
-   
 
-    public  GamePanel(GameModel model) {
-        this.model = model;
+
+    public GamePanel(GameController controller) {
+        this.controller = controller;
         setPreferredSize(new Dimension(1920, 1080));
         setFocusable(true);
         loadSprites();
     }
 
     private BufferedImage loadImage(String route) {
-    try (InputStream in = getClass().getResourceAsStream(route)) {
-        if (in == null) {
-            System.err.println("NO SE ENCONTRO: " + route);
+        try (InputStream in = getClass().getResourceAsStream(route)) {
+            if (in == null) {
+                System.err.println("NO SE ENCONTRO: " + route);
+                return null;
+            }
+            BufferedImage img = ImageIO.read(in);
+            if (img == null) System.err.println("FORMATO NO SOPORTADO: " + route);
+            return img;
+        } catch (IOException e) {
+            System.err.println("Error leyendo " + route + ": " + e.getMessage());
             return null;
         }
-        BufferedImage img = ImageIO.read(in);
-        if (img == null) System.err.println("FORMATO NO SOPORTADO: " + route);
-        return img;
-    } catch (IOException e) {
-        System.err.println("Error leyendo " + route + ": " + e.getMessage());
-        return null;
     }
-}
-private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
 
+    private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
 
 
     private void loadSprites() {
@@ -93,7 +91,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor-move_handgun_" + (i+1) + ".png";
+                String route = "/Resources/imagenes/entitys/player/survivor-move_handgun_" + (i + 1) + ".png";
                 InputStream inHandgun = getClass().getResourceAsStream(route);
 
                 if (inHandgun != null) {
@@ -114,7 +112,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i+1) + ".png";
+                String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i + 1) + ".png";
                 InputStream inHandgun = getClass().getResourceAsStream(route);
 
                 if (inHandgun != null) {
@@ -128,7 +126,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             System.err.println("Error cargando animación del player: " + e.getMessage());
         }
 
-       
+
         String base = "/Resources/imagenes/powerups/";
         powerUpSprites.put(Heal.class, loadImage(base + "heal.png"));
         powerUpSprites.put(Shield.class, loadImage(base + "shield.png"));
@@ -141,7 +139,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/zombie_normal/skeleton-move_" + (i+1) + ".png";
+                String route = "/Resources/imagenes/entitys/zombie_normal/skeleton-move_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
 
                 if (in != null) {
@@ -156,76 +154,76 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             System.err.println("Error cargando animación del zombie: " + e.getMessage());
         }
 
-        try{
+        try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/tank_idle.png");
             if (in != null) {
                 tankIdleSprite = ImageIO.read(in);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Error cargando sprite del tanque en reposo: " + e.getMessage());
         }
 
-        try{
+        try {
             int tankFrameQuantity = 36;
             BufferedImage[] tankFrames = new BufferedImage[tankFrameQuantity];
 
-            for (int i = 0; i < tankFrameQuantity; i++){
+            for (int i = 0; i < tankFrameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/tank_zombie/tank_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
 
                 if (in != null) {
                     tankFrames[i] = ImageIO.read(in);
-                }else{
+                } else {
                     System.out.println("Advertencia: No se encontro la imagen " + route);
                 }
             }
             tankWalkAnimation = new Animation(100, tankFrames);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error cargando animacion del tanque: " + e.getMessage());
         }
 
-        try{
+        try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/fast_idle.png");
-            if (in != null) fastIdleSprite = ImageIO.read(in); 
-        }catch (IOException e){
+            if (in != null) fastIdleSprite = ImageIO.read(in);
+        } catch (IOException e) {
             System.out.println("Error cargando srpite del fast zombie en reposo: " + e.getMessage());
         }
 
-        try{
+        try {
             int fastFrameQuantity = 16;
             BufferedImage[] fastFrames = new BufferedImage[fastFrameQuantity];
-            for (int i = 0; i < fastFrameQuantity; i++){
+            for (int i = 0; i < fastFrameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/fast_zombie/fast_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
-                if (in != null) fastFrames[i] = ImageIO.read(in); 
+                if (in != null) fastFrames[i] = ImageIO.read(in);
             }
             fastWalkAnimation = new Animation(80, fastFrames);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error cargando animacion del zombie rapido: " + e.getMessage());
         }
 
-        try{
+        try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/poison_idle_png");
             if (in != null) poisonIdleSprite = ImageIO.read(in);
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Error cargando sprite del poison zombie en reposo: " + e.getMessage());
         }
 
-        try{
+        try {
             int poisonFrameQuantity = 16;
             BufferedImage[] poisonFrames = new BufferedImage[poisonFrameQuantity];
-            for(int i = 0; i < poisonFrameQuantity; i++){
+            for (int i = 0; i < poisonFrameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/poison_zombie/poison_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
-                if(in != null) poisonFrames[i] = ImageIO.read(in);
+                if (in != null) poisonFrames[i] = ImageIO.read(in);
             }
             poisonWalkAnimation = new Animation(150, poisonFrames);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error cargando animacion del zombie venenoso: " + e.getMessage());
         }
 
-        if(zombieWalkAnimation != null){
+        if (zombieWalkAnimation != null) {
             zombieAnimations.put(NormalZombie.class, zombieWalkAnimation);
         }
         if (tankWalkAnimation != null) {
@@ -257,7 +255,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        Player player = this.model.getState().getPlayer();
+        Player player = this.controller.getState().getPlayer();
 
         ///////////////////////////////////////
         // SEGUIMIENTO DE CAMARA A PERSONAJE //
@@ -266,8 +264,8 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         int screenWidth = getWidth();
         int screenHeight = getHeight();
 
-        int mapWidth = this.model.getState().getMapWidth();
-        int mapHeight = this.model.getState().getMapHeight();
+        int mapWidth = this.controller.getState().getMapWidth();
+        int mapHeight = this.controller.getState().getMapHeight();
 
         // Calculo de camara
         int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
@@ -298,10 +296,10 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
             tankWalkAnimation.update();
         }
 
-        for(Animation anim: zombieAnimations.values()){
+        for (Animation anim : zombieAnimations.values()) {
             anim.update();
         }
-        for (Enemy zombie : this.model.getState().getEnemies()) {
+        for (Enemy zombie : this.controller.getState().getEnemies()) {
 
             if (zombie.isAlive()) {
                 AffineTransform transformOriginal = g2.getTransform();
@@ -339,22 +337,22 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         ///////////////////////////////////////
         //   Dibuja las balas del jugador    //
         ///////////////////////////////////////
-        
+
         g2.setColor(Color.ORANGE);
-        for (Bullet bullet : this.model.getState().getPlayerBullets()) {
-            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth()-2, bullet.getHeight()-2);
+        for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
+            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth() - 2, bullet.getHeight() - 2);
         }
 
         ///////////////////////////////////////
         //   Dibuja las balas venenosas      //
         ///////////////////////////////////////
-        
+
         g2.setColor(new Color(50, 205, 50));
-        for (Bullet poison : this.model.getState().getPoisonBullets()) {
+        for (Bullet poison : this.controller.getState().getPoisonBullets()) {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
 
-        
+
         ///////////////////////////////////////
         //          Dibuja al jugador        //
         ///////////////////////////////////////
@@ -403,7 +401,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         ///////////////////////////////////////
         //             HITBOXES              //
         ///////////////////////////////////////
-        
+
         g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
 
         // Hitbox del jugador (Verde)
@@ -413,7 +411,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
 
         // Hitboxes de los zombies (Rojo)
         g2.setColor(Color.RED);
-        for (Enemy zombie : this.model.getState().getEnemies()) {
+        for (Enemy zombie : this.controller.getState().getEnemies()) {
             if (zombie.isAlive()) {
                 Rectangle zBounds = zombie.getBounds();
                 g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
@@ -422,7 +420,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
 
         // Hitboxes de las balas (Cian)
         g2.setColor(Color.CYAN);
-        for (Bullet bullet : this.model.getState().getPlayerBullets()) {
+        for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             if (bullet.isActive()) {
                 Rectangle bBounds = bullet.getBounds();
                 g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
@@ -432,7 +430,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         ///////////////////////////////////////
         //          EFECTO OSCURIDAD         //
         ///////////////////////////////////////
-        
+
         double centerX = player.getX() + (player.getWidth() / 2);
         double centerY = player.getY() + (player.getHeight() / 2);
 
@@ -444,10 +442,10 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         double angleDegrees = -Math.toDegrees(player.getAngle());
 
         Arc2D.Double lightCone = new Arc2D.Double(
-            centerX - lightRadius, centerY - lightRadius,
-            lightRadius * 2, lightRadius * 2,
-            angleDegrees - (fovAngle / 2.0), fovAngle,
-            Arc2D.PIE
+                centerX - lightRadius, centerY - lightRadius,
+                lightRadius * 2, lightRadius * 2,
+                angleDegrees - (fovAngle / 2.0), fovAngle,
+                Arc2D.PIE
         );
 
         double personalRadius = 90.0; // Circulo personal donde se va a ver 
@@ -466,7 +464,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
 
         g2.translate(camX, camY);
 
-        
+
         ///////////////////////////////////////
         //             INTERFAZ              //
         ///////////////////////////////////////
@@ -496,7 +494,7 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         }
 
         // Mensaje de estados
-        GameModel.gameStatus status = model.getStatus();
+        GameModel.gameStatus status = controller.getStatus();
         if (status == GameModel.gameStatus.GAME_OVER) {
             showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
         } else if (status == GameModel.gameStatus.LEVEL_COMPLETED) {
@@ -510,49 +508,50 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         }
 
     }
+
     private void drawFloating(Graphics2D g2, Entity e, Color glowColor, Consumer<Graphics2D> content) {
-    double t = System.currentTimeMillis() / 1000.0;
-    double phase = e.getX() * 0.05;                               // desfase por objeto
-    double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
-    double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
-    int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
+        double t = System.currentTimeMillis() / 1000.0;
+        double phase = e.getX() * 0.05;                               // desfase por objeto
+        double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
+        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
+        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
 
-    int w = e.getWidth();
-    int h = e.getHeight();
+        int w = e.getWidth();
+        int h = e.getHeight();
 
-    AffineTransform old = g2.getTransform();
-    g2.translate(e.getX() + w / 2.0, e.getY() + h / 2.0 + bob);
+        AffineTransform old = g2.getTransform();
+        g2.translate(e.getX() + w / 2.0, e.getY() + h / 2.0 + bob);
 
-    g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
-    g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+        g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
+        g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
 
-    g2.scale(scale, scale);
-    content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
+        g2.scale(scale, scale);
+        content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
 
-    g2.setTransform(old);
-}
-
-   private void drawPowerUps(Graphics2D g2) {
-    for (PowerUp p : this.model.getState().getPowerUps()) {
-        BufferedImage sprite = powerUpSprites.get(p.getClass());
-        int w = p.getWidth();
-        int h = p.getHeight();
-
-        drawFloating(g2, p, p.getColor(), g -> {
-            if (sprite != null) {
-                g.drawImage(sprite, -w / 2, -h / 2, w, h, null);
-            } else {
-                g.setColor(p.getColor());
-                g.fillOval(-w / 2, -h / 2, w, h);
-                g.setColor(Color.BLACK);
-                g.drawOval(-w / 2, -h / 2, w, h);
-                g.setFont(new Font("Monospaced", Font.BOLD, 11));
-                FontMetrics fm = g.getFontMetrics();
-                g.drawString(p.getLabel(), -fm.stringWidth(p.getLabel()) / 2, fm.getAscent() / 2 - 2);
-            }
-        });
+        g2.setTransform(old);
     }
-}
+
+    private void drawPowerUps(Graphics2D g2) {
+        for (PowerUp p : this.controller.getState().getPowerUps()) {
+            BufferedImage sprite = powerUpSprites.get(p.getClass());
+            int w = p.getWidth();
+            int h = p.getHeight();
+
+            drawFloating(g2, p, p.getColor(), g -> {
+                if (sprite != null) {
+                    g.drawImage(sprite, -w / 2, -h / 2, w, h, null);
+                } else {
+                    g.setColor(p.getColor());
+                    g.fillOval(-w / 2, -h / 2, w, h);
+                    g.setColor(Color.BLACK);
+                    g.drawOval(-w / 2, -h / 2, w, h);
+                    g.setFont(new Font("Monospaced", Font.BOLD, 11));
+                    FontMetrics fm = g.getFontMetrics();
+                    g.drawString(p.getLabel(), -fm.stringWidth(p.getLabel()) / 2, fm.getAscent() / 2 - 2);
+                }
+            });
+        }
+    }
 
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
         g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
@@ -565,73 +564,75 @@ private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new H
         int textY = getHeight() / 2;
         g2.drawString(texto, textX, textY);
     }
-    private void drawGroundWeapons(Graphics2D g2) {
-    for (WeaponItem item : this.model.getState().getGroundWeapons()) {
-        BufferedImage sprite = weaponSprites.get(item.getWeapon().getClass());
-        int x = (int) item.getX();
-        int y = (int) item.getY();
-        int w = item.getWidth();
-        int h = item.getHeight();
 
-        if (sprite != null) {
-            g2.drawImage(sprite, x, y, w, h, null);
-        } else {
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.fillRect(x, y, w, h);
-            g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
+    private void drawGroundWeapons(Graphics2D g2) {
+        for (WeaponItem item : this.controller.getState().getGroundWeapons()) {
+            BufferedImage sprite = weaponSprites.get(item.getWeapon().getClass());
+            int x = (int) item.getX();
+            int y = (int) item.getY();
+            int w = item.getWidth();
+            int h = item.getHeight();
+
+            if (sprite != null) {
+                g2.drawImage(sprite, x, y, w, h, null);
+            } else {
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(x, y, w, h);
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
+            }
         }
     }
-}
-private void drawBossIntro(Graphics2D g2) {
-    int step = model.getBossIntroStep();
-    double p = model.getBossIntroProgress();
 
-    // el texto aparece y se desvanece de a poco
-    double fade = Math.max(0.0, Math.min(1.0, Math.min(p / 0.25, (1.0 - p) / 0.25)));
-    int alpha = (int) (255 * fade);
+    private void drawBossIntro(Graphics2D g2) {
+        int step = controller.getBossIntroStep();
+        double p = controller.getBossIntroProgress();
 
-    // fondo oscuro
-    g2.setColor(new Color(0, 0, 0, 215));
-    g2.fillRect(0, 0, getWidth(), getHeight());
+        // el texto aparece y se desvanece de a poco
+        double fade = Math.max(0.0, Math.min(1.0, Math.min(p / 0.25, (1.0 - p) / 0.25)));
+        int alpha = (int) (255 * fade);
 
-    String text;
-    Color color;
-    int size;
-    if (step == 0) {
-        text = "Felicidades, sobreviviste a la primer oleada, buen trabajo";
-        color = new Color(190, 190, 190);
-        size = 32;
-    } else {
-        text = "Preparate para el Jefe";
-        color = new Color(190, 0, 0);
-        size = 54;
+        // fondo oscuro
+        g2.setColor(new Color(0, 0, 0, 215));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        String text;
+        Color color;
+        int size;
+        if (step == 0) {
+            text = "Felicidades, sobreviviste a la primer oleada, buen trabajo";
+            color = new Color(190, 190, 190);
+            size = 32;
+        } else {
+            text = "Preparate para el Jefe";
+            color = new Color(190, 0, 0);
+            size = 54;
+        }
+
+        // si el texto no entra en pantalla, se achica la letra
+        Font font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
+        FontMetrics fm = g2.getFontMetrics(font);
+        while (fm.stringWidth(text) > getWidth() - 80 && size > 12) {
+            size--;
+            font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
+            fm = g2.getFontMetrics(font);
+        }
+        g2.setFont(font);
+
+        int x = (getWidth() - fm.stringWidth(text)) / 2;
+        int y = getHeight() / 2;
+
+        // temblor leve solo en "Preparate para el Jefe"
+        if (step == 1) {
+            x += (int) (Math.random() * 5) - 2;
+            y += (int) (Math.random() * 5) - 2;
+        }
+
+        // sombra rojo oscuro y texto encima
+        g2.setColor(new Color(70, 0, 0, alpha));
+        g2.drawString(text, x + 3, y + 3);
+        g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+        g2.drawString(text, x, y);
     }
-
-    // si el texto no entra en pantalla, se achica la letra
-    Font font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
-    FontMetrics fm = g2.getFontMetrics(font);
-    while (fm.stringWidth(text) > getWidth() - 80 && size > 12) {
-        size--;
-        font = new Font("Serif", Font.BOLD | Font.ITALIC, size);
-        fm = g2.getFontMetrics(font);
-    }
-    g2.setFont(font);
-
-    int x = (getWidth() - fm.stringWidth(text)) / 2;
-    int y = getHeight() / 2;
-
-    // temblor leve solo en "Preparate para el Jefe"
-    if (step == 1) {
-        x += (int) (Math.random() * 5) - 2;
-        y += (int) (Math.random() * 5) - 2;
-    }
-
-    // sombra rojo oscuro y texto encima
-    g2.setColor(new Color(70, 0, 0, alpha));
-    g2.drawString(text, x + 3, y + 3);
-    g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
-    g2.drawString(text, x, y);
-}
 }

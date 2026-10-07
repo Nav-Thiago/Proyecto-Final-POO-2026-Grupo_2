@@ -1,6 +1,6 @@
 package model;
 
-public abstract class FireArm extends Weapon implements AmmoHolder {
+public class FireArm extends Weapon implements AmmoHolder {
 
     protected int actualMunition;
     private final int maxMunition;
@@ -28,7 +28,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
             double centerY = player.getY() + (player.getHeight() / 2.0);
 
             double totalDamage = this.getDamage() + player.getDamageBonus();
-            Bullet bullet = new Bullet(centerX, centerY, dirX, dirY, 12.0, totalDamage);
+            Bullet bullet = new Bullet(centerX, centerY, 6, 6, dirX, dirY, 12.0, totalDamage);
 
             state.addPlayerBullet(bullet);
 

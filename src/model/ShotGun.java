@@ -37,7 +37,7 @@ public class ShotGun extends FireArm{
                 double centerX = player.getX() + (player.getWidth() / 2.0);
                 double centerY = player.getY() + (player.getHeight() / 2.0);
 
-                Bullet pellet = new Bullet(centerX, centerY, dirX, dirY, 12.0, this.getDamage());
+                Bullet pellet = new Bullet(centerX, centerY, 6, 6, dirX, dirY, 12.0, this.getDamage());
                 state.addPlayerBullet(pellet);
             }
             return true;

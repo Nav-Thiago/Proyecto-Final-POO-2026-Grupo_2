@@ -50,8 +50,6 @@ public class GameModel {
         int mapHeight = state.getMapHeight();
 
         // Mover balas
-        for (Bullet b : state.getPlayerBullets()) b.update(screenWidth, screenHeight);
-        for (Bullet p : state.getPoisonBullets()) p.update(screenWidth, screenHeight);
         for (Bullet b : state.getPlayerBullets()) b.update(mapWidth, mapHeight);
         for (Bullet p: state.getPoisonBullets()) p.update(mapWidth, mapHeight);
 
