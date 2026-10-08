@@ -352,7 +352,6 @@ public class GamePanel extends JPanel {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
 
-
         ///////////////////////////////////////
         //          Dibuja al jugador        //
         ///////////////////////////////////////
@@ -363,10 +362,10 @@ public class GamePanel extends JPanel {
         if (playersFeetAnimation != null) {
             playersFeetAnimation.update();
         }
-        if (player.isAlive()) {
+        if (controller.getIsAlive()) {
             AffineTransform transformOriginal = g2.getTransform();
 
-            double centerX = player.getX() + (player.getWidth() / 2.0);
+            double centerX = controller.getPlayerX() + (player.getWidth() / 2.0);
             double centerY = player.getY() + (player.getHeight() / 2.0);
 
             g2.translate(centerX, centerY);

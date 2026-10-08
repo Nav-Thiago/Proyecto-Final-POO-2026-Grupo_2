@@ -44,7 +44,7 @@ public abstract class Character extends Entity {
         // Hitbox lógica (más chica que sprite visual)
         int leftTile = (int) (nextX + 15) / tile_size;
         int rightTile = (int) (nextX + width - 15) / tile_size;
-        int topTile = (int) (nextY + 30) / tile_size; 
+        int topTile = (int) (nextY + 30) / tile_size;
         int bottomTile = (int) (nextY + height - 5) / tile_size;
 
         if (leftTile < 0 || rightTile >= map.length || topTile < 0 || bottomTile >= map[0].length) {

@@ -10,6 +10,7 @@ public class Player extends Character {
     private boolean moveDown;
     private boolean moveLeft;
     private boolean moveRight;
+    private boolean isAttacking;
 
     // [POWERUP] estado que modifican los power ups
     private final List<Effect> effects = new ArrayList<>();
@@ -45,6 +46,10 @@ public class Player extends Character {
 
     public void setMoveRight(boolean moveRight) {
         this.moveRight = moveRight;
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.isAttacking = attacking;
     }
 
     public boolean isMoving() {
@@ -110,7 +115,7 @@ public class Player extends Character {
     }
 
     public void attack(GameState state) {
-        if (this.activeWeapon != null) {
+        if (this.activeWeapon != null || this.isAttacking) {
             this.activeWeapon.attack(this, state);
         }
     }

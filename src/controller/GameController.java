@@ -93,9 +93,18 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     @Override
     public void mousePressed(MouseEvent e) {
         gamePanel.requestFocusInWindow();
-        
+
         if (e.getButton() == MouseEvent.BUTTON1) {
             this.model.getState().getPlayer().attack(model.getState());
+            this.model.getState().getPlayer().setAttacking(true);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            this.model.getState().getPlayer().setAttacking(false);
         }
     }
 
@@ -105,14 +114,20 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     @Override
     public void mouseClicked(MouseEvent e) {}
     @Override
-    public void mouseReleased(MouseEvent e) {}
-    @Override
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
 
     public GameState getState() {
         return this.model.getState();
+    }
+
+    public double getPlayerX() {
+        return this.model.getState().getPlayer().getX();
+    }
+
+    public boolean getIsAlive() {
+        return this.model.getState().getPlayer().isAlive();
     }
 
     public GameModel.gameStatus getStatus() {

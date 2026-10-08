@@ -3,12 +3,13 @@ package model;
 public class CollisionSystem {
 
     public void update (GameState state) {
-        checkBulletCollision(state);
+        checkBulletZombieCollision(state);
+        chekBulletMapCollision(state);
         checkPoisonPlayerCollision(state);
         checkZombiePlayerCollision(state);
     }
 
-    private void checkBulletCollision (GameState state) {
+    private void checkBulletZombieCollision (GameState state) {
         for (Bullet bullet : state.getPlayerBullets()) {
             if (!bullet.isActive()) continue;
 
@@ -22,6 +23,39 @@ public class CollisionSystem {
         }
     }
 
+    private void chekBulletMapCollision (GameState state) {
+        boolean[][] map = state.getCollisionMatrix();
+        if (map == null) return;
+
+        int tileSize = GameState.TILE_SIZE;
+
+        for (Bullet bullet : state.getPlayerBullets()) {
+            if (!bullet.isActive()) continue;
+
+            int tileX = (int) (bullet.getX() + bullet.getWidth() / 2.0) / tileSize;
+            int tileY = (int) (bullet.getY() + bullet.getHeight() / 2.0) / tileSize;
+
+            if (tileX >= 0 && tileX < map.length && tileY >= 0 && tileY < map[0].length) {
+                if (map[tileX][tileY]) {
+                    bullet.setActive(false);
+                }
+            }
+        }
+
+        for (PoisonBullet poison : state.getPoisonBullets()) {
+            if (!poison.isActive()) continue;
+
+            int tileX = (int) (poison.getX() + poison.getWidth() / 2.0) / tileSize;
+            int tileY = (int) (poison.getY() + poison.getHeight() / 2.0) / tileSize;
+
+            if (tileX >= 0 && tileX < map.length && tileY >= 0 && tileY < map[0].length) {
+                if (map[tileX][tileY]) {
+                    poison.setActive(false);
+                }
+            }
+        }
+    }
+
     private void checkPoisonPlayerCollision (GameState state) {
         Player player = state.getPlayer();
         if (!player.isAlive()) return;
@@ -29,7 +63,7 @@ public class CollisionSystem {
         for (PoisonBullet poison : state.getPoisonBullets()) {
             if (poison.isActive() && poison.collidesWith(player)) {
                 poison.setActive(false);
-                poison.applyTo(player);//POLIMORFISMO: cada bala sabe que hacer
+                poison.applyTo(player);//POLIMORFISMO: cada bala sabe qué hacer
             }
         }
     }
