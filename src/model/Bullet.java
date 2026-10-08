@@ -3,10 +3,10 @@ package model;
 import java.awt.Rectangle; 
 
 public class Bullet extends Entity {
-    private double dirX;
-    private double dirY;
-    private double speed;
-    private double damage;
+    private final double dirX;
+    private final double dirY;
+    private final double speed;
+    private final double damage;
     private boolean active; // booleano para saber si la bala debe 'desaparecer'
     private int lifeSpanTicks;
 
