@@ -21,17 +21,25 @@ public class EnemySpawner {
         if (currentTime - lastSpawnTime >= spawnInterval && zombieSpawned < waveLimit) {
             Random random = new Random();
             int tipoZombie = random.nextInt(4);
+            int mapWidth = state.getMapWidth();
+            int mapHeight = state.getMapHeight();
+
+        
+            if (mapWidth <= 100 || mapHeight <= 100) return;
+
+            int spawnX = random.nextInt(mapWidth - 100);
+            int spawnY = random.nextInt(mapHeight - 100);
 
             Enemy newZombie;
 
             if (tipoZombie == 0) {
-                newZombie = new TankZombie(1184, 96);
+                newZombie = new TankZombie(spawnX, spawnY);
             } else if (tipoZombie == 1) {
-                newZombie = new FastZombie(1184, 96);
+                newZombie = new FastZombie(spawnX, spawnY);
             } else if (tipoZombie == 2) {
-                newZombie = new PoisonZombie(1184, 96, state.getPoisonBullets());
+                newZombie = new PoisonZombie(spawnX, spawnY, state.getPoisonBullets());
             } else {
-                newZombie = new NormalZombie(1184, 96);
+                newZombie = new NormalZombie(spawnX, spawnY);
             }
 
             state.addEnemy(newZombie);
