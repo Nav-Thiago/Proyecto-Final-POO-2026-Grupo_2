@@ -19,11 +19,7 @@ public class GameModel {
         this.collisionSystem = new CollisionSystem();
 
         // Inicializamos los spawners
-<<<<<<< HEAD
-        this.spawner = new EnemySpawner(2000, 2);
-=======
-        this.spawner = new EnemySpawner(2000, 0);
->>>>>>> 083316614a82f906eb9f0d80f6e6fe5aa0841def
+        this.spawner = new EnemySpawner(2000, 10);
         this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
         System.out.println("GameModel NUEVO cargado");
         state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
