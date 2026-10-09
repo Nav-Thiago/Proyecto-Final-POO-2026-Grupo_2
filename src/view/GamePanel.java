@@ -139,7 +139,7 @@ public class GamePanel extends JPanel {
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/zombie_normal/skeleton-move_" + (i + 1) + ".png";
+                String route = "/Resources/imagenes/entitys/zombie_forest/zombie_normal/skeleton-move_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
 
                 if (in != null) {
@@ -155,7 +155,7 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/tank_idle.png");
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/tank_zombie/tank_idle.png");
             if (in != null) {
                 tankIdleSprite = ImageIO.read(in);
             }
@@ -168,7 +168,7 @@ public class GamePanel extends JPanel {
             BufferedImage[] tankFrames = new BufferedImage[tankFrameQuantity];
 
             for (int i = 0; i < tankFrameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/tank_zombie/tank_walk_" + (i + 1) + ".png";
+                String route = "/Resources/imagenes/entitys/zombie_forest/tank_zombie/tank_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
 
                 if (in != null) {
@@ -180,31 +180,31 @@ public class GamePanel extends JPanel {
             tankWalkAnimation = new Animation(100, tankFrames);
 
         } catch (Exception e) {
-            System.out.println("Error cargando animacion del tanque: " + e.getMessage());
+            System.out.println("Error cargando animación del tanque: " + e.getMessage());
         }
 
         try {
-            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/fast_idle.png");
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/fast_zombie/fast_idle.png");
             if (in != null) fastIdleSprite = ImageIO.read(in);
         } catch (IOException e) {
-            System.out.println("Error cargando srpite del fast zombie en reposo: " + e.getMessage());
+            System.out.println("Error cargando sprite del fast zombie en reposo: " + e.getMessage());
         }
 
         try {
             int fastFrameQuantity = 16;
             BufferedImage[] fastFrames = new BufferedImage[fastFrameQuantity];
             for (int i = 0; i < fastFrameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/fast_zombie/fast_walk_" + (i + 1) + ".png";
+                String route = "/Resources/imagenes/entitys/zombie_forest/fast_zombie/fast_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
                 if (in != null) fastFrames[i] = ImageIO.read(in);
             }
             fastWalkAnimation = new Animation(80, fastFrames);
         } catch (Exception e) {
-            System.out.println("Error cargando animacion del zombie rapido: " + e.getMessage());
+            System.out.println("Error cargando animación del zombie rápido: " + e.getMessage());
         }
 
         try {
-            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/poison_idle_png");
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/poison_zombie/poison_idle_png");
             if (in != null) poisonIdleSprite = ImageIO.read(in);
         } catch (IOException e) {
             System.out.println("Error cargando sprite del poison zombie en reposo: " + e.getMessage());
@@ -214,13 +214,13 @@ public class GamePanel extends JPanel {
             int poisonFrameQuantity = 16;
             BufferedImage[] poisonFrames = new BufferedImage[poisonFrameQuantity];
             for (int i = 0; i < poisonFrameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/poison_zombie/poison_walk_" + (i + 1) + ".png";
+                String route = "/Resources/imagenes/entitys/zombie_forest/poison_zombie/poison_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
                 if (in != null) poisonFrames[i] = ImageIO.read(in);
             }
             poisonWalkAnimation = new Animation(150, poisonFrames);
         } catch (Exception e) {
-            System.out.println("Error cargando animacion del zombie venenoso: " + e.getMessage());
+            System.out.println("Error cargando animación del zombie venenoso: " + e.getMessage());
         }
 
         if (zombieWalkAnimation != null) {
