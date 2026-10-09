@@ -2,12 +2,14 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import controller.MenuController;
 
 public class MenuPanel extends JPanel {
     
     private Image backgroundImage;
-    private MenuController controller;
+
+    private MenuButton playButton;
+    private MenuButton optionButton;
+    private MenuButton exitButton;
 
     private java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
     private javax.swing.Timer particleTimer;
@@ -32,8 +34,7 @@ public class MenuPanel extends JPanel {
         }
     }
 
-    public MenuPanel(MenuController controller) {
-        this.controller = controller;
+    public MenuPanel() {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 0));
@@ -68,17 +69,14 @@ public class MenuPanel extends JPanel {
             titleLabel.setFont(new Font("Arial", Font.BOLD, 60));
         }   
 
-        MenuButton playButton = new MenuButton("Jugar");
-        MenuButton optionButton = new MenuButton("Opciones");
-        MenuButton exitButton = new MenuButton("Salir");
+        playButton = new MenuButton("Jugar");
+        optionButton = new MenuButton("Opciones");
+        exitButton = new MenuButton("Salir");
 
         playButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         optionButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         exitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        playButton.addActionListener(e -> {this.controller.startGame();;});
-        optionButton.addActionListener(e -> {this.controller.optionMenu();});
-        exitButton.addActionListener(e -> {System.exit(0);});
 
         add(Box.createVerticalStrut(150));
         add(titleLabel);
@@ -105,7 +103,14 @@ public class MenuPanel extends JPanel {
             repaint(); // Obliga a redibujar el panel con las nuevas posiciones
         });
         particleTimer.start();
+
+        
     }
+
+    public MenuButton getPlayButton() { return playButton; }
+    public MenuButton getOptionButton() { return optionButton; }
+    public MenuButton getExitButton() { return exitButton; }
+
 
     @Override 
     protected void paintComponent(Graphics g) {
