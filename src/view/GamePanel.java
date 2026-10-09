@@ -1,8 +1,12 @@
 package view;
 
 
+
+
 import controller.GameController;
 import model.*;
+
+
 
 
 import javax.imageio.ImageIO;
@@ -16,17 +20,22 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.HashMap;
 
+
 import java.awt.geom.Area;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
+
 public class GamePanel extends JPanel {
+
 
     private final GameController controller;
 
+
     private Animation playerWalkAnimation;
     private Animation playersFeetAnimation;
+
 
     private Animation zombieWalkAnimation;
     private BufferedImage tankIdleSprite;
@@ -37,14 +46,20 @@ public class GamePanel extends JPanel {
     private Animation poisonWalkAnimation;
 
 
+
+
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
+
 
     // Mapas para asociar la clase del modelo con su recurso visual
     private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
     private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
 
+
     private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
+
+
 
 
     public GamePanel(GameController controller) {
@@ -53,6 +68,7 @@ public class GamePanel extends JPanel {
         setFocusable(true);
         loadSprites();
     }
+
 
     private BufferedImage loadImage(String route) {
         try (InputStream in = getClass().getResourceAsStream(route)) {
@@ -69,7 +85,10 @@ public class GamePanel extends JPanel {
         }
     }
 
+
     private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
+
+
 
 
     private void loadSprites() {
@@ -86,13 +105,16 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando mapas: " + e.getMessage());
         }
 
+
         try {
             int frameQuantity = 19;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
+
             for (int i = 0; i < frameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/player/survivor-move_handgun_" + (i + 1) + ".png";
                 InputStream inHandgun = getClass().getResourceAsStream(route);
+
 
                 if (inHandgun != null) {
                     frames[i] = ImageIO.read(inHandgun);
@@ -107,13 +129,16 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando animación del player: " + e.getMessage());
         }
 
+
         try {
             int frameQuantity = 19;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
+
             for (int i = 0; i < frameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i + 1) + ".png";
                 InputStream inHandgun = getClass().getResourceAsStream(route);
+
 
                 if (inHandgun != null) {
                     frames[i] = ImageIO.read(inHandgun);
@@ -127,6 +152,8 @@ public class GamePanel extends JPanel {
         }
 
 
+
+
         String base = "/Resources/imagenes/powerups/";
         powerUpSprites.put(Heal.class, loadImage(base + "heal.png"));
         powerUpSprites.put(Shield.class, loadImage(base + "shield.png"));
@@ -134,13 +161,16 @@ public class GamePanel extends JPanel {
         powerUpSprites.put(Ammo.class, loadImage(base + "ammo.png"));
         powerUpSprites.put(MaxAmmo.class, loadImage(base + "max_ammo.png"));
 
+
         try {
             int frameQuantity = 16;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
+
             for (int i = 0; i < frameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/zombie_normal/skeleton-move_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
+
 
                 if (in != null) {
                     frames[i] = ImageIO.read(in);
@@ -149,10 +179,12 @@ public class GamePanel extends JPanel {
                 }
             }
 
+
             zombieWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {
             System.err.println("Error cargando animación del zombie: " + e.getMessage());
         }
+
 
         try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/tank_idle.png");
@@ -163,13 +195,16 @@ public class GamePanel extends JPanel {
             System.out.println("Error cargando sprite del tanque en reposo: " + e.getMessage());
         }
 
+
         try {
             int tankFrameQuantity = 36;
             BufferedImage[] tankFrames = new BufferedImage[tankFrameQuantity];
 
+
             for (int i = 0; i < tankFrameQuantity; i++) {
                 String route = "/Resources/imagenes/entitys/tank_zombie/tank_walk_" + (i + 1) + ".png";
                 InputStream in = getClass().getResourceAsStream(route);
+
 
                 if (in != null) {
                     tankFrames[i] = ImageIO.read(in);
@@ -179,9 +214,11 @@ public class GamePanel extends JPanel {
             }
             tankWalkAnimation = new Animation(100, tankFrames);
 
+
         } catch (Exception e) {
             System.out.println("Error cargando animacion del tanque: " + e.getMessage());
         }
+
 
         try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/fast_idle.png");
@@ -189,6 +226,7 @@ public class GamePanel extends JPanel {
         } catch (IOException e) {
             System.out.println("Error cargando srpite del fast zombie en reposo: " + e.getMessage());
         }
+
 
         try {
             int fastFrameQuantity = 16;
@@ -203,12 +241,14 @@ public class GamePanel extends JPanel {
             System.out.println("Error cargando animacion del zombie rapido: " + e.getMessage());
         }
 
+
         try {
             InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/poison_idle_png");
             if (in != null) poisonIdleSprite = ImageIO.read(in);
         } catch (IOException e) {
             System.out.println("Error cargando sprite del poison zombie en reposo: " + e.getMessage());
         }
+
 
         try {
             int poisonFrameQuantity = 16;
@@ -222,6 +262,7 @@ public class GamePanel extends JPanel {
         } catch (Exception e) {
             System.out.println("Error cargando animacion del zombie venenoso: " + e.getMessage());
         }
+
 
         if (zombieWalkAnimation != null) {
             zombieAnimations.put(NormalZombie.class, zombieWalkAnimation);
@@ -247,45 +288,59 @@ public class GamePanel extends JPanel {
     }
 
 
+
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
+
         Player player = this.controller.getState().getPlayer();
+
 
         ///////////////////////////////////////
         // SEGUIMIENTO DE CAMARA A PERSONAJE //
         ///////////////////////////////////////
 
+
         int screenWidth = getWidth();
         int screenHeight = getHeight();
 
+
         int mapWidth = this.controller.getState().getMapWidth();
         int mapHeight = this.controller.getState().getMapHeight();
+
 
         // Calculo de camara
         int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
         int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
 
+
         // Calculo para no irse del mapa
         camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
         camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
 
+
         g2.translate(-camX, -camY);
+
 
         if (backgroundForest != null) {
             g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
         }
 
+
         // Dibuja PowerUps
         drawPowerUps(g2); // [POWER-UP] primero, para que queden debajo de zombies y jugador
 
+
         // Dibuja Armas en el suelo
         drawGroundWeapons(g2); // [ARMAS] segundo, para que queden debajo de zombies y jugador
+
 
         // Dibuja a los enemigos
         if (zombieWalkAnimation != null) {
@@ -296,24 +351,30 @@ public class GamePanel extends JPanel {
             tankWalkAnimation.update();
         }
 
+
         for (Animation anim : zombieAnimations.values()) {
             anim.update();
         }
         for (Enemy zombie : this.controller.getState().getEnemies()) {
+
 
             if (zombie.isAlive()) {
                 AffineTransform transformOriginal = g2.getTransform();
                 double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
                 double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
 
+
                 g2.translate(centerX, centerY);
                 g2.rotate(zombie.getAngle());
+
 
                 int w = zombie.getWidth();
                 int h = zombie.getHeight();
 
+
                 Animation anim = zombieAnimations.get(zombie.getClass());
                 BufferedImage idle = zombieIdleSprites.get(zombie.getClass());
+
 
                 if (anim != null && anim.getCurrentFrame() != null) {
                     g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
@@ -324,10 +385,12 @@ public class GamePanel extends JPanel {
                     g2.fillOval(-w / 2, -h / 2, w, h);
                 }
 
+
                 g2.setTransform(transformOriginal);
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Monospaced", Font.BOLD, 20));
                 String lifeText = "HP: " + zombie.getHealth();
+
 
                 int textX = (int) zombie.getX();
                 int textY = (int) zombie.getY();
@@ -338,23 +401,28 @@ public class GamePanel extends JPanel {
         //   Dibuja las balas del jugador    //
         ///////////////////////////////////////
 
+
         g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth() - 2, bullet.getHeight() - 2);
         }
 
+
         ///////////////////////////////////////
         //   Dibuja las balas venenosas      //
         ///////////////////////////////////////
+
 
         g2.setColor(new Color(50, 205, 50));
         for (Bullet poison : this.controller.getState().getPoisonBullets()) {
             g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
         }
 
+
         ///////////////////////////////////////
         //          Dibuja al jugador        //
         ///////////////////////////////////////
+
 
         if (playerWalkAnimation != null) {
             playerWalkAnimation.update();
@@ -365,23 +433,29 @@ public class GamePanel extends JPanel {
         if (controller.getIsAlive()) {
             AffineTransform transformOriginal = g2.getTransform();
 
+
             double centerX = controller.getPlayerX() + (player.getWidth() / 2.0);
             double centerY = player.getY() + (player.getHeight() / 2.0);
+
 
             g2.translate(centerX, centerY);
             g2.rotate(player.getAngle());
 
+
             int w = player.getWidth();
             int h = player.getHeight();
 
+
             if (player.isMoving() && playersFeetAnimation != null && playersFeetAnimation.getCurrentFrame() != null) {
                 BufferedImage feetFrame = playersFeetAnimation.getCurrentFrame();
+
 
                 AffineTransform transformFeet = g2.getTransform();
                 g2.scale(0.6, 0.6);
                 g2.drawImage(feetFrame, -w / 2, -h / 2, w, h, null);
                 g2.setTransform(transformFeet);
             }
+
 
             if (playerWalkAnimation != null && playerWalkAnimation.getCurrentFrame() != null) {
                 BufferedImage bodyFrame = playerWalkAnimation.getCurrentFrame();
@@ -393,20 +467,25 @@ public class GamePanel extends JPanel {
             g2.setTransform(transformOriginal);
         }
 
+
         if (firstLayer != null) {
             g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
         }
+
 
         ///////////////////////////////////////
         //             HITBOXES              //
         ///////////////////////////////////////
 
+
         g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
+
 
         // Hitbox del jugador (Verde)
         g2.setColor(Color.GREEN);
         Rectangle pBounds = player.getBounds();
         g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
+
 
         // Hitboxes de los zombies (Rojo)
         g2.setColor(Color.RED);
@@ -417,6 +496,7 @@ public class GamePanel extends JPanel {
             }
         }
 
+
         // Hitboxes de las balas (Cian)
         g2.setColor(Color.CYAN);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
@@ -426,19 +506,25 @@ public class GamePanel extends JPanel {
             }
         }
 
+
         ///////////////////////////////////////
         //          EFECTO OSCURIDAD         //
         ///////////////////////////////////////
 
+
         double centerX = player.getX() + (player.getWidth() / 2);
         double centerY = player.getY() + (player.getHeight() / 2);
 
+
         Area darkness = new Area(new Rectangle2D.Double(0, 0, mapWidth, mapHeight));
 
-        double lightRadius = 700.0; // Define distancia 
-        double fovAngle = 85.0; // Define ángulo 
+
+        double lightRadius = 700.0; // Define distancia
+        double fovAngle = 85.0; // Define ángulo
+
 
         double angleDegrees = -Math.toDegrees(player.getAngle());
+
 
         Arc2D.Double lightCone = new Arc2D.Double(
                 centerX - lightRadius, centerY - lightRadius,
@@ -447,30 +533,39 @@ public class GamePanel extends JPanel {
                 Arc2D.PIE
         );
 
-        double personalRadius = 90.0; // Circulo personal donde se va a ver 
+
+        double personalRadius = 90.0; // Circulo personal donde se va a ver
         Ellipse2D.Double personalCircle = new Ellipse2D.Double(
                 centerX - personalRadius, centerY - personalRadius,
                 personalRadius * 2, personalRadius * 2
         );
 
+
         darkness.subtract(new Area(lightCone)); // Substrae el cono de iluminación
         darkness.subtract(new Area(personalCircle)); // Substrae el circulo personal
+
 
         g2.setColor(new Color(0, 0, 0, 220)); // 245 = opacidad
         g2.fill(darkness);
 
+
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
 
+
         g2.translate(camX, camY);
+
+
 
 
         ///////////////////////////////////////
         //             INTERFAZ              //
         ///////////////////////////////////////
 
+
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
         g2.drawString("Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth(), 20, 30); // Dibuja el texto en la esquina superior izquierda
+
 
         if (player.getShield() > 0) {
             g2.setColor(Color.CYAN);
@@ -480,6 +575,7 @@ public class GamePanel extends JPanel {
             g2.setColor(Color.RED);
             g2.drawString("Daño +" + Math.round(player.getDamageBonus()), 20, 80);
         }
+
 
         // Texto de arma activa y munición
         Weapon activeWeapon = player.getActiveWeapon();
@@ -491,6 +587,7 @@ public class GamePanel extends JPanel {
             g2.setColor(Color.WHITE);
             g2.drawString("Arma: Cuchillo", 20, 105);
         }
+
 
         // Mensaje de estados
         GameModel.gameStatus status = controller.getStatus();
@@ -506,7 +603,9 @@ public class GamePanel extends JPanel {
             drawBossIntro(g2);
         }
 
+
     }
+
 
     private void drawFloating(Graphics2D g2, Entity e, Color glowColor, Consumer<Graphics2D> content) {
         double t = System.currentTimeMillis() / 1000.0;
@@ -515,26 +614,33 @@ public class GamePanel extends JPanel {
         double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
         int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
 
+
         int w = e.getWidth();
         int h = e.getHeight();
+
 
         AffineTransform old = g2.getTransform();
         g2.translate(e.getX() + w / 2.0, e.getY() + h / 2.0 + bob);
 
+
         g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
         g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+
 
         g2.scale(scale, scale);
         content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
 
+
         g2.setTransform(old);
     }
+
 
     private void drawPowerUps(Graphics2D g2) {
         for (PowerUp p : this.controller.getState().getPowerUps()) {
             BufferedImage sprite = powerUpSprites.get(p.getClass());
             int w = p.getWidth();
             int h = p.getHeight();
+
 
             drawFloating(g2, p, p.getColor(), g -> {
                 if (sprite != null) {
@@ -552,9 +658,11 @@ public class GamePanel extends JPanel {
         }
     }
 
+
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {
         g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
         g2.fillRect(0, 0, getWidth(), getHeight());
+
 
         g2.setColor(color);
         g2.setFont(new Font("Monospaced", Font.BOLD, 40));
@@ -564,6 +672,7 @@ public class GamePanel extends JPanel {
         g2.drawString(texto, textX, textY);
     }
 
+
     private void drawGroundWeapons(Graphics2D g2) {
         for (WeaponItem item : this.controller.getState().getGroundWeapons()) {
             BufferedImage sprite = weaponSprites.get(item.getWeapon().getClass());
@@ -571,6 +680,7 @@ public class GamePanel extends JPanel {
             int y = (int) item.getY();
             int w = item.getWidth();
             int h = item.getHeight();
+
 
             if (sprite != null) {
                 g2.drawImage(sprite, x, y, w, h, null);
@@ -583,6 +693,7 @@ public class GamePanel extends JPanel {
             }
         }
     }
+
 
     private void drawBossIntro(Graphics2D g2) {
         int step = controller.getBossIntroStep();
