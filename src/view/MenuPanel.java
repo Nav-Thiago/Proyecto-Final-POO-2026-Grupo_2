@@ -78,14 +78,17 @@ public class MenuPanel extends JPanel {
         exitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 
-        add(Box.createVerticalStrut(150));
+        add(Box.createVerticalGlue());
+
         add(titleLabel);
-        add(Box.createVerticalStrut(80));
+        add(Box.createRigidArea(new Dimension(0, 80)));
         add(playButton);
-        add(Box.createVerticalStrut(20));
+        add(Box.createRigidArea(new Dimension(0, 20)));
         add(optionButton);
-        add(Box.createVerticalStrut(20));
+        add(Box.createRigidArea(new Dimension(0, 20)));
         add(exitButton);
+
+        add(Box.createVerticalGlue());
 
         // Generar 70 partículas iniciales (asumiendo un ancho base de 1920x1080 para esparcirlas)
         for (int i = 0; i < 70; i++) {
@@ -127,7 +130,7 @@ public class MenuPanel extends JPanel {
         }
 
         // Dibujar las partículas de ceniza/nieve
-        g.setColor(new Color(200, 200, 200, 150)); // Gris claro semitransparente
+        g.setColor(new Color(200, 200, 200, 100)); // Gris claro semitransparente
         for (Ceniza c : particulas) {
             g.fillOval(c.x, c.y, c.size, c.size);
         }
