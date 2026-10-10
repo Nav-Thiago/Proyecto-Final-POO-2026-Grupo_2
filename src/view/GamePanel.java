@@ -217,7 +217,7 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            int frameQuantity = 19;
+            int frameQuantity = 3;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
@@ -236,7 +236,7 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            int frameQuantity = 19;
+            int frameQuantity = 3;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
@@ -255,7 +255,7 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            int frameQuantity = 19;
+            int frameQuantity = 15;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
@@ -620,8 +620,8 @@ public class GamePanel extends JPanel {
 
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
 
-         bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
-  bulletEffects.drawMuzzleFlash(g2, player);
+        bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
+        bulletEffects.drawMuzzleFlash(g2, player);
 
         g2.translate(camX, camY);
 
