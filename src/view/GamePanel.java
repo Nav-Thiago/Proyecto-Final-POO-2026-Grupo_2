@@ -35,6 +35,7 @@ public class GamePanel extends JPanel {
     private Animation fastWalkAnimation;
     private BufferedImage poisonIdleSprite;
     private Animation poisonWalkAnimation;
+     
 
 
     private BufferedImage backgroundForest;
@@ -46,6 +47,7 @@ public class GamePanel extends JPanel {
 
     private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
 
+     private final BulletEffects bulletEffects = new BulletEffects();
 
     public GamePanel(GameController controller) {
         this.controller = controller;
@@ -338,10 +340,10 @@ public class GamePanel extends JPanel {
         //   Dibuja las balas del jugador    //
         ///////////////////////////////////////
 
-        g2.setColor(Color.ORANGE);
+        /*g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth() - 2, bullet.getHeight() - 2);
-        }
+        }*/
 
         ///////////////////////////////////////
         //   Dibuja las balas venenosas      //
@@ -420,13 +422,13 @@ public class GamePanel extends JPanel {
         }
 
         // Hitboxes de las balas (Cian)
-        g2.setColor(Color.CYAN);
+        /*g2.setColor(Color.CYAN);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             if (bullet.isActive()) {
                 Rectangle bBounds = bullet.getBounds();
                 g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
             }
-        }
+        }*/
 
         ///////////////////////////////////////
         //          EFECTO OSCURIDAD         //
@@ -462,6 +464,9 @@ public class GamePanel extends JPanel {
         g2.fill(darkness);
 
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
+
+         bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
+  bulletEffects.drawMuzzleFlash(g2, player);
 
         g2.translate(camX, camY);
 

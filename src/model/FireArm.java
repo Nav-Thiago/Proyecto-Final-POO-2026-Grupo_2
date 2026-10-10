@@ -24,11 +24,11 @@ public class FireArm extends Weapon implements AmmoHolder {
             double dirX = Math.cos(player.getAngle());
             double dirY = Math.sin(player.getAngle());
 
-            double centerX = player.getX() + (player.getWidth() / 2.0);
-            double centerY = player.getY() + (player.getHeight() / 2.0);
+            double muzzleX = getMuzzleX(player);
+            double muzzleY = getMuzzleY(player);
 
             double totalDamage = this.getDamage() + player.getDamageBonus();
-            Bullet bullet = new Bullet(centerX, centerY, 6, 6, dirX, dirY, totalDamage, 60);
+            Bullet bullet = new Bullet(muzzleX, muzzleY, 6, 6, dirX, dirY, totalDamage, 60);
 
             state.addPlayerBullet(bullet);
 
