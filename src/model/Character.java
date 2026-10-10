@@ -35,7 +35,7 @@ public abstract class Character extends Entity {
         }
     }
 
-    private boolean isCollidingWithMap(double nextX, double nextY, GameState state) {
+    protected boolean isCollidingWithMap(double nextX, double nextY, GameState state) {
         boolean[][] map = state.getCollisionMatrix();
         if (map == null) return false;
 
@@ -53,6 +53,16 @@ public abstract class Character extends Entity {
 
         return map[leftTile][topTile] || map[rightTile][topTile] ||
            map[leftTile][bottomTile] || map[rightTile][bottomTile];
+    }
+
+    protected boolean canMove(double dx, double dy, GameState state) {
+        if (dx == 0 && dy == 0) return false;
+
+        double length = Math.hypot(dx, dy);
+        double moveX = (dx / length) * speed;
+        double moveY = (dy / length) * speed;
+
+        return !isCollidingWithMap(x + moveX, y + moveY, state);
     }
 
     public double getSpeed() {
