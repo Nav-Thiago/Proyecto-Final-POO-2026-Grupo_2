@@ -393,6 +393,8 @@ public class GamePanel extends JPanel {
             g2.setTransform(transformOriginal);
         }
 
+        // Cursor de prueba
+        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         if (firstLayer != null) {
             g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
         }
@@ -633,5 +635,6 @@ public class GamePanel extends JPanel {
         g2.drawString(text, x + 3, y + 3);
         g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
         g2.drawString(text, x, y);
+
     }
 }

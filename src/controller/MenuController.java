@@ -23,8 +23,12 @@ public class MenuController implements MenuActions{
 
         SplashUniversity uniSplash = new SplashUniversity();
         SplashSubject subjectSplash = new SplashSubject();
-        MenuPanel menu = new MenuPanel(this);
+        MenuPanel menu = new MenuPanel();
         OptionsPanel option = new OptionsPanel(this);
+
+        menu.getPlayButton().addActionListener(e -> startGame());
+        menu.getOptionButton().addActionListener(e -> optionMenu());
+        menu.getExitButton().addActionListener(e -> System.exit(0));
         
 
         mainContainer.add(uniSplash, "SPLASH_UNI");

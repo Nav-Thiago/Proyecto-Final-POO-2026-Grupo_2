@@ -2,12 +2,14 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import controller.MenuController;
 
 public class MenuPanel extends JPanel {
     
     private Image backgroundImage;
-    private MenuController controller;
+
+    private MenuButton playButton;
+    private MenuButton optionButton;
+    private MenuButton exitButton;
 
     private java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
     private javax.swing.Timer particleTimer;
@@ -32,8 +34,7 @@ public class MenuPanel extends JPanel {
         }
     }
 
-    public MenuPanel(MenuController controller) {
-        this.controller = controller;
+    public MenuPanel() {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 0));
@@ -68,26 +69,26 @@ public class MenuPanel extends JPanel {
             titleLabel.setFont(new Font("Arial", Font.BOLD, 60));
         }   
 
-        MenuButton playButton = new MenuButton("Jugar");
-        MenuButton optionButton = new MenuButton("Opciones");
-        MenuButton exitButton = new MenuButton("Salir");
+        playButton = new MenuButton("Jugar");
+        optionButton = new MenuButton("Opciones");
+        exitButton = new MenuButton("Salir");
 
         playButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         optionButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         exitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        playButton.addActionListener(e -> {this.controller.startGame();;});
-        optionButton.addActionListener(e -> {this.controller.optionMenu();});
-        exitButton.addActionListener(e -> {System.exit(0);});
 
-        add(Box.createVerticalStrut(150));
+        add(Box.createVerticalGlue());
+
         add(titleLabel);
-        add(Box.createVerticalStrut(80));
+        add(Box.createRigidArea(new Dimension(0, 80)));
         add(playButton);
-        add(Box.createVerticalStrut(20));
+        add(Box.createRigidArea(new Dimension(0, 20)));
         add(optionButton);
-        add(Box.createVerticalStrut(20));
+        add(Box.createRigidArea(new Dimension(0, 20)));
         add(exitButton);
+
+        add(Box.createVerticalGlue());
 
         // Generar 70 partículas iniciales (asumiendo un ancho base de 1920x1080 para esparcirlas)
         for (int i = 0; i < 70; i++) {
@@ -105,7 +106,14 @@ public class MenuPanel extends JPanel {
             repaint(); // Obliga a redibujar el panel con las nuevas posiciones
         });
         particleTimer.start();
+
+        
     }
+
+    public MenuButton getPlayButton() { return playButton; }
+    public MenuButton getOptionButton() { return optionButton; }
+    public MenuButton getExitButton() { return exitButton; }
+
 
     @Override 
     protected void paintComponent(Graphics g) {
@@ -122,7 +130,7 @@ public class MenuPanel extends JPanel {
         }
 
         // Dibujar las partículas de ceniza/nieve
-        g.setColor(new Color(200, 200, 200, 150)); // Gris claro semitransparente
+        g.setColor(new Color(200, 200, 200, 100)); // Gris claro semitransparente
         for (Ceniza c : particulas) {
             g.fillOval(c.x, c.y, c.size, c.size);
         }
