@@ -25,6 +25,7 @@ public class GamePanel extends JPanel {
 
     private final GameController controller;
 
+    private Animation playerWalkAnimation;
     private Animation playersFeetAnimation;
 
     private Animation playerKnifeWalkAnimation;
@@ -50,6 +51,7 @@ public class GamePanel extends JPanel {
     private BufferedImage poisonIdleSprite;
     private Animation poisonWalkAnimation;
 
+
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
 
@@ -60,6 +62,7 @@ public class GamePanel extends JPanel {
     private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
 
     private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
+     private final BulletEffects bulletEffects = new BulletEffects();
 
     public GamePanel(GameController controller) {
         this.controller = controller;
@@ -110,6 +113,8 @@ public class GamePanel extends JPanel {
                 } else {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
+                weaponSprites.put(FireArm.class, loadImage("/Resources/imagenes/weapons/gun.png"));
+                weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
             }
             playersFeetAnimation = new Animation(150, frames);
         } catch (Exception e) {
@@ -140,7 +145,7 @@ public class GamePanel extends JPanel {
             BufferedImage[] frames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_move_handgun/survivor-move_handgun_" + (i + 1) + ".png";
+                String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i + 1) + ".png";
                 InputStream inHandgun = getClass().getResourceAsStream(route);
 
                 if (inHandgun != null) {
@@ -390,6 +395,7 @@ public class GamePanel extends JPanel {
         }
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -482,10 +488,10 @@ public class GamePanel extends JPanel {
         //   Dibuja las balas del jugador    //
         ///////////////////////////////////////
 
-        g2.setColor(Color.ORANGE);
+        /*g2.setColor(Color.ORANGE);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth() - 2, bullet.getHeight() - 2);
-        }
+        }*/
 
         ///////////////////////////////////////
         //   Dibuja las balas venenosas      //
@@ -500,6 +506,9 @@ public class GamePanel extends JPanel {
         //          Dibuja al jugador        //
         ///////////////////////////////////////
 
+        if (playerWalkAnimation != null) {
+            playerWalkAnimation.update();
+        }
         if (playersFeetAnimation != null) {
             playersFeetAnimation.update();
         }
@@ -568,13 +577,13 @@ public class GamePanel extends JPanel {
         }
 
         // Hitboxes de las balas (Cian)
-        g2.setColor(Color.CYAN);
+        /*g2.setColor(Color.CYAN);
         for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
             if (bullet.isActive()) {
                 Rectangle bBounds = bullet.getBounds();
                 g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
             }
-        }
+        }*/
 
         ///////////////////////////////////////
         //          EFECTO OSCURIDAD         //
@@ -610,6 +619,9 @@ public class GamePanel extends JPanel {
         g2.fill(darkness);
 
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
+
+         bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
+  bulletEffects.drawMuzzleFlash(g2, player);
 
         g2.translate(camX, camY);
 
