@@ -667,7 +667,6 @@ public class GamePanel extends JPanel {
         } else if (status == GameModel.gameStatus.BOSS_INTRO) {
             drawBossIntro(g2);
         }
-
     }
 
     private void drawFloating(Graphics2D g2, Entity e, Color glowColor, Consumer<Graphics2D> content) {
