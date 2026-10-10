@@ -39,4 +39,6 @@ public abstract class Weapon {
     }
  
     public abstract boolean attack(Player player, GameState state);
+
+    public abstract boolean isAutomatic();
 }

@@ -88,6 +88,7 @@ public class GamePanel extends JPanel {
             System.err.println("Error cargando mapas: " + e.getMessage());
         }
 
+        
         try {
             int frameQuantity = 19;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
@@ -101,8 +102,9 @@ public class GamePanel extends JPanel {
                 } else {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
-                weaponSprites.put(FireArm.class, loadImage("/Resources/imagenes/weapons/gun.png"));
+                weaponSprites.put(Handgun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
                 weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
+                weaponSprites.put(Rifle.class, loadImage("/Resources/imagenes/weapons/rifle.png"));
             }
             playerWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {

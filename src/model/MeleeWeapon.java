@@ -50,4 +50,9 @@ public class MeleeWeapon extends Weapon {
         }
         return false;
     }
+
+    @Override
+    public boolean isAutomatic() {
+        return false;
+    }
 }

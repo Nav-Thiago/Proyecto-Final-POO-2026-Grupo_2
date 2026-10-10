@@ -91,7 +91,7 @@ public class MenuController implements MenuActions{
     public void startGame() {
         AudioManager.stopMusic();
         Player player = new Player(128, 3040);
-        player.equipWeapon(new FireArm(20, 400, 20, 20));
+        player.equipWeapon(new Handgun(20, 400, 20, 20));
 
         // Dimensiones del mapa 
         int mapCols = 100;
@@ -103,7 +103,7 @@ public class MenuController implements MenuActions{
         boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque/mapa_bosque_NWB.tmj", mapCols, mapRows);
         state.setCollisionMatrix(matrix);
         state.getGroundWeapons().add(new WeaponItem(1753, 1415, new ShotGun(30, 800, 7, 7)));
-        state.getGroundWeapons().add(new WeaponItem(2807, 323, new FireArm(30, 200, 30, 30)));
+        state.getGroundWeapons().add(new WeaponItem(2807, 323, new Rifle(30, 200, 30, 30)));
 
         GameModel model = new GameModel(state);
         this.controller = new GameController(model);

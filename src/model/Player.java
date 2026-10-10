@@ -26,7 +26,7 @@ public class Player extends Character {
     private Weapon activeWeapon; // Puntero al arma que tiene en la mano actualmente
 
     public Player(double x, double y) {
-        super(x, y, 64, 64,3.5 , 100, 100);
+        super(x, y, 64, 64, 5.5 , 100, 100);
 
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
@@ -70,6 +70,10 @@ public class Player extends Character {
 
     public void update(GameState state) {
         updateEffects(); // [POWERUP] vence los efectos temporales
+
+        if (this.isAttacking && this.activeWeapon != null && this.activeWeapon.isAutomatic()) {
+            this.attack(state);
+        }
 
         double dx = 0;
         double dy = 0;
@@ -115,7 +119,7 @@ public class Player extends Character {
     }
 
     public void attack(GameState state) {
-        if (this.activeWeapon != null || this.isAttacking) {
+        if (this.activeWeapon != null) {
             this.activeWeapon.attack(this, state);
         }
     }
