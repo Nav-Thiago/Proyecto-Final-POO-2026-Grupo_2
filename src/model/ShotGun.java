@@ -39,4 +39,9 @@ public class ShotGun extends FireArm {
         }
         return false;
     }
+
+    @Override 
+    public boolean isAutomatic() {
+        return false;
+    }
 }

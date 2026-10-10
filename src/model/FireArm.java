@@ -1,6 +1,6 @@
 package model;
 
-public class FireArm extends Weapon implements AmmoHolder {
+public abstract class FireArm extends Weapon implements AmmoHolder {
 
     protected int actualMunition;
     private final int maxMunition;
