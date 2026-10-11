@@ -10,6 +10,9 @@ public abstract class Enemy extends Character {
     private long lastAttackTime = 0;
     private final Random random = new Random();
     private static final double[] AVOID_ANGLES_DEG = {0, 25, -25, 50, -50, 75, -75, 100, -100};
+    private boolean isCollidingWithPlayer = false;
+    private long collisionStartTime = 0;
+    private final int ATTACK_WINDUP = 400;
     // private static final long SIDESTEP_DURATION_MS = 450;
     // private int sidestepDirection = 0;
     // private long sidestepUntil = 0;
@@ -31,6 +34,22 @@ public abstract class Enemy extends Character {
 
     public double getAngle() {
         return angle;
+    }
+
+    public boolean isCollidingWithPlayer() {
+        return isCollidingWithPlayer;
+    }
+
+    public void setCollidingWithPlayer(boolean colliding) {
+        this.isCollidingWithPlayer = colliding;
+    }
+
+    public void setCollisionStartTime(long time) {
+        this.collisionStartTime = time;
+    }
+
+    public boolean hasCompletedAttackDelay() {
+        return (System.currentTimeMillis() - collisionStartTime >= ATTACK_WINDUP);
     }
 
     public void update(Player target, GameState state) {

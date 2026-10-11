@@ -14,7 +14,7 @@ public class DamageBoost extends PowerUp {
  
     @Override
     protected void apply(Player player) {
-        player.addEffect(new DamageBoostEffect(BONUS, duration));
+        player.decorateStats(s -> new DamageBoostDecorator(s, BONUS, duration));
     }
  
     @Override

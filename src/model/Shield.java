@@ -7,13 +7,13 @@ public class Shield extends PowerUp {
     private final int shieldPoints;
 
     public Shield(double x, double y, int shieldPoints) {
-        super(32, 32);
+        super(x, y);
         this.shieldPoints = shieldPoints;
     }
 
     @Override
     protected void apply(Player player) {
-        player.addShield(shieldPoints);
+        player.decorateStats(s -> new ShieldDecorator(s, shieldPoints));
     }
 
     @Override

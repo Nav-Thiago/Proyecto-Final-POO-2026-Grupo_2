@@ -10,7 +10,7 @@ public class MaxAmmo extends PowerUp {
 
     @Override
     protected void apply(Player player) {
-        player.refillAmmo();
+        player.decorateStats(MaxAmmoDecorator::new);
     }
 
     @Override
