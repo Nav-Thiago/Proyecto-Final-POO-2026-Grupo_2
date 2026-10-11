@@ -21,14 +21,39 @@ public class EnemySpawner {
         if (currentTime - lastSpawnTime >= spawnInterval && zombieSpawned < waveLimit) {
             Random random = new Random();
             int tipoZombie = random.nextInt(4);
+
             int mapWidth = state.getMapWidth();
             int mapHeight = state.getMapHeight();
+            boolean[][] collisionMatrix = state.getCollisionMatrix();
+            int tileSize = GameState.TILE_SIZE;
 
-        
-            if (mapWidth <= 100 || mapHeight <= 100) return;
+            if (mapWidth <= 100 || mapHeight <= 100 || collisionMatrix == null) return;
 
-            int spawnX = random.nextInt(mapWidth - 100);
-            int spawnY = random.nextInt(mapHeight - 100);
+            int spawnX = 0;
+            int spawnY = 0;
+            boolean validPosition = false;
+            int maxAttempts = 50; // Evita un bucle infinito si el mapa estuviera lleno
+            int attempts = 0;
+
+            // Buscamos una coordenada que no sea colisión
+            while (!validPosition && attempts < maxAttempts) {
+                spawnX = random.nextInt(mapWidth - 100);
+                spawnY = random.nextInt(mapHeight - 100);
+                
+                int tileX = spawnX / tileSize;
+                int tileY = spawnY / tileSize;
+
+                // Verificamos que esté dentro de los límites de la matriz
+                if (tileX >= 0 && tileX < collisionMatrix.length && 
+                    tileY >= 0 && tileY < collisionMatrix[0].length) {
+                    
+                    // Si es false, significa que no hay colisión (es caminable)
+                    if (!collisionMatrix[tileX][tileY]) {
+                        validPosition = true;
+                    }
+                }
+                attempts++;
+            }
 
             Enemy newZombie;
 
@@ -47,12 +72,13 @@ public class EnemySpawner {
             zombieSpawned++;
         }
     }
-    public void reset() {
-    this.zombieSpawned = 0;
-    this.lastSpawnTime = System.currentTimeMillis();
-}
 
     public boolean isWaveComplete(){
         return zombieSpawned >= waveLimit;
+    }
+
+    public void reset() {
+    this.zombieSpawned = 0; 
+    this.lastSpawnTime = System.currentTimeMillis();
     }
 }
