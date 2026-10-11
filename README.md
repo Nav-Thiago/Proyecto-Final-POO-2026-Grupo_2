@@ -71,11 +71,13 @@ El jugador controla a un sobreviviente de un apocalipsis zombie que explora un n
 ![Imagen 3](src/Resources/imagenes/jugabilidad.png)
 En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en el suelo y varios power-ups que se pueden recoger. Falta pulir el diseño e implementar el mapa.
 
+*Interfaz / Visibilidad*
+![Imagen 3.5](src/Resources/imagenes/visibilidad.png)
+
 *Mapa del bosque (posible diseño nivel 1)*
 ![Imagen 4](src/Resources/imagenes/mapa_bosque.png)
 
-*Mapa de la ciudad (posible diseño nivel 2)*
-![Imagen 5](src/Resources/imagenes/mapa_ciudad.png)
+
 
 *Los tamaños de los zombies están sujetos a dimensiones in-game*
 
