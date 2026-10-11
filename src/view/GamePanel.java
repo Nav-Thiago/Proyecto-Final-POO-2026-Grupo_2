@@ -25,20 +25,8 @@ public class GamePanel extends JPanel {
 
     private final GameController controller;
 
-    private Animation playerWalkAnimation;
-    private Animation playersFeetAnimation;
-
-    private Animation playerKnifeWalkAnimation;
-    private Animation playerKnifeAttackAnimation;
-
-    private Animation playerHandGunWalkAnimation;
-    private Animation playerHandGunAttackAnimation;
-
-    private Animation playerRifleWalkAnimation;
-    private Animation playerRifleAttackAnimation;
-
-    private Animation playerShotgunWalkAnimation;
-    private Animation playerShotgunAttackAnimation;
+    private Animation playerFeetAnimation;
+    private final Map<Class<? extends Weapon>, Animation> playerAnimations = new HashMap<>();
 
     private Animation zombieWalkAnimation;
 
@@ -87,192 +75,45 @@ public class GamePanel extends JPanel {
     }
 
     private void loadSprites() {
-        try {
-            InputStream inBackground = getClass().getResourceAsStream("/Resources/mapa_bosque/fondo_bosque.png");
-            if (inBackground != null) {
-                backgroundForest = ImageIO.read(inBackground);
-            } else {
-                System.out.println("No se encontró el png del mapa");
-            }
-            InputStream inFirstLayer = getClass().getResourceAsStream("/Resources/mapa_bosque/primer_plano.png");
-            if (inFirstLayer != null) firstLayer = ImageIO.read(inFirstLayer);
-        } catch (Exception e) {
-            System.err.println("Error cargando mapas: " + e.getMessage());
-        }
+        backgroundForest = loadImage("/Resources/mapa_bosque/fondo_bosque.png");
+        firstLayer = loadImage("/Resources/mapa_bosque/primer_plano.png");
 
-        
+        // PIES DEL JUGADOR
         try {
             int frameQuantity = 19;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
-
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_feet_run/survivor-run_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-                weaponSprites.put(Handgun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
-                weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
-                weaponSprites.put(Rifle.class, loadImage("/Resources/imagenes/weapons/rifle.png"));
+                String route = "/Resources/imagenes/entitys/player/feet_run/survivor-run_" + (i + 1) + ".png";
+                BufferedImage img = loadImage(route);
+                if (img != null) frames[i] = img;
             }
-            playersFeetAnimation = new Animation(150, frames);
+            playerFeetAnimation = new Animation(150, frames);
         } catch (Exception e) {
             System.err.println("Error cargando animación del player: " + e.getMessage());
         }
 
+        // MOVIMIENTO CON ARMAS
         try {
             int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
+            BufferedImage[] handgunFrames = new BufferedImage[frameQuantity];
+            BufferedImage[] rifleFrames = new BufferedImage[frameQuantity];
+            BufferedImage[] shotgunFrames = new BufferedImage[frameQuantity];
+            BufferedImage[] knifeFrames = new BufferedImage[frameQuantity];
 
             for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_move_knife/survivor-move_knife_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
+                handgunFrames[i] = loadImage("/Resources/imagenes/entitys/player/move_handgun/survivor-move_handgun_" + (i + 1) + ".png");
+                rifleFrames[i] = loadImage("/Resources/imagenes/entitys/player/move_rifle/survivor-move_rifle_" + (i + 1) + ".png");
+                shotgunFrames[i] = loadImage("/Resources/imagenes/entitys/player/move_shotgun/survivor-move_shotgun_" + (i + 1) + ".png");
+                knifeFrames[i] = loadImage("/Resources/imagenes/entitys/player/move_knife/survivor-move_knife_" + (i + 1) + ".png");
             }
-            playerKnifeWalkAnimation = new Animation(150, frames);
+
+            playerAnimations.put(Handgun.class, new Animation(150, handgunFrames));
+            playerAnimations.put(Rifle.class, new Animation(150, rifleFrames));
+            playerAnimations.put(ShotGun.class, new Animation(150, shotgunFrames));
+            playerAnimations.put(MeleeWeapon.class, new Animation(150, knifeFrames));
+
         } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor-run_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerHandGunWalkAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_move_rifle/survivor-move_rifle_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerRifleWalkAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_move_shotgun/survivor-move_shotgun_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerShotgunWalkAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 3;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_shoot_handgun/survivor-shoot_handgun_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerHandGunAttackAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_shoot_rifle/survivor-shoot_rifle_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerRifleAttackAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_shoot_shotgun/survivor-shoot_shotgun_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerShotgunAttackAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
-        }
-
-        try {
-            int frameQuantity = 19;
-            BufferedImage[] frames = new BufferedImage[frameQuantity];
-
-            for (int i = 0; i < frameQuantity; i++) {
-                String route = "/Resources/imagenes/entitys/player/survivor_meleeattack_knife/survivor-meleeattack_knife_" + (i + 1) + ".png";
-                InputStream inHandgun = getClass().getResourceAsStream(route);
-
-                if (inHandgun != null) {
-                    frames[i] = ImageIO.read(inHandgun);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen " + route);
-                }
-            }
-            playerKnifeAttackAnimation = new Animation(150, frames);
-        } catch (Exception e) {
-            System.err.println("Error cargando animación del player: " + e.getMessage());
+            System.err.println("Error cargando animaciones del player (move_arma)");
         }
 
         String base = "/Resources/imagenes/powerups/";
@@ -282,9 +123,12 @@ public class GamePanel extends JPanel {
         powerUpSprites.put(Ammo.class, loadImage(base + "ammo.png"));
         powerUpSprites.put(MaxAmmo.class, loadImage(base + "max_ammo.png"));
 
-        weaponSprites.put(FireArm.class, loadImage("/Resources/imagenes/weapons/gun.png"));
+        weaponSprites.put(Handgun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
         weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
+        weaponSprites.put(Rifle.class, loadImage("/Resources/imagenes/weapons/rifle.png"));
 
+
+        // ZOMBIES
         try {
             int frameQuantity = 16;
             BufferedImage[] frames = new BufferedImage[frameQuantity];
@@ -299,7 +143,6 @@ public class GamePanel extends JPanel {
                     System.err.println("Advertencia: No se encontró la imagen " + route);
                 }
             }
-
             zombieWalkAnimation = new Animation(150, frames);
         } catch (Exception e) {
             System.err.println("Error cargando animación del zombie: " + e.getMessage());
@@ -507,18 +350,6 @@ public class GamePanel extends JPanel {
         ///////////////////////////////////////
         //          Dibuja al jugador        //
         ///////////////////////////////////////
-
-        if (playerWalkAnimation != null) {
-            playerWalkAnimation.update();
-        }
-        if (playersFeetAnimation != null) {
-            playersFeetAnimation.update();
-        }
-
-        if (playerKnifeWalkAnimation != null) {
-            playerKnifeWalkAnimation.update();
-        }
-
         if (controller.getIsAlive()) {
             AffineTransform transformOriginal = g2.getTransform();
 
@@ -531,25 +362,29 @@ public class GamePanel extends JPanel {
             int w = player.getWidth();
             int h = player.getHeight();
 
-            if (player.isMoving() && playersFeetAnimation != null && playersFeetAnimation.getCurrentFrame() != null) {
-                BufferedImage feetFrame = playersFeetAnimation.getCurrentFrame();
-
+            if (player.isMoving() && playerFeetAnimation != null && playerFeetAnimation.getCurrentFrame() != null) {
+                BufferedImage feetFrame = playerFeetAnimation.getCurrentFrame();
                 AffineTransform transformFeet = g2.getTransform();
                 g2.scale(0.6, 0.6);
                 g2.drawImage(feetFrame, -w / 2, -h / 2, w, h, null);
                 g2.setTransform(transformFeet);
             }
 
-            /*
-            if (playerKniWalkAnimation != null && playerWalkAnimation.getCurrentFrame() != null) {
-                BufferedImage bodyFrame = playerWalkAnimation.getCurrentFrame();
-                g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
+            Weapon activeWeapon = player.getActiveWeapon();
+            Animation currentAnim = playerAnimations.get(activeWeapon.getClass());
+
+            if (currentAnim != null) {
+                currentAnim.update();
+                if (currentAnim.getCurrentFrame() != null) {
+                    BufferedImage bodyFrame = currentAnim.getCurrentFrame();
+                    g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
+                }
             } else {
                 g2.setColor(Color.RED);
                 g2.fillOval(-w / 2, -h / 2, w, h);
             }
+
             g2.setTransform(transformOriginal);
-             */
         }
 
         // Cursor de prueba
@@ -623,7 +458,7 @@ public class GamePanel extends JPanel {
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
 
          bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
-  bulletEffects.drawMuzzleFlash(g2, player);
+        bulletEffects.drawMuzzleFlash(g2, player);
 
         g2.translate(camX, camY);
 
