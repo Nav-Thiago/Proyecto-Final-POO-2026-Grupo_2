@@ -79,15 +79,15 @@ En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en 
 
 *Los tamaños de los zombies están sujetos a dimensiones in-game*
 
-| Jugador | Zombie normal | Zombie rápido |
-| :---: | :---: | :---: |
-| <img src="src/Resources/gifs/handgun.gif" height="150" /> | <img src="src/Resources/gifs/normal_zombie.gif" height="150" /> | <img src="src/Resources/gifs/fast_zombie.gif" height="150" /> |
+### Superviviente
+| Cuchillo | Pistola | Escopeta | Rifle |
+| :---: | :---: | :---: | :---: |
+| <img src="src/Resources/gifs/knife.gif" height="150" /> | <img src="src/Resources/gifs/handgun.gif" height="150" /> | <img src="src/Resources/gifs/shotgun.gif" height="150" /> | <img src="src/Resources/gifs/rifle.gif" height="150" /> |
 
-<br>
-
-| Zombie venenoso | Zombie tanque |
-| :---: | :---: |
-| <img src="src/Resources/gifs/poison_zombie.gif" height="150" /> | <img src="src/Resources/gifs/tank_zombie.gif" height="150" /> |
+### Zombis
+| Zombi Normal | Zombi Rápido | Zombi Venenoso | Zombi Tanque |
+| :---: | :---: | :---: | :---: |
+| <img src="src/Resources/gifs/normal_zombie.gif" height="150" /> | <img src="src/Resources/gifs/fast_zombie.gif" height="150" /> | <img src="src/Resources/gifs/poison_zombie.gif" height="150" /> | <img src="src/Resources/gifs/tank_zombie.gif" height="150" /> |
 
 
 
