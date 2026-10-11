@@ -12,15 +12,14 @@
 ## 2. Dominio y Alcance del Sistema 
 
 ### Descripción del problema
-Se busca desarrollar una aplicación de escritorio de un videojuego de tipo **roguelike**, específicamente enfocado en la exploración de mazmorras y la acción frenética, ambientado en un mundo de apocalipsis zombie. El jugador tomará el control de un sobreviviente al apocalipsis que debe eliminar zombies en diferentes salas para sobrevivir.
+Se busca desarrollar una aplicación de escritorio de un videojuego de acción y supervivencia con perspectiva **top-down**, ambientado en un apocalipsis zombie. El jugador tomará el control de un sobreviviente que debe defenderse de oleadas de enemigos en un entorno abierto. Para sobrevivir y avanzar, deberá gestionar estratégicamente su posicionamiento y visión limitada, administrar recursos finitos como la munición, recolectar armamento y potenciadores del entorno, y finalmente derrotar a un jefe para completar el nivel.
 
 ### Objetivo del Sistema
-El sistema será un juego funcional y extensible. El diseño aplicará rigurosamente la arquitectura **MVC**, los principios de la Programación Orientada a Objetos (POO) y patrones de diseño para facilitar la incorporación de nuevos personajes, habilidades, mapas y persistencia de datos.
- El objetivo del juego es eliminar al jefe final. Para esto debe encontrar una llave por cada nivel para acceder al siguiente. Al llegar a una determinada cantidad de salas completadas, se encuentra con un jefe al que tiene que eliminar.
+El sistema será un juego funcional y extensible. El diseño aplicará rigurosamente la arquitectura **MVC** y los principios de la Programación Orientada a Objetos (POO) para facilitar la incorporación de nuevos personajes, armas, mapas y mecánicas a futuro.
+El objetivo principal del juego es sobrevivir y derrotar a un jefe final. Para lograrlo, el jugador debe enfrentarse a una oleada de enemigos dentro de un mapa abierto. Una vez que logra resistir la oleada y eliminar a una cantidad predeterminada de zombies, se desencadenará un encuentro con el jefe final, al cual deberá eliminar para completar el nivel con éxito.
 
 ### Idea general
-El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en 2D de perspectiva top-down donde aparecen justamente zombies que le quieren hacer daño y él se tiene que defender, para eso cuenta con un arma de fuego y un cuchillo. El arma de fuego tiene balas y cooldown, en cada nivel aparece con una cantidad default de balas y se puede ir encontrando más de las mismas, además de otros potenciadores o power ups como por ejemplo de velocidad o escudo. También podría encontrarse otras armas mejores que sean más eficientes y faciliten la jugabilidad. Todo esto el jugador lo utiliza para derrotar a los enemigos de cada nivel, y al eliminarlos a todos debe derrotar a un jefe final para pasar al siguiente nivel. 
- El juego cuenta con varios escenarios en donde se desarrollaran los niveles del juego y también con variedad en cuanto a los enemigos como distintos tipos de zombies que tendrán mecánicas propias que los hagan únicos.
+El jugador controla a un sobreviviente de un apocalipsis zombie que explora un nivel único (ambientado en un bosque) en 2D con perspectiva top-down. El objetivo principal es sobrevivir a una oleada de enemigos y, finalmente, derrotar al jefe del mapa para ganar el juego. Para defenderse, el jugador inicia con una pistola —la cual cuenta con munición limitada y tiempo de recarga (cooldown)— y un cuchillo para ataques cuerpo a cuerpo.   Durante la partida, el jugador deberá sobrevivir bajo un efecto de visión limitada que oscurece el entorno. Explorando el mapa, podrá encontrar y equipar armas de fuego más eficientes tiradas en el suelo (como rifles y escopetas) para facilitar el combate. Además, el escenario genera aleatoriamente diversos potenciadores (power-ups) que otorgan ventajas tácticas, tales como curación de vida, escudos protectores, aumento temporal de daño y recargas de munición. 
 
 ### Funcionalidades Principales (Features)
 
@@ -31,20 +30,25 @@ El jugador es un sobreviviente de un apocalipsis zombie caminando por un mapa en
 **Interacciones con el entorno:**
 - El jugador inicia con dos armas, una es para que tenga capacidad de hacer daño a los zombies a larga distancia, hay que tener cuidado porque estas balas tienen un límite, fomentando al jugador a usar cada bala con cuidado y con consciencia. La otra arma es un cuchillo con el que va a poder golpear a melee (ataque cuerpo a cuerpo)
 - El jugador puede llegar a conseguir potenciadores o power-ups que se encuentran dispersos alrededor del mapa, estos incrementan sus stats ya sea de velocidad, cooldown del arma, más balas, etc. Beneficiando al jugador y dándole ventaja contra la situación. 
-- Cuando entran a las salas donde están los enemigos las puertas se cierran, obligando al jugador a eliminarlos a todos para poder irse.
 
  **Mecánicas de Juego:**
-- Si los zombies atacan al jugador, le quitan 1 corazón de 5 que representa su vida.
-- Ciertos enemigos al ser eliminados dejan caer balas o power-ups.
-- Hay salas donde hay cofres que tienen armas dentro o una tienda donde se puedan comprar armas, vida o power ups.
+- Visión Limitada: El jugador experimenta un efecto de oscuridad en pantalla, restringiendo su campo de visión mediante un cono de luz guiado por el cursor y un pequeño radio a su alrededor, lo que fomenta la precaución.
+- Gestión de Arsenal: Intercambio fluido entre el arma de fuego equipada y el arma cuerpo a cuerpo (cuchillo) usando una tecla dedicada.
+- Recolección de Botín (Loot): Recogida dinámica de nuevas armas (rifles, escopetas) esparcidas por el mapa, reemplazando el arma actual e instanciando la antigua en el suelo.
+- Sistema de Potenciadores (Power-Ups): Generación aleatoria de mejoras que el jugador puede recolectar al tocarlas, obteniendo beneficios como curación, escudos absorbe-daño, recarga de munición y multiplicadores de daño temporal.
+- Combate Diferenciado: Cada arma posee características únicas (daño, dispersión, munición, disparo automático o semiautomático) implementadas mediante polimorfismo.
+- Oleadas y Jefe Final: Los enemigos se generan (spawnean) en un perimetro. Al limpiar la oleada, se invoca al Jefe Final (con cinemática de texto y pantalla oscurecida).
+- IA de Enemigos Básica: Comportamiento de persecución (Pathfinding directo al jugador) con detección de colisiones simples para evitar solapamiento masivo entre los propios zombies.
+- Sistema de Daño y Escudos: El jugador recibe daño al contacto físico (melee) o por proyectiles venenosos. Los puntos de escudo absorben daño antes de afectar la vida (HP) del personaje.
 
 **Interfaz Gráfica (IGU):**
-- Visualización del mapa (bosque, edificios, etc.), en perspectiva top-down.
-- Indicadores visuales de estado (barra de vida, cantidad de munición, power ups activos).
-- Botón para iniciar la partida.
+- Cámara y Entorno: Visualización del mapa (bosque) en perspectiva top-down mediante una cámara dinámica que sigue al jugador y orienta al personaje en la dirección del cursor del mouse.
+- HUD (Head-Up Display): Indicadores en pantalla que muestran estadísticas en tiempo real: puntos de supervivencia (vida), cantidad de escudo activo, bonificadores de daño temporal y el estado de la munición del arma equipada.
+- Sistema de Menús: Flujo de navegación estructurado con pantallas de presentación (Splash Screens), un menú principal con animaciones de partículas de fondo (cenizas), y un menú de opciones funcional para ajustar el volumen general y la resolución de la ventana.
+- Efectos Visuales y Renderizado: Implementación avanzada mediante **Graphics2D** que incluye iluminación dinámica (cono de visión del jugador), estelas de trayectoria para los proyectiles (tracers), destellos al disparar armas de fuego, y animaciones de flotación y brillo para identificar los potenciadores en el suelo.
 
 **Creación de enemigos:**
-- Oleadas de una cantidad aleatoria de zombies dependiendo la mazmorra donde se encuentre.
+- Oleadas de una cantidad aleatoria de zombies.
 
 **Persistencia de datos:**
 - Guardado y consulta de mejores puntuaciones (High Scores) en una base de datos SQLite.
