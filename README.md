@@ -77,20 +77,17 @@ En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en 
 *Mapa de la ciudad (posible diseño nivel 2)*
 ![Imagen 5](src/Resources/imagenes/mapa_ciudad.png)
 
-*Jugador*
-![Animación c/ arma](src/Resources/gifs/handgun.gif)
+*Los tamaños de los zombies están sujetos a dimensiones in-game*
 
-*Zombie normal*
-![Animación zombie normal](src/Resources/gifs/normal_zombie.gif)
+| Jugador | Zombie normal | Zombie rápido |
+| :---: | :---: | :---: |
+| <img src="src/Resources/gifs/handgun.gif" height="150" /> | <img src="src/Resources/gifs/normal_zombie.gif" height="150" /> | <img src="src/Resources/gifs/fast_zombie.gif" height="150" /> |
 
-*Zombie rápido*
-![Animación zombie rápido](src/Resources/gifs/fast_zombie.gif)
+<br>
 
-*Zombie venenoso*
-![Animación zombie venenoso](src/Resources/gifs/poison_zombie.gif)
-
-*Zombie tanque*
-![Animación zombie tanque](src/Resources/gifs/tank_zombie.gif)
+| Zombie venenoso | Zombie tanque |
+| :---: | :---: |
+| <img src="src/Resources/gifs/poison_zombie.gif" height="150" /> | <img src="src/Resources/gifs/tank_zombie.gif" height="150" /> |
 
 
 
