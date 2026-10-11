@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 public class Player extends Character {
 
@@ -14,9 +15,7 @@ public class Player extends Character {
 
     // [POWERUP] estado que modifican los power ups
     private final List<Effect> effects = new ArrayList<>();
-    private double damageBonus = 0; // daño extra que se suma a cada bala
-    private int shield = 0;
-    private static final int MAX_SHIELD = 100;
+    private PlayerStats stats = new BaseStats(); // cadena de decoradores (escudo, daño, munición)
     private AmmoHolder ammoHolder; // arma actual (puede ser null hasta que exista Weapon)
 
     private double angle; // Ángulo en radianes hacia el cursor
@@ -70,6 +69,7 @@ public class Player extends Character {
 
     public void update(GameState state) {
         updateEffects(); // [POWERUP] vence los efectos temporales
+        stats = stats.prune(); // [POWERUP] descarta los decoradores vencidos
 
         if (this.isAttacking && this.activeWeapon != null && this.activeWeapon.isAutomatic()) {
             this.attack(state);
@@ -141,32 +141,28 @@ public class Player extends Character {
         }
     }
 
-    public double getDamageBonus() {
-        return damageBonus;
+    /** Envuelve las stats actuales con un nuevo decorador, ej: player.decorateStats(s -> new ShieldDecorator(s, 50)). */
+    public void decorateStats(UnaryOperator<PlayerStats> decorator) {
+        stats = decorator.apply(stats);
+        stats.onApply(this);
     }
 
-    public void setDamageBonus(double damageBonus) {
-        this.damageBonus = damageBonus;
+    public double getDamageBonus() {
+        return stats.getDamageBonus();
     }
 
     public void heal(int amount) {
         setHealth(Math.min(getHealth() + amount, getMaxHealth()));
     }
 
-    public void addShield(int points) {
-        shield = Math.min(shield + points, MAX_SHIELD);
-    }
-
     public int getShield() {
-        return shield;
+        return stats.getShield();
     }
 
     @Override
     public void takeDamage(int amount) {
-        // el escudo absorbe primero
-        int absorbed = Math.min(shield, amount);
-        shield -= absorbed;
-        super.takeDamage(amount - absorbed);
+        // los decoradores de escudo absorben primero; a la vida llega lo que sobra
+        super.takeDamage(stats.absorbDamage(amount));
     }
 
     public void setAmmoHolder(AmmoHolder ammoHolder) {
@@ -183,4 +179,3 @@ public class Player extends Character {
         }
     }
 }
-

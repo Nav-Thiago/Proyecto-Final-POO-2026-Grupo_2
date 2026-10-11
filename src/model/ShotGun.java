@@ -19,6 +19,8 @@ public class ShotGun extends FireArm {
             this.actualMunition--;
             this.lastShoot = currentTime;
  
+            double totalDamage = this.getDamage() + player.getDamageBonus();
+
             for (int i = 0; i < 4; i++) {
                 // random.nextDouble() da un valor entre 0.0 y 1.0.
                 // Al restar 0.5 queda entre -0.5 y 0.5.
@@ -32,7 +34,7 @@ public class ShotGun extends FireArm {
                 double muzzleX = getMuzzleX(player);
                 double muzzleY = getMuzzleY(player);
  
-                Bullet pellet = new Bullet(muzzleX, muzzleY, 6, 6, dirX, dirY, this.getDamage(), 30, BulletKind.PELLET);
+                Bullet pellet = new Bullet(muzzleX, muzzleY, 6, 6, dirX, dirY, totalDamage, 30, BulletKind.PELLET);
                 state.addPlayerBullet(pellet);
             }
             return true;

@@ -26,7 +26,7 @@ public class GameModel {
 
         // Inicializamos los spawners
         this.spawner = new EnemySpawner(2000, 10);
-        this.powerUpSpawner = new PowerUpSpawner(state.getPowerUps(), 8000, 3);
+        this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
        // state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
     }
 
@@ -55,7 +55,7 @@ public class GameModel {
 
         // Spawners
         spawner.update(state);
-        powerUpSpawner.update(screenWidth, screenHeight);
+        powerUpSpawner.update();
 
         // Mover zombies
         for (Enemy zombie : state.getEnemies()) {
