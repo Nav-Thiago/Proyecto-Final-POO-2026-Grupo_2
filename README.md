@@ -78,10 +78,21 @@ En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en 
 ![Imagen 5](src/Resources/imagenes/mapa_ciudad.png)
 
 *Jugador*
-![Imagen 6](src/Resources/imagenes/player_idle.png)
+![Animación c/ arma](src/Resources/gifs/handgun.gif)
 
-*Zombie*
-![Imagen 7](src/Resources/imagenes/zombie_idle.png)
+*Zombie normal*
+![Animación zombie normal](src/Resources/gifs/normal_zombie.gif)
+
+*Zombie rápido*
+![Animación zombie rápido](src/Resources/gifs/fast_zombie.gif)
+
+*Zombie venenoso*
+![Animación zombie venenoso](src/Resources/gifs/poison_zombie.gif)
+
+*Zombie tanque*
+![Animación zombie tanque](src/Resources/gifs/tank_zombie.gif)
+
+
 
 
 ## 4. Stack Tecnológico  
