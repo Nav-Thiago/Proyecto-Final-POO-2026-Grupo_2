@@ -24,6 +24,10 @@ public class Player extends Character {
     private FireArm primaryWeapon; // Arma de fuego equipada
     private Weapon activeWeapon; // Puntero al arma que tiene en la mano actualmente
 
+    // --- VARIABLES DE INMUNIDAD (I-FRAMES) ---
+    private long lastDamageTime = 0;
+    private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
+
     public Player(double x, double y) {
         super(x, y, 64, 64, 5.5 , 100, 100);
 
@@ -161,8 +165,16 @@ public class Player extends Character {
 
     @Override
     public void takeDamage(int amount) {
-        // los decoradores de escudo absorben primero; a la vida llega lo que sobra
-        super.takeDamage(stats.absorbDamage(amount));
+        long currentTime = System.currentTimeMillis();
+        
+        // Evaluamos el cooldown de choque antes de procesar el daño
+        if (currentTime - lastDamageTime >= invulnerabilityCooldown) {
+            // Los decoradores de escudo absorben primero; a la vida llega lo que sobra
+            super.takeDamage(stats.absorbDamage(amount));
+            
+            // Reiniciamos el temporizador de inmunidad
+            this.lastDamageTime = currentTime;
+        }
     }
 
     public void setAmmoHolder(AmmoHolder ammoHolder) {
