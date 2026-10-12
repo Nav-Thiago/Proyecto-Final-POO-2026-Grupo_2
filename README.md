@@ -138,3 +138,27 @@ En esta imágen se pueden ver dos tipos de zombies, un tipo distinto de arma en 
 
 **PowerUp.apply()**
 - Cuando el jugador choca con un power-up en el piso, se llama al método collect(player). No se necesita usar condicionales para averiguar qué tipo de power-up levantó, cada objeto se encarga de aplicar su propio efecto (curar, dar escudo, recargar munición o aumentar el daño) con un único mensaje.
+
+## Implementacion de patron "Decorator" para power ups
+ **problema que tenian los power ups
+ Cada power up dejaba rastro en clases que no son suyas
+
+-Player guardaba el estado de cada powerup: shield, MAX_SHIELD, damage	Bonus, addShield() y setDamageBonus(), y takeDamage tenia la logica del escudo metida adentro. Para sumar un power up nuevo había que tocar Player , y eso rompe abierto/cerrado
+
+-Habian tres mecanismos distintos para lo mismo: el escudo era un campo, el boost  de danio era un Effect con Apply/Remove que sumaba y restaba sobre un campo compartido, y la municion iba por ammoHolder.
+
+-La logica de danio estaba repartida entre las armas: cada arma tenia que acordarse de sumas player.getDamageBonus().shotGun se olvido: usaba solo getDamage, asi que el DamageBoost no funcionaba con la escopeta. Es un bug que sale de esa estructura
+
+-Shield  tenia un tipo: super(32, 32) ignoraba x e y, asi  que el power Up de escudo siempre aparecia en la esquina (32, 32).
+
+**¿ como se resolvio el problema? usando decorator
+ El jugador pasa a tener un PlayerStats, y cada power up es un decorador que envuelve al anterior
+ -BaseStats es el objeto base: el jugador sin power ups.
+
+-Player guarda una sola referencia a la capa de afuera, el campo stats. Cuando le pregunta stats.getShield(), la consulta recorre la cadena hacia adentro.
+
+-El objeto decorado es Player.stats, no player
+
+El objeto decorado es Player.stats y no el objeto Player completo. Se optó por decorar únicamente las estadísticas de combate del jugador porque el estado del juego (GameState), el controlador y la vista trabajan directamente con una instancia concreta de Player. Envolver al jugador entero con decoradores habría obligado a modificar múltiples componentes del sistema. Encapsular los power-ups en un objeto independiente (PlayerStats) logra el mismo efecto dinámico sin acoplar ni alterar el resto de la arquitectura.
+
+![Diagrama de clases, patron decorator para powerUps](src/Resources/imagenes/Diagrama_de_clases_patron_decorator.png)

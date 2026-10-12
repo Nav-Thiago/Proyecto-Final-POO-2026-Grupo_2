@@ -9,7 +9,7 @@ public abstract class StatsDecorator implements PlayerStats {
 
     protected PlayerStats wrapped;
 
-    protected StatsDecorator(PlayerStats wrapped) {
+    protected StatsDecorator(PlayerStats wrapped) { //wrapped = envuelto, referencia al objeto que se está decorando
         this.wrapped = wrapped;
     }
 
