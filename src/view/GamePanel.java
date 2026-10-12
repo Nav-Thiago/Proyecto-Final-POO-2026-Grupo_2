@@ -457,7 +457,7 @@ public class GamePanel extends JPanel {
 
         g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
 
-         bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
+        bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
         bulletEffects.drawMuzzleFlash(g2, player);
 
         g2.translate(camX, camY);
