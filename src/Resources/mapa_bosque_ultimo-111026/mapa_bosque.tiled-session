@@ -1,0 +1,208 @@
+{
+    "activeFile": "/home/nano/Escritorio/mapa_bosque/mapa_bosque_NWB (ULTIMO).tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/CAMPER_Burnt_000.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/Grass 2 - 128x128.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/mountain_landscape.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/owlishmedia_pixel_tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/pasto_decoracion.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/template2.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "/../Documentos/tiles_ocean.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/tileset_arboles.tsx": {
+            "scaleInDock": 1
+        },
+        "/../Documentos/tileset_arboles3.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/CAMPER_Burnt_000.tsx": {
+            "scaleInDock": 0.75
+        },
+        "/home/nano/Documentos/Grass 2 - 128x128.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/camper_quemada.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/imagen_prueba.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/mountain_landscape.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/owlishmedia_pixel_tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/pasto y tierra.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/pasto_decoracion.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Documentos/template2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Documentos/tent.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Documentos/tiles_ocean.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Documentos/tileset_arboles.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Documentos/tileset_arboles2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Documentos/tileset_arboles3.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque/carpa.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque/mapa_bosque_NWB (ULTIMO).tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1043,
+                "y": 1737
+            }
+        },
+        "/home/nano/Escritorio/mapa_bosque/tile_colisiones.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque/tileset_arboles2.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/tile_colisiones.tsx": {
+            "scaleInDock": 1
+        },
+        "CAMPER_Burnt_000.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Grass 2 - 128x128.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "asfalto.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "carpa.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "mapa_bosque_NWB (ULTIMO).tmj": {
+            "scale": 0.75,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 1787.3333333333335,
+                "y": 952.6666666666667
+            }
+        },
+        "mapa_bosque_NWB (ULTIMO).tmx": {
+            "scale": 0.33,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 1498.4848484848485,
+                "y": 1998.4848484848485
+            }
+        },
+        "mapa_solo_colisiones.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1630.6666666666665,
+                "y": 1732.6666666666665
+            }
+        },
+        "mountain_landscape.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "owlishmedia_pixel_tiles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pasto_decoracion.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tile_colisiones.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiles_ocean.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset_arboles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset_arboles2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset_arboles3.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque",
+    "last.externalTilesetPath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque",
+    "last.imagePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque/assets",
+    "map.height": 100,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 100,
+    "openFiles": [
+        "/home/nano/Escritorio/mapa_bosque/mapa_bosque_NWB (ULTIMO).tmx"
+    ],
+    "project": "mapa_bosque.tiled-project",
+    "recentFiles": [
+        "/home/nano/Escritorio/mapa_bosque/mapa_bosque_NWB (ULTIMO).tmx",
+        "pasto_decoracion.tsx",
+        "mapa_bosque_NWB (ULTIMO).tmx",
+        "mapa_solo_colisiones.tmx",
+        "mapa_bosque_NWB (ULTIMO).tmj",
+        "tileset_arboles2.tsx",
+        "carpa.tsx",
+        "/home/nano/Documentos/tent.tsx",
+        "/home/nano/Documentos/template2.tsx",
+        "tileset_arboles3.tsx",
+        "tileset_arboles.tsx",
+        "tiles_ocean.tsx"
+    ],
+    "tileset.lastUsedFilter": "Archivos de conjuntos de patrones Tiled (*.tsx *.xml)"
+}

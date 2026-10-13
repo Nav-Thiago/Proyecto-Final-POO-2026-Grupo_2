@@ -29,7 +29,7 @@ public class Player extends Character {
     private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
 
     public Player(double x, double y) {
-        super(x, y, 64, 64, 5.5 , 100, 100);
+        super(x, y, 64, 64, 8 , 100, 100);
 
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;

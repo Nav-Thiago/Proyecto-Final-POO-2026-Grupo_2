@@ -75,8 +75,8 @@ public class GamePanel extends JPanel {
     }
 
     private void loadSprites() {
-        backgroundForest = loadImage("/Resources/mapa_bosque/fondo_bosque.png");
-        firstLayer = loadImage("/Resources/mapa_bosque/primer_plano.png");
+        backgroundForest = loadImage("/Resources/mapa_bosque_ultimo-111026/fondo_bosque.png");
+        firstLayer = loadImage("/Resources/mapa_bosque_ultimo-111026/primer_plano.png");
 
         // PIES DEL JUGADOR
         try {

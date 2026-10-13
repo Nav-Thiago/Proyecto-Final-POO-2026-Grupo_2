@@ -1,11 +1,96 @@
 {
-    "activeFile": "",
+    "activeFile": "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx",
     "expandedProjectPaths": [
         "."
     ],
-    "file.lastUsedOpenFilter": "Todos los archivos (*)",
     "fileStates": {
         "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3178,
+                "y": 6150
+            }
+        },
+        "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx#CAMPER_Burnt_000": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx#parking_asphalt": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/Grass 2 - 128x128.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/RUTA.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/Tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/asfalto.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/boxtruck_abandoned.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/carpa.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/estacionamiento.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/minivan_abandoned.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/mountain_landscape.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/owlishmedia_pixel_tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/pasto_decoracion.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/pickup_abandoned.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/pixil-frame-0.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/police_car.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/sedan_car.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/suv_burnt.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tile_colisiones.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tiles_ocean.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tileset_arboles.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tileset_arboles2.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tileset_arboles3.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/tileset_vegetation.tsx": {
+            "scaleInDock": 1
+        },
+        "../mapa_bosque_ultimo-111026/tsx's/truck_abandoned.tsx": {
             "scaleInDock": 1
         },
         "/../Documentos/CAMPER_Burnt_000.tsx": {
@@ -33,6 +118,74 @@
             "scaleInDock": 1
         },
         "/../Documentos/tileset_arboles3.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Example Map.tmx": {
+            "scale": 1.0650390625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 384.02347331743994,
+                "y": 501.8595268659454
+            }
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Dirt_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Dirt_02-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Glass_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Grass_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Metal_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Sand_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Sand_02-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Stone_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Stone_02-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Floors/Tiled Tsx/Floor-Stone_03-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Brick_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Brick_02-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Brick_03-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Concrete_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Dirt_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Glass_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Glass_02-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Metal_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Sand_01-64x64.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Descargas/TILED/SBS - Top Down Dungeon Pack/Tiles/Walls/Tiled Tsx/Wall-Stone_01-64x64.tsx": {
             "scaleInDock": 1
         },
         "/home/nano/Documentos/CAMPER_Burnt_000.tsx": {
@@ -99,6 +252,247 @@
         },
         "/home/nano/Escritorio/mapa_bosque/tileset_arboles2.tsx": {
             "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_proyecto_backup/carpa.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_proyecto_backup/mapa_bosque_NWB (ULTIMO).tmx": {
+            "scale": 0.133296875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1594.1859102098224,
+                "y": 1601.6879615519867
+            }
+        },
+        "/home/nano/Escritorio/mapa_bosque_proyecto_backup/tile_colisiones.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_proyecto_backup/tileset_arboles2.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/White_VAN_CLEAN_All_045.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/assets/tileset_tierra_1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 0.33
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/boxtruck_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/camino_bosque.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/house_24.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2484,
+                "y": 2964
+            }
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx#CAMPER_Burnt_000": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx#parking_asphalt": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/minivan_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/parking_asphalt.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/pickup_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/piso_bosque.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/pixil-frame-0.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/police_car.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/sedan_car.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/suv_burnt.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/truck_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/CAMPER_Burnt_000.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/Grass 2 - 128x128.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/RUTA.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/Tileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/Top Down City Pack.tsx": {
+            "scaleInDock": 0.25,
+            "scaleInEditor": 1.5
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/Train assets.tsx": {
+            "scaleInDock": 0.125,
+            "scaleInEditor": 0.25
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/asfalto.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/bk_cars1.a.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 3
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/boxtruck_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/buildings.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/buildings2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1.5
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/camino_bosque.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/car1_spr.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/carpa.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/estacionamiento.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/gen-3ceaf327-526c-4249-8c01-c66c1d49272b.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/minivan_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/mountain_landscape.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/owlishmedia_pixel_tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/parkiing_striped.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/parking_asphalt.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/pasto_decoracion.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/pickup_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_bosque.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_prueba.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_prueba1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/pixil-frame-0.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/police_car.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/sedan_car.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/suv_burnt.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tile_colisiones.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tiles_ocean.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_arboles.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_arboles2.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_arboles3.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_buildings.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_roads.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_tierra_2.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_vegetacion.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_vegetation.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/truck_abandoned.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "/home/nano/Escritorio/tile_colisiones.tsx": {
             "scaleInDock": 1
@@ -176,29 +570,25 @@
             "scaleInEditor": 1
         }
     },
-    "last.exportedFilePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque",
-    "last.externalTilesetPath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque",
-    "last.imagePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque/assets",
-    "map.height": 100,
-    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
-    "map.lastUsedFormat": "tmx",
-    "map.width": 100,
+    "last.exportedFilePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque_ultimo-111026",
+    "last.imagePath": "/home/nano/Workspace/Proyecto-Final-POO-2026-Grupo_2/src/Resources/mapa_bosque_ultimo-111026/assets",
+    "map.lastUsedExportFilter": "Todos los archivos (*)",
     "openFiles": [
+        "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx"
     ],
-    "project": "mapa_bosque.tiled-project",
+    "project": "",
     "recentFiles": [
-        "mapa_bosque_NWB (ULTIMO).tmx",
-        "/home/nano/Escritorio/mapa_bosque/mapa_bosque_NWB (ULTIMO).tmx",
-        "mapa_solo_colisiones.tmx",
-        "mapa_bosque_NWB (ULTIMO).tmj",
-        "tileset_arboles2.tsx",
-        "carpa.tsx",
-        "/home/nano/Documentos/tent.tsx",
-        "/home/nano/Documentos/template2.tsx",
-        "tileset_arboles3.tsx",
-        "tileset_arboles.tsx",
-        "tiles_ocean.tsx",
-        "tile_colisiones.tsx"
-    ],
-    "tileset.lastUsedFilter": "Archivos de conjuntos de patrones Tiled (*.tsx *.xml)"
+        "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx",
+        "../mapa_bosque_ultimo-111026/tsx's/asfalto.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/asfalto.tsx",
+        "/home/nano/Escritorio/mapa_bosque_proyecto_backup/mapa_bosque_NWB (ULTIMO).tmx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/tileset_vegetation.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/Tileset.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/buildings2.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_bosque.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/parking_asphalt.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_prueba1.tsx",
+        "/home/nano/Escritorio/mapa_bosque_ultimo-111026/tsx's/piso_prueba.tsx"
+    ]
 }

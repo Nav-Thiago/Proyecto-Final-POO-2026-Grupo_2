@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
  */
 public class ReachableArea {
 
-    private static final int STEP = 8;          // resolución de la grilla (px)
+    private static final int STEP = 16;          // resolución de la grilla (px) // Thiago: cambio a 16 por motivos de rendimiento
     private static final int PICKUP_REACH = 32; // cuánto puede estar el centro del jugador del centro del ítem
     private static final int MIN_CELLS = 100;   // si da menos, el cálculo no es confiable
 
