@@ -10,9 +10,4 @@ public class FastZombie  extends Enemy {
     public int attack(){
         return 25;
     }
-
-    @Override 
-    public double getAngle(){
-        return super.getAngle() + (Math.PI / 2);
-    }
 }

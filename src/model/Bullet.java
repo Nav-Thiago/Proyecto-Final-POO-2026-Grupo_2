@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.Rectangle;
-
 public class Bullet extends Entity {
     private final double dirX;
     private final double dirY;
@@ -28,6 +26,23 @@ public class Bullet extends Entity {
         this.age = 0;
     }
 
+    public void update(int mapWidth, int mapHeight) {
+        this.x += dirX * speed; 
+        this.y += dirY * speed;
+
+        this.age++;
+        this.lifeSpanTicks--;
+
+        if (this.lifeSpanTicks <= 0) {
+            this.active = false;
+        }
+
+        // Desactivar la bala si sale de los límites de la ventana
+        if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
+            active = false;
+        }
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -51,26 +66,5 @@ public class Bullet extends Entity {
     }
     public double getSpeed() {
         return speed;
-    }
-
-    public void update(int mapWidth, int mapHeight) {
-        this.x += dirX * speed; 
-        this.y += dirY * speed;
-
-        this.age++;
-        this.lifeSpanTicks--;
-
-        if (this.lifeSpanTicks <= 0) {
-            this.active = false;
-        }
-
-        // Desactivar la bala si sale de los límites de la ventana
-        if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
-            active = false;
-        }
-    }
-
-    public Rectangle getBounds(){
-        return new Rectangle((int) x, (int) y, (int) width, (int) height);
     }
 }

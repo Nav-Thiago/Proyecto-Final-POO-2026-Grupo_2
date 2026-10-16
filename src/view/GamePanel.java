@@ -43,6 +43,8 @@ public class GamePanel extends JPanel {
     private final Map<String, Animation> zombieAnimations = new HashMap<>();
     private final Map<String, BufferedImage> zombieIdleSprites = new HashMap<>();
 
+    private static final Map<String, Double> SPRITE_ROTATION = Map.of("FastZombie", Math.PI / 2, "PoisonZombie", Math.PI / 2, "TankZombie", -Math.PI / 2);
+
     private final Map<String, BufferedImage> powerUpSprites = new HashMap<>();
     private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
     private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25", "Ammo", "AMMO", "MaxAmmo", "MAX");
@@ -288,12 +290,14 @@ public class GamePanel extends JPanel {
 
     // Dibuja al zombie
     public void drawZombie(Graphics2D g2, double x, double y, int w, int h, double angle, int health, String type) {
+        double spriteAngle = angle + SPRITE_ROTATION.getOrDefault(type, 0.0);
+
         AffineTransform transformOriginal = g2.getTransform();
         double centerX = x + (w / 2.0);
         double centerY = y + (h / 2.0);
 
         g2.translate(centerX, centerY);
-        g2.rotate(angle);
+        g2.rotate(spriteAngle);
 
         Animation anim = zombieAnimations.get(type);
         BufferedImage idle = zombieIdleSprites.get(type);

@@ -8,15 +8,10 @@ public abstract class Enemy extends Character {
     private final int ATTACK_COOLDOWN= 1000;
     protected double angle;
     private long lastAttackTime = 0;
-    private final Random random = new Random();
     private static final double[] AVOID_ANGLES_DEG = {0, 25, -25, 50, -50, 75, -75, 100, -100};
     private boolean isCollidingWithPlayer = false;
     private long collisionStartTime = 0;
     private final int ATTACK_WINDUP = 400;
-    // private static final long SIDESTEP_DURATION_MS = 450;
-    // private int sidestepDirection = 0;
-    // private long sidestepUntil = 0;
-
 
     public Enemy(double x, double y, int width, int height, double speed, int health, int maxHealth) {
         super(x, y, width, height, speed, health, maxHealth);
@@ -30,7 +25,6 @@ public abstract class Enemy extends Character {
     public void setY(double y) {
         this.y = y;
     }
-
 
     public double getAngle() {
         return angle;
@@ -72,9 +66,6 @@ public abstract class Enemy extends Character {
         }
 
         if (distance > 30) {
-            double dirX = dx / distance;
-            double dirY = dy / distance;
-
             moveTowardsWithAvoidance(dx, dy, state);
         }
 
@@ -98,71 +89,6 @@ public abstract class Enemy extends Character {
             }
         }
     }
-
-    /*
-    private void moveWithSideStep(double dx, double dy, GameState state) {
-        long now = System.currentTimeMillis();
-
-        if (sidestepDirection != 0 && now < sidestepUntil) {
-
-            if (trySideStep(dx, dy, state, sidestepDirection)) {
-                return;
-            }
-
-            sidestepDirection *= -1;
-            sidestepUntil = now + SIDESTEP_DURATION_MS;
-
-            if (trySideStep(dx, dy, state, sidestepDirection)) {
-                return;
-            }
-
-            sidestepDirection = 0;
-            sidestepUntil = 0;
-            return;
-        }
-
-        sidestepDirection = 0;
-        sidestepUntil = 0;
-
-        double oldX = x;
-        double oldY = y;
-        double distanceBefore = Math.hypot(dx, dy);
-
-        move(dx, dy, state);
-
-        double movedX = x - oldX;
-        double movedY = y - oldY;
-
-        double distanceAfter = Math.hypot(dx - movedX, dy - movedY);
-
-        if (distanceAfter < distanceBefore - (this.speed * 0.5)) {
-            return;
-        }
-
-        sidestepDirection = random.nextBoolean() ? 1 : -1;
-        sidestepUntil = now + SIDESTEP_DURATION_MS;
-
-        if (trySideStep(dx, dy, state, sidestepDirection)) {
-            return;
-        }
-
-        sidestepDirection = 0;
-        sidestepUntil = 0;
-    }
-
-    private boolean trySideStep (double dx, double dy, GameState state, int direction) {
-        double sideX = -dy * direction;
-        double sideY = dx * direction;
-
-        double oldX = x;
-        double oldY = y;
-
-        move(sideX, sideY, state);
-
-        double lateralMovement = Math.hypot(x - oldX, y - oldY);
-        return lateralMovement > (this.speed * 0.5);
-    }
-     */
 
     public void avoidOverlap(GameState state) {
         for (Enemy otherZombie : state.getEnemies()) {
@@ -188,10 +114,6 @@ public abstract class Enemy extends Character {
                 }
             }
         }
-    }
-
-    private boolean hasMovedFrom(double oldX, double oldY) {
-        return Math.abs(x - oldX) > 0.001 || Math.abs(y - oldY) > 0.001;
     }
 
     public boolean canAttack() {

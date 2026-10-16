@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.*;
-
 public abstract class Entity {
 
     protected double x;
@@ -30,10 +28,6 @@ public abstract class Entity {
 
     public int getHeight() {
         return height;
-    }
-
-    public Rectangle getBounds() {
-        return new Rectangle((int) x, (int) y, width, height);
     }
 
     public boolean collidesWith(Entity e) {

@@ -37,9 +37,4 @@ public class PoisonZombie extends RangedEnemy {
             }
         }
     }
-
-    @Override
-    public double getAngle() {
-        return super.getAngle() + (Math.PI / 2);
-    }
 }

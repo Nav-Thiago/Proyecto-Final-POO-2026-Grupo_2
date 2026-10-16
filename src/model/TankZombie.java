@@ -10,9 +10,4 @@ public class TankZombie extends Enemy {
     public int attack(){
         return 15;
     }
-    
-    @Override 
-    public double getAngle(){
-        return super.getAngle() - (Math.PI / 2);
-    }
 }
