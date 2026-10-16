@@ -68,7 +68,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
         int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
 
-        // Calculo para no irse del mapa
+        // Cálculo para no irse del mapa
         camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
         camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
 
@@ -137,6 +137,31 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
         // Dibuja los zombies
         drawZombies(panel, g2, state);
+
+        // Dibuja a las balas venenosas
+        drawPoisonBullets(panel, g2, state);
+
+        // Dibuja al jugador
+        drawPlayer(panel, g2, state);
+
+        // Dibuja la primera capa del mapa
+        drawFirstLayer(panel, g2, state);
+
+        // Dibuja la oscuridad y el cono de visión
+        drawDarkness(panel, g2, state);
+
+        // Dibuja los disparos de las armas
+        drawBulletTracers(panel, g2, state);
+        drawMuzzleFlash(panel, g2, state);
+
+        // Deshace la cámara
+        panel.resetCamera(g2, camX, camY);
+
+        // Dibuja el HUD
+        drawHud(panel, g2, state);
+
+        // Dibuja los mensajes de estado
+        drawStatusMessage(panel, g2);
     }
 
     private void drawPowerUps(GamePanel panel, Graphics2D g2, GameState state) {
@@ -160,6 +185,82 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         }
     }
 
+    private void drawPoisonBullets(GamePanel panel, Graphics2D g2, GameState state) {
+        for (Bullet poison : state.getPoisonBullets()) {
+            panel.drawPoisonBullet(g2, poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight());
+        }
+    }
+
+    private void drawPlayer(GamePanel panel, Graphics2D g2, GameState state) {
+        Player player = state.getPlayer();
+        if (player.isAlive()) {
+            panel.drawPlayer(g2, player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), player.isMoving(), player.getActiveWeapon().getClass().getSimpleName());
+        }
+    }
+
+    private void drawFirstLayer(GamePanel panel, Graphics2D g2, GameState state) {
+        panel.drawFirstLayer(g2, state.getMapWidth(), state.getMapHeight());
+    }
+
+    private void drawDarkness(GamePanel panel, Graphics2D g2, GameState state) {
+        Player player = state.getPlayer();
+        panel.drawDarkness(g2, player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), state.getMapWidth(), state.getMapHeight());
+    }
+
+    private void drawHud(GamePanel panel, Graphics2D g2, GameState state) {
+        Player player = state.getPlayer();
+
+        panel.drawHealth(g2, player.getHealth(), player.getMaxHealth());
+
+        if (player.getShield() > 0) {
+            panel.drawShield(g2, player.getShield());
+        }
+
+        if (player.getDamageBonus() > 0) {
+            panel.drawDamageBonus(g2, player.getDamageBonus());
+        }
+
+        Weapon activeWeapon = player.getActiveWeapon();
+        if (activeWeapon instanceof FireArm fa) {
+            panel.drawFireArmInfo(g2, fa.getClass().getSimpleName(), fa.getActualMunition(), fa.getMaxMunition());
+        } else if (activeWeapon instanceof MeleeWeapon) {
+            panel.drawMeleeInfo(g2);
+        }
+    }
+
+    private void drawStatusMessage(GamePanel panel, Graphics2D g2) {
+        GameModel.gameStatus status = this.model.getStatus();
+
+        if (status == GameModel.gameStatus.GAME_OVER) {
+            panel.drawGameOver(g2);
+        } else if (status == GameModel.gameStatus.LEVEL_COMPLETED) {
+            panel.drawLevelCompleted(g2);
+        } else if (status == GameModel.gameStatus.GAME_WON) {
+            panel.drawGameWon(g2);
+        } else if (status == GameModel.gameStatus.PAUSED) {
+            panel.drawPause(g2);
+        } else if (status == GameModel.gameStatus.BOSS_INTRO) {
+            panel.drawBossIntro(g2, this.model.getBossIntroStep(), this.model.getBossIntroProgress());
+        }
+    }
+
+    private void drawBulletTracers(GamePanel panel, Graphics2D g2, GameState state) {
+        for (Bullet bullet : state.getPlayerBullets()) {
+            if (bullet.isActive()) {
+                panel.drawBulletTracer(g2, bullet.getX(), bullet.getY(), bullet.getWidth(), bullet.getHeight(), bullet.getDirX(), bullet.getDirY(), bullet.getSpeed(), bullet.getAge(), bullet.getKind().name());
+            }
+        }
+    }
+
+    private void drawMuzzleFlash(GamePanel panel, Graphics2D g2, GameState state) {
+        Player player = state.getPlayer();
+        Weapon weapon = player.getActiveWeapon();
+
+        if (player.isAlive() && weapon instanceof FireArm) {
+            panel.drawMuzzleFlash(g2, player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), weapon.getClass().getSimpleName(), weapon.getLastShoot(), Weapon.MUZZLE_FORWARD, Weapon.MUZZLE_SIDE);
+        }
+    }
+
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
     // public class GameController extends MouseAdapter implements KeyListener {
     // Investigar.
@@ -169,12 +270,4 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
-
-    public GameState getState() { return this.model.getState(); }
-    public double getPlayerX() { return this.model.getState().getPlayer().getX(); }
-    public boolean getIsAlive() { return this.model.getState().getPlayer().isAlive(); }
-    public GameModel.gameStatus getStatus() { return this.model.getStatus(); }
-    public int getBossIntroStep() { return this.model.getBossIntroStep(); }
-    public double getBossIntroProgress() { return this.model.getBossIntroProgress(); }
-    public List<Enemy> getEnemies() { return this.model.getState().getEnemies(); }
 }

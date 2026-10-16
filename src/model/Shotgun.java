@@ -2,11 +2,11 @@ package model;
  
 import java.util.Random;
  
-public class ShotGun extends FireArm {
+public class Shotgun extends FireArm {
  
     private final Random random = new Random();
  
-    public ShotGun(int damage, int cooldown, int actualMunition, int maxMunition) {
+    public Shotgun(int damage, int cooldown, int actualMunition, int maxMunition) {
         super(damage, cooldown, actualMunition, maxMunition);
     }
  

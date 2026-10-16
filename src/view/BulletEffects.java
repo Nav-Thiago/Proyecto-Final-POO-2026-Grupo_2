@@ -1,12 +1,5 @@
 package view;
- 
-import model.Bullet;
-import model.BulletKind;
-import model.FireArm;
-import model.Player;
-import model.ShotGun;
-import model.Weapon;
- 
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
@@ -19,90 +12,73 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.List;
 import java.util.Random;
  
 /**
- * Efectos visuales de disparo: estelas (tracers) de las balas y destello en la boca del arma.
- * Solo dibuja; no modifica el modelo. Hay que llamarlo con el Graphics2D en coordenadas de MUNDO.
+  Efectos visuales de disparo: estelas (tracers) de las balas y destello en la boca del arma.
+  Solo dibuja; no modifica el modelo. Hay que llamarlo con el Graphics2D en coordenadas de MUNDO.
  */
+
 public class BulletEffects {
  
     private static final long FLASH_MS = 70;
     private static final long SHOTGUN_FLASH_MS = 100;
  
     // ESTELAS
- 
-    public void drawTracers(Graphics2D g2, List<Bullet> bullets) {
+    public void drawTracer(Graphics2D g2, double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String kind) {
         Stroke oldStroke = g2.getStroke();
         Paint oldPaint = g2.getPaint();
- 
-        for (Bullet b : bullets) {
-            if (b.isActive()) {
-                drawTracer(g2, b);
-            }
-        }
- 
-        g2.setStroke(oldStroke);
-        g2.setPaint(oldPaint);
-    }
- 
-    private void drawTracer(Graphics2D g2, Bullet b) {
-        boolean pellet = b.getKind() == BulletKind.PELLET;
+
+        boolean pellet = kind.equals("PELLET");
  
         double maxLength = pellet ? 18 : 36;
         // La estela crece desde 0 los primeros ticks: parece que "sale" del arma
-        double length = Math.min(maxLength, b.getAge() * b.getSpeed() + 6);
+        double length = Math.min(maxLength, age * speed + 6);
  
-        double headX = b.getX() + b.getWidth() / 2.0;
-        double headY = b.getY() + b.getHeight() / 2.0;
-        double tailX = headX - b.getDirX() * length;
-        double tailY = headY - b.getDirY() * length;
+        double headX = x + w / 2.0;
+        double headY = y + h / 2.0;
+        double tailX = headX - dirX * length;
+        double tailY = headY - dirY * length;
  
         Color glow = pellet ? new Color(255, 110, 20) : new Color(255, 185, 60);
         Line2D line = new Line2D.Double(tailX, tailY, headX, headY);
  
         // Halo exterior
-        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(glow, 0),
-                (float) headX, (float) headY, alpha(glow, 90)));
+        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(glow, 0), (float) headX, (float) headY, alpha(glow, 90)));
         g2.setStroke(new BasicStroke(pellet ? 7f : 9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(line);
  
         // Cuerpo
-        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(glow, 0),
-                (float) headX, (float) headY, alpha(glow, 210)));
+        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(glow, 0), (float) headX, (float) headY, alpha(glow, 210)));
         g2.setStroke(new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(line);
  
         // Núcleo blanco-amarillento
         Color core = new Color(255, 250, 210);
-        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(core, 0),
-                (float) headX, (float) headY, alpha(core, 255)));
+        g2.setPaint(new GradientPaint((float) tailX, (float) tailY, alpha(core, 0), (float) headX, (float) headY, alpha(core, 255)));
         g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(line);
  
         // Punta brillante
         g2.setPaint(alpha(core, 235));
         g2.fill(new Ellipse2D.Double(headX - 2.5, headY - 2.5, 5, 5));
+
+        g2.setStroke(oldStroke);
+        g2.setPaint(oldPaint);
     }
  
     // DESTELLO DE BOCA DE FUEGO
- 
-    public void drawMuzzleFlash(Graphics2D g2, Player player) {
-        if (!player.isAlive()) return;
- 
-        Weapon weapon = player.getActiveWeapon();
-        if (!(weapon instanceof FireArm)) return; // el cuchillo no tiene destello
- 
-        boolean shotgun = weapon instanceof ShotGun;
+    public void drawMuzzleFlash(Graphics2D g2, double x, double y, int w, int h, double angle, String weaponType, long lastShoot, double muzzleForward, double muzzleSide) {
+
+        boolean shotgun = weaponType.equals("Shotgun");
         long duration = shotgun ? SHOTGUN_FLASH_MS : FLASH_MS;
-        long elapsed = System.currentTimeMillis() - weapon.getLastShoot();
+        long elapsed = System.currentTimeMillis() - lastShoot;
         if (elapsed < 0 || elapsed > duration) return;
  
         double life = 1.0 - (double) elapsed / duration; // 1 al disparar -> 0 al apagarse
  
-        double centerX = player.getX() + player.getWidth() / 2.0;
-        double centerY = player.getY() + player.getHeight() / 2.0;
+        double centerX = x + w / 2.0;
+        double centerY = y + h / 2.0;
  
         AffineTransform old = g2.getTransform();
         Paint oldPaint = g2.getPaint();
@@ -110,11 +86,11 @@ public class BulletEffects {
  
         // A partir de acá, el eje X apunta hacia donde mira el jugador y (0,0) es la boca del arma
         g2.translate(centerX, centerY);
-        g2.rotate(player.getAngle());
-        g2.translate(Weapon.MUZZLE_FORWARD, Weapon.MUZZLE_SIDE);
+        g2.rotate(angle);
+        g2.translate(muzzleForward, muzzleSide);
  
         // Misma semilla durante todo el destello: la forma se mantiene y solo se desvanece
-        Random rnd = new Random(weapon.getLastShoot());
+        Random rnd = new Random(lastShoot);
  
         drawFlashGlow(g2, life, shotgun);
         drawFlashSpikes(g2, rnd, life, shotgun);

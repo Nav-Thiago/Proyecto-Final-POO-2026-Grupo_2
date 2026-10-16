@@ -1,9 +1,6 @@
 package view;
 
-
 import controller.GameController;
-import model.*;
-
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,7 +23,7 @@ public class GamePanel extends JPanel {
     private final GameController controller;
 
     private Animation playerFeetAnimation;
-    private final Map<Class<? extends Weapon>, Animation> playerAnimations = new HashMap<>();
+    private final Map<String, Animation> playerAnimations = new HashMap<>();
 
     private Animation zombieWalkAnimation;
 
@@ -38,7 +35,6 @@ public class GamePanel extends JPanel {
 
     private BufferedImage poisonIdleSprite;
     private Animation poisonWalkAnimation;
-
 
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
@@ -52,13 +48,16 @@ public class GamePanel extends JPanel {
     private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25", "Ammo", "AMMO", "MaxAmmo", "MAX");
 
     private final Map<String, BufferedImage> weaponSprites = new HashMap<>();
-     private final BulletEffects bulletEffects = new BulletEffects();
+    private final BulletEffects bulletEffects = new BulletEffects();
+
+    private static final Font HUD_FONT = new Font("Monospaced", Font.BOLD, 20);
 
     public GamePanel(GameController controller) {
         this.controller = controller;
         setPreferredSize(new Dimension(1920, 1080));
         setFocusable(true);
         loadSprites();
+        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     private BufferedImage loadImage(String route) {
@@ -109,10 +108,10 @@ public class GamePanel extends JPanel {
                 knifeFrames[i] = loadImage("/Resources/imagenes/entitys/player/move_knife/survivor-move_knife_" + (i + 1) + ".png");
             }
 
-            playerAnimations.put(Handgun.class, new Animation(150, handgunFrames));
-            playerAnimations.put(Rifle.class, new Animation(150, rifleFrames));
-            playerAnimations.put(ShotGun.class, new Animation(150, shotgunFrames));
-            playerAnimations.put(MeleeWeapon.class, new Animation(150, knifeFrames));
+            playerAnimations.put("Handgun", new Animation(150, handgunFrames));
+            playerAnimations.put("Rifle", new Animation(150, rifleFrames));
+            playerAnimations.put("Shotgun", new Animation(150, shotgunFrames));
+            playerAnimations.put("MeleeWeapon", new Animation(150, knifeFrames));
 
         } catch (Exception e) {
             System.err.println("Error cargando animaciones del player (move_arma)");
@@ -126,7 +125,7 @@ public class GamePanel extends JPanel {
         powerUpSprites.put("MaxAmmo", loadImage(base + "max_ammo.png"));
 
         weaponSprites.put("Handgun", loadImage("/Resources/imagenes/weapons/gun.png"));
-        weaponSprites.put("ShotGun", loadImage("/Resources/imagenes/weapons/shotgun.png"));
+        weaponSprites.put("Shotgun", loadImage("/Resources/imagenes/weapons/shotgun.png"));
         weaponSprites.put("Rifle", loadImage("/Resources/imagenes/weapons/rifle.png"));
 
 
@@ -250,231 +249,83 @@ public class GamePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        ///////////////////////////////////////
-        // SEGUIMIENTO DE CAMARA A PERSONAJE //
-        ///////////////////////////////////////
+        this.controller.drawScene(this, g2);
+    }
 
-        Player player = this.controller.getState().getPlayer();
+    // Dibuja al jugador
+    public void drawPlayer(Graphics2D g2, double x, double y, int w, int h, double angle, boolean moving, String weaponType) {
+        AffineTransform transformOriginal = g2.getTransform();
 
-        int screenWidth = getWidth();
-        int screenHeight = getHeight();
-        int mapWidth = this.controller.getState().getMapWidth();
-        int mapHeight = this.controller.getState().getMapHeight();
+        double centerX = x + (w / 2.0);
+        double centerY = y + (h / 2.0);
 
-        // Calculo de camara (queda duplicado con drawScene, es temporal)
-        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
-        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
-        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
+        g2.translate(centerX, centerY);
+        g2.rotate(angle);
 
-        this.controller.drawScene(this, g2); // reemplaza al translate y al drawImage del fondo
-
-        ///////////////////////////////////////
-        //   Dibuja las balas del jugador    //
-        ///////////////////////////////////////
-
-        /*g2.setColor(Color.ORANGE);
-        for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
-            g2.fillOval((int) bullet.getX(), (int) bullet.getY(), bullet.getWidth() - 2, bullet.getHeight() - 2);
-        }*/
-
-        ///////////////////////////////////////
-        //   Dibuja las balas venenosas      //
-        ///////////////////////////////////////
-
-        g2.setColor(new Color(50, 205, 50));
-        for (Bullet poison : this.controller.getState().getPoisonBullets()) {
-            g2.fillOval((int) poison.getX(), (int) poison.getY(), poison.getWidth(), poison.getHeight());
+        if (moving && playerFeetAnimation != null && playerFeetAnimation.getCurrentFrame() != null) {
+            BufferedImage feetFrame = playerFeetAnimation.getCurrentFrame();
+            AffineTransform transformFeet = g2.getTransform();
+            g2.scale(0.6, 0.6);
+            g2.drawImage(feetFrame, -w / 2, -h / 2, w, h, null);
+            g2.setTransform(transformFeet);
         }
 
-        ///////////////////////////////////////
-        //          Dibuja al jugador        //
-        ///////////////////////////////////////
-        if (controller.getIsAlive()) {
-            AffineTransform transformOriginal = g2.getTransform();
+        Animation currentAnim = playerAnimations.get(weaponType);
 
-            double centerX = controller.getPlayerX() + (player.getWidth() / 2.0);
-            double centerY = player.getY() + (player.getHeight() / 2.0);
-
-            g2.translate(centerX, centerY);
-            g2.rotate(player.getAngle());
-
-            int w = player.getWidth();
-            int h = player.getHeight();
-
-            if (player.isMoving() && playerFeetAnimation != null && playerFeetAnimation.getCurrentFrame() != null) {
-                BufferedImage feetFrame = playerFeetAnimation.getCurrentFrame();
-                AffineTransform transformFeet = g2.getTransform();
-                g2.scale(0.6, 0.6);
-                g2.drawImage(feetFrame, -w / 2, -h / 2, w, h, null);
-                g2.setTransform(transformFeet);
+        if (currentAnim != null) {
+            currentAnim.update();
+            if (currentAnim.getCurrentFrame() != null) {
+                BufferedImage bodyFrame = currentAnim.getCurrentFrame();
+                g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
             }
-
-            Weapon activeWeapon = player.getActiveWeapon();
-            Animation currentAnim = playerAnimations.get(activeWeapon.getClass());
-
-            if (currentAnim != null) {
-                currentAnim.update();
-                if (currentAnim.getCurrentFrame() != null) {
-                    BufferedImage bodyFrame = currentAnim.getCurrentFrame();
-                    g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
-                }
-            } else {
-                g2.setColor(Color.RED);
-                g2.fillOval(-w / 2, -h / 2, w, h);
-            }
-
-            g2.setTransform(transformOriginal);
-        }
-
-        // Cursor de prueba
-        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-        if (firstLayer != null) {
-            g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
-        }
-
-        ///////////////////////////////////////
-        //             HITBOXES              //
-        ///////////////////////////////////////
-
-        g2.setStroke(new BasicStroke(2.0f)); // Líneas más gruesas para que se vean bien
-
-        // Hitbox del jugador (Verde)
-        g2.setColor(Color.GREEN);
-        Rectangle pBounds = player.getBounds();
-        g2.drawRect(pBounds.x, pBounds.y, pBounds.width, pBounds.height);
-
-        // Hitboxes de los zombies (Rojo)
-        g2.setColor(Color.RED);
-        for (Enemy zombie : this.controller.getState().getEnemies()) {
-            if (zombie.isAlive()) {
-                Rectangle zBounds = zombie.getBounds();
-                g2.drawRect(zBounds.x, zBounds.y, zBounds.width, zBounds.height);
-            }
-        }
-
-        // Hitboxes de las balas (Cian)
-        /*g2.setColor(Color.CYAN);
-        for (Bullet bullet : this.controller.getState().getPlayerBullets()) {
-            if (bullet.isActive()) {
-                Rectangle bBounds = bullet.getBounds();
-                g2.drawRect(bBounds.x, bBounds.y, bBounds.width, bBounds.height);
-            }
-        }*/
-
-        ///////////////////////////////////////
-        //          EFECTO OSCURIDAD         //
-        ///////////////////////////////////////
-
-        double centerX = player.getX() + (player.getWidth() / 2);
-        double centerY = player.getY() + (player.getHeight() / 2);
-
-        Area darkness = new Area(new Rectangle2D.Double(0, 0, mapWidth, mapHeight));
-
-        double lightRadius = 700.0; // Define distancia 
-        double fovAngle = 85.0; // Define ángulo 
-
-        double angleDegrees = -Math.toDegrees(player.getAngle());
-
-        Arc2D.Double lightCone = new Arc2D.Double(
-                centerX - lightRadius, centerY - lightRadius,
-                lightRadius * 2, lightRadius * 2,
-                angleDegrees - (fovAngle / 2.0), fovAngle,
-                Arc2D.PIE
-        );
-
-        double personalRadius = 90.0; // Circulo personal donde se va a ver 
-        Ellipse2D.Double personalCircle = new Ellipse2D.Double(
-                centerX - personalRadius, centerY - personalRadius,
-                personalRadius * 2, personalRadius * 2
-        );
-
-        darkness.subtract(new Area(lightCone)); // Substrae el cono de iluminación
-        darkness.subtract(new Area(personalCircle)); // Substrae el circulo personal
-
-        g2.setColor(new Color(0, 0, 0, 220)); // 245 = opacidad
-        g2.fill(darkness);
-
-        g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
-
-        bulletEffects.drawTracers(g2, this.controller.getState().getPlayerBullets());
-        bulletEffects.drawMuzzleFlash(g2, player);
-
-        g2.translate(camX, camY);
-
-
-        ///////////////////////////////////////
-        //             INTERFAZ              //
-        ///////////////////////////////////////
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 20)); // Configura la tipografía
-        g2.drawString("Supervivencia: " + player.getHealth() + " / " + player.getMaxHealth(), 20, 30); // Dibuja el texto en la esquina superior izquierda
-
-        if (player.getShield() > 0) {
-            g2.setColor(Color.CYAN);
-            g2.drawString("Escudo: " + player.getShield(), 20, 55);
-        }
-        if (player.getDamageBonus() > 0) {
+        } else {
             g2.setColor(Color.RED);
-            g2.drawString("Daño +" + Math.round(player.getDamageBonus()), 20, 80);
+            g2.fillOval(-w / 2, -h / 2, w, h);
         }
 
-        // Texto de arma activa y munición
-        Weapon activeWeapon = player.getActiveWeapon();
-        if (activeWeapon instanceof FireArm fa) {
-            String ammoText = "Arma: " + fa.getClass().getSimpleName() + " - Balas: " + fa.getActualMunition() + " / " + fa.getMaxMunition();
-            g2.setColor(Color.WHITE);
-            g2.drawString(ammoText, 20, 105);
-        } else if (activeWeapon instanceof MeleeWeapon) {
-            g2.setColor(Color.WHITE);
-            g2.drawString("Arma: Cuchillo", 20, 105);
+        g2.setTransform(transformOriginal);
+    }
+
+    // Dibuja al zombie
+    public void drawZombie(Graphics2D g2, double x, double y, int w, int h, double angle, int health, String type) {
+        AffineTransform transformOriginal = g2.getTransform();
+        double centerX = x + (w / 2.0);
+        double centerY = y + (h / 2.0);
+
+        g2.translate(centerX, centerY);
+        g2.rotate(angle);
+
+        Animation anim = zombieAnimations.get(type);
+        BufferedImage idle = zombieIdleSprites.get(type);
+
+        if (anim != null && anim.getCurrentFrame() != null) {
+            g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
+        } else if (idle != null) {
+            g2.drawImage(idle, -w / 2, -h / 2, w, h, null);
+        } else {
+            g2.setColor(Color.RED);
+            g2.fillOval(-w / 2, -h / 2, w, h);
         }
 
-        // Mensaje de estados
-        GameModel.gameStatus status = controller.getStatus();
-        if (status == GameModel.gameStatus.GAME_OVER) {
-            showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
-        } else if (status == GameModel.gameStatus.LEVEL_COMPLETED) {
-            showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
-        } else if (status == GameModel.gameStatus.GAME_WON) {
-            showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
-        } else if (status == GameModel.gameStatus.PAUSED) {
-            showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
-        } else if (status == GameModel.gameStatus.BOSS_INTRO) {
-            drawBossIntro(g2);
+        g2.setTransform(transformOriginal);
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+        g2.drawString("HP: " + health, (int) x, (int) y);
+    }
+
+    public void updateZombieAnimations() {
+        if (zombieWalkAnimation != null) {
+            zombieWalkAnimation.update();
+        }
+        if (tankWalkAnimation != null) {
+            tankWalkAnimation.update();
+        }
+        for (Animation anim : zombieAnimations.values()) {
+            anim.update();
         }
     }
 
-    public void applyCamera(Graphics2D g2, int camX, int camY) {
-        g2.translate(-camX, -camY);
-    }
-
-    public void drawBackground(Graphics2D g2, int mapWidth, int mapHeight) {
-        if (backgroundForest != null) {
-            g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
-        }
-    }
-
-    private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor, Consumer<Graphics2D> content) {
-        double t = System.currentTimeMillis() / 1000.0;
-        double phase = x * 0.05;                               // desfase por objeto
-        double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
-        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
-        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
-
-        AffineTransform old = g2.getTransform();
-        g2.translate(x + w / 2.0, y + h / 2.0 + bob);
-
-        g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
-        g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
-
-        g2.scale(scale, scale);
-        content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
-
-        g2.setTransform(old);
-    }
-
+    // Dibuja los power-up
     public void drawPowerUp(Graphics2D g2, double x, double y, int w, int h, String type) {
         BufferedImage sprite = powerUpSprites.get(type);
         Color color = POWERUP_COLORS.getOrDefault(type, Color.WHITE);
@@ -495,18 +346,7 @@ public class GamePanel extends JPanel {
         });
     }
 
-    private void showFinalMessage(Graphics2D g2, String texto, Color color) {
-        g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        g2.setColor(color);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 40));
-        FontMetrics fm = g2.getFontMetrics();
-        int textX = (getWidth() - fm.stringWidth(texto)) / 2;
-        int textY = getHeight() / 2;
-        g2.drawString(texto, textX, textY);
-    }
-
+    // Dibuja las armas
     public void drawGroundWeapon(Graphics2D g2, double x, double y, int w, int h, String type) {
         BufferedImage sprite = weaponSprites.get(type);
         int drawX = (int) x;
@@ -523,12 +363,95 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private void drawBossIntro(Graphics2D g2) {
-        int step = controller.getBossIntroStep();
-        double p = controller.getBossIntroProgress();
+    // Dibuja balas de veneno
+    public void drawPoisonBullet(Graphics2D g2, double x, double y, int w, int h) {
+        g2.setColor(new Color(50, 205, 50));
+        g2.fillOval((int) x, (int) y, w, h);
+    }
 
+    // Primera capa
+    public void drawFirstLayer(Graphics2D g2, int mapWidth, int mapHeight) {
+        if (firstLayer != null) {
+            g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
+        }
+    }
+
+    // Mapa
+    public void drawBackground(Graphics2D g2, int mapWidth, int mapHeight) {
+        if (backgroundForest != null) {
+            g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
+        }
+    }
+
+    // Oscuridad
+    public void drawDarkness(Graphics2D g2, double playerX, double playerY, int playerW, int playerH, double playerAngle, int mapWidth, int mapHeight) {
+        double centerX = playerX + (playerW / 2.0);
+        double centerY = playerY + (playerH / 2.0);
+
+        Area darkness = new Area(new Rectangle2D.Double(0, 0, mapWidth, mapHeight));
+
+        double lightRadius = 700.0; // Define distancia
+        double fovAngle = 85.0; // Define ángulo
+
+        double angleDegrees = -Math.toDegrees(playerAngle);
+
+        Arc2D.Double lightCone = new Arc2D.Double(
+                centerX - lightRadius, centerY - lightRadius,
+                lightRadius * 2, lightRadius * 2,
+                angleDegrees - (fovAngle / 2.0), fovAngle,
+                Arc2D.PIE
+        );
+
+        double personalRadius = 90.0; // Círculo personal donde se va a ver
+        Ellipse2D.Double personalCircle = new Ellipse2D.Double(
+                centerX - personalRadius, centerY - personalRadius,
+                personalRadius * 2, personalRadius * 2
+        );
+
+        darkness.subtract(new Area(lightCone)); // Substrae el cono de iluminación
+        darkness.subtract(new Area(personalCircle)); // Substrae el círculo personal
+
+        g2.setColor(new Color(0, 0, 0, 220)); // 245 = opacidad
+        g2.fill(darkness);
+
+        g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
+    }
+
+    // HUD
+    public void drawHealth(Graphics2D g2, int health, int maxHealth) {
+        g2.setColor(Color.WHITE);
+        g2.setFont(HUD_FONT); // Configura la tipografía
+        g2.drawString("Supervivencia: " + health + " / " + maxHealth, 20, 30); // Dibuja el texto en la esquina superior izquierda
+    }
+
+    public void drawShield(Graphics2D g2, int shield) {
+        g2.setColor(Color.CYAN);
+        g2.setFont(HUD_FONT);
+        g2.drawString("Escudo: " + shield, 20, 55);
+    }
+
+    public void drawDamageBonus(Graphics2D g2, double damageBonus) {
+        g2.setColor(Color.RED);
+        g2.setFont(HUD_FONT);
+        g2.drawString("Daño +" + Math.round(damageBonus), 20, 80);
+    }
+
+    public void drawFireArmInfo(Graphics2D g2, String weaponType, int ammo, int maxAmmo) {
+        g2.setColor(Color.WHITE);
+        g2.setFont(HUD_FONT);
+        g2.drawString("Arma: " + weaponType + " - Balas: " + ammo + " / " + maxAmmo, 20, 105);
+    }
+
+    public void drawMeleeInfo(Graphics2D g2) {
+        g2.setColor(Color.WHITE);
+        g2.setFont(HUD_FONT);
+        g2.drawString("Arma: cuchillo", 20, 105);
+    }
+
+    // Pantalla de intro del jefe final
+    public void drawBossIntro(Graphics2D g2, int step, double progress) {
         // el texto aparece y se desvanece de a poco
-        double fade = Math.max(0.0, Math.min(1.0, Math.min(p / 0.25, (1.0 - p) / 0.25)));
+        double fade = Math.max(0.0, Math.min(1.0, Math.min(progress / 0.25, (1.0 - progress) / 0.25)));
         int alpha = (int) (255 * fade);
 
         // fondo oscuro
@@ -561,7 +484,7 @@ public class GamePanel extends JPanel {
         int x = (getWidth() - fm.stringWidth(text)) / 2;
         int y = getHeight() / 2;
 
-        // temblor leve solo en "Preparate para el Jefe"
+        // temblor leve solo en "Prepárate para el Jefe"
         if (step == 1) {
             x += (int) (Math.random() * 5) - 2;
             y += (int) (Math.random() * 5) - 2;
@@ -574,41 +497,71 @@ public class GamePanel extends JPanel {
         g2.drawString(text, x, y);
     }
 
-    public void updateZombieAnimations() {
-        if (zombieWalkAnimation != null) {
-            zombieWalkAnimation.update();
-        }
-        if (tankWalkAnimation != null) {
-            tankWalkAnimation.update();
-        }
-        for (Animation anim : zombieAnimations.values()) {
-            anim.update();
-        }
+    // Mensaje en pantalla
+    private void showFinalMessage(Graphics2D g2, String texto, Color color) {
+        g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        g2.setColor(color);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 40));
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = (getWidth() - fm.stringWidth(texto)) / 2;
+        int textY = getHeight() / 2;
+        g2.drawString(texto, textX, textY);
     }
 
-    public void drawZombie(Graphics2D g2, double x, double y, int w, int h, double angle, int health, String type) {
-        AffineTransform transformOriginal = g2.getTransform();
-        double centerX = x + (w / 2.0);
-        double centerY = y + (h / 2.0);
+    // Mensajes de estado
+    public void drawGameOver(Graphics2D g2) {
+        showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
+    }
 
-        g2.translate(centerX, centerY);
-        g2.rotate(angle);
+    public void drawLevelCompleted(Graphics2D g2) {
+        showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
+    }
 
-        Animation anim = zombieAnimations.get(type);
-        BufferedImage idle = zombieIdleSprites.get(type);
+    public void drawGameWon(Graphics2D g2) {
+        showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+    }
 
-        if (anim != null && anim.getCurrentFrame() != null) {
-            g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
-        } else if (idle != null) {
-            g2.drawImage(idle, -w / 2, -h / 2, w, h, null);
-        } else {
-            g2.setColor(Color.RED);
-            g2.fillOval(-w / 2, -h / 2, w, h);
-        }
+    public void drawPause(Graphics2D g2) {
+        showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
+    }
 
-        g2.setTransform(transformOriginal);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-        g2.drawString("HP: " + health, (int) x, (int) y);
+    // Efectos para los power-ups
+    private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor, Consumer<Graphics2D> content) {
+        double t = System.currentTimeMillis() / 1000.0;
+        double phase = x * 0.05;                               // desfase por objeto
+        double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
+        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
+        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
+
+        AffineTransform old = g2.getTransform();
+        g2.translate(x + w / 2.0, y + h / 2.0 + bob);
+
+        g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
+        g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+
+        g2.scale(scale, scale);
+        content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
+
+        g2.setTransform(old);
+    }
+
+    // Efectos de la bala
+    public void drawBulletTracer(Graphics2D g2, double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String kind) {
+        bulletEffects.drawTracer(g2, x, y, w, h, dirX, dirY, speed, age, kind);
+    }
+
+    public void drawMuzzleFlash(Graphics2D g2, double x, double y, int w, int h, double angle, String weaponType, long lastShoot, double muzzleForward, double muzzleSide) {
+        bulletEffects.drawMuzzleFlash(g2, x, y, w, h, angle, weaponType, lastShoot, muzzleForward, muzzleSide);
+    }
+
+    // Camara de seguimiento
+    public void applyCamera(Graphics2D g2, int camX, int camY) {
+        g2.translate(-camX, -camY);
+    }
+
+    public void resetCamera(Graphics2D g2, double camX, double camY) {
+        g2.translate(camX, camY);
     }
 }
