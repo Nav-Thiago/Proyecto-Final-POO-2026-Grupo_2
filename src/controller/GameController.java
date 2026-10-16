@@ -134,6 +134,9 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
         // Dibuja Armas en el suelo
         drawGroundWeapons(panel, g2, state); // [ARMAS] segundo, para que queden debajo de zombies y jugador
+
+        // Dibuja los zombies
+        drawZombies(panel, g2, state);
     }
 
     private void drawPowerUps(GamePanel panel, Graphics2D g2, GameState state) {
@@ -145,6 +148,15 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     private void drawGroundWeapons(GamePanel panel, Graphics2D g2, GameState state) {
         for (WeaponItem item : state.getGroundWeapons()) {
             panel.drawGroundWeapon(g2, item.getX(), item.getY(), item.getWidth(), item.getHeight(), item.getWeapon().getClass().getSimpleName());
+        }
+    }
+
+    private void drawZombies(GamePanel panel, Graphics2D g2, GameState state) {
+        panel.updateZombieAnimations();
+        for (Enemy zombie : state.getEnemies()) {
+            if (zombie.isAlive()) {
+                panel.drawZombie(g2, zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName());
+            }
         }
     }
 

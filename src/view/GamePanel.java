@@ -44,8 +44,8 @@ public class GamePanel extends JPanel {
     private BufferedImage firstLayer;
 
     // Mapas para asociar la clase del modelo con su recurso visual
-    private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
-    private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
+    private final Map<String, Animation> zombieAnimations = new HashMap<>();
+    private final Map<String, BufferedImage> zombieIdleSprites = new HashMap<>();
 
     private final Map<String, BufferedImage> powerUpSprites = new HashMap<>();
     private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
@@ -220,28 +220,27 @@ public class GamePanel extends JPanel {
         }
 
         if (zombieWalkAnimation != null) {
-            zombieAnimations.put(NormalZombie.class, zombieWalkAnimation);
+            zombieAnimations.put("NormalZombie", zombieWalkAnimation);
         }
         if (tankWalkAnimation != null) {
-            zombieAnimations.put(TankZombie.class, tankWalkAnimation);
+            zombieAnimations.put("TankZombie", tankWalkAnimation);
         }
         if (tankIdleSprite != null) {
-            zombieIdleSprites.put(TankZombie.class, tankIdleSprite);
+            zombieIdleSprites.put("TankZombie", tankIdleSprite);
         }
         if (fastWalkAnimation != null) {
-            zombieAnimations.put(FastZombie.class, fastWalkAnimation);
+            zombieAnimations.put("FastZombie", fastWalkAnimation);
         }
         if (fastIdleSprite != null) {
-            zombieIdleSprites.put(FastZombie.class, fastIdleSprite);
+            zombieIdleSprites.put("FastZombie", fastIdleSprite);
         }
         if (poisonWalkAnimation != null) {
-            zombieAnimations.put(PoisonZombie.class, poisonWalkAnimation);
+            zombieAnimations.put("PoisonZombie", poisonWalkAnimation);
         }
         if (poisonIdleSprite != null) {
-            zombieAnimations.put(PoisonZombie.class, poisonWalkAnimation);
+            zombieIdleSprites.put("PoisonZombie", poisonIdleSprite);
         }
     }
-
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -270,54 +269,6 @@ public class GamePanel extends JPanel {
 
         this.controller.drawScene(this, g2); // reemplaza al translate y al drawImage del fondo
 
-        // Dibuja a los enemigos
-        if (zombieWalkAnimation != null) {
-            zombieWalkAnimation.update();
-        }
-
-        //Dibuja Zombie Tanque
-        if (tankWalkAnimation != null) {
-            tankWalkAnimation.update();
-        }
-
-        for (Animation anim : zombieAnimations.values()) {
-            anim.update();
-        }
-        for (Enemy zombie : this.controller.getState().getEnemies()) {
-
-            if (zombie.isAlive()) {
-                AffineTransform transformOriginal = g2.getTransform();
-                double centerX = zombie.getX() + (zombie.getWidth() / 2.0);
-                double centerY = zombie.getY() + (zombie.getHeight() / 2.0);
-
-                g2.translate(centerX, centerY);
-                g2.rotate(zombie.getAngle());
-
-                int w = zombie.getWidth();
-                int h = zombie.getHeight();
-
-                Animation anim = zombieAnimations.get(zombie.getClass());
-                BufferedImage idle = zombieIdleSprites.get(zombie.getClass());
-
-                if (anim != null && anim.getCurrentFrame() != null) {
-                    g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
-                } else if (idle != null) {
-                    g2.drawImage(idle, -w / 2, -h / 2, w, h, null);
-                } else {
-                    g2.setColor(Color.RED);
-                    g2.fillOval(-w / 2, -h / 2, w, h);
-                }
-
-                g2.setTransform(transformOriginal);
-                g2.setColor(Color.WHITE);
-                g2.setFont(new Font("Monospaced", Font.BOLD, 20));
-                String lifeText = "HP: " + zombie.getHealth();
-
-                int textX = (int) zombie.getX();
-                int textY = (int) zombie.getY();
-                g2.drawString(lifeText, textX, textY);
-            }
-        }
         ///////////////////////////////////////
         //   Dibuja las balas del jugador    //
         ///////////////////////////////////////
@@ -621,6 +572,43 @@ public class GamePanel extends JPanel {
         g2.drawString(text, x + 3, y + 3);
         g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
         g2.drawString(text, x, y);
+    }
 
+    public void updateZombieAnimations() {
+        if (zombieWalkAnimation != null) {
+            zombieWalkAnimation.update();
+        }
+        if (tankWalkAnimation != null) {
+            tankWalkAnimation.update();
+        }
+        for (Animation anim : zombieAnimations.values()) {
+            anim.update();
+        }
+    }
+
+    public void drawZombie(Graphics2D g2, double x, double y, int w, int h, double angle, int health, String type) {
+        AffineTransform transformOriginal = g2.getTransform();
+        double centerX = x + (w / 2.0);
+        double centerY = y + (h / 2.0);
+
+        g2.translate(centerX, centerY);
+        g2.rotate(angle);
+
+        Animation anim = zombieAnimations.get(type);
+        BufferedImage idle = zombieIdleSprites.get(type);
+
+        if (anim != null && anim.getCurrentFrame() != null) {
+            g2.drawImage(anim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
+        } else if (idle != null) {
+            g2.drawImage(idle, -w / 2, -h / 2, w, h, null);
+        } else {
+            g2.setColor(Color.RED);
+            g2.fillOval(-w / 2, -h / 2, w, h);
+        }
+
+        g2.setTransform(transformOriginal);
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+        g2.drawString("HP: " + health, (int) x, (int) y);
     }
 }
