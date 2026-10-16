@@ -131,11 +131,20 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
         // Dibuja al power-up
         drawPowerUps(panel, g2, state); // [POWER-UP] primero, para que queden debajo de zombies y jugador
+
+        // Dibuja Armas en el suelo
+        drawGroundWeapons(panel, g2, state); // [ARMAS] segundo, para que queden debajo de zombies y jugador
     }
 
     private void drawPowerUps(GamePanel panel, Graphics2D g2, GameState state) {
         for (PowerUp p : state.getPowerUps()) {
             panel.drawPowerUp(g2, p.getX(), p.getY(), p.getWidth(), p.getHeight(), p.getClass().getSimpleName());
+        }
+    }
+
+    private void drawGroundWeapons(GamePanel panel, Graphics2D g2, GameState state) {
+        for (WeaponItem item : state.getGroundWeapons()) {
+            panel.drawGroundWeapon(g2, item.getX(), item.getY(), item.getWidth(), item.getHeight(), item.getWeapon().getClass().getSimpleName());
         }
     }
 

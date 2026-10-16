@@ -51,7 +51,7 @@ public class GamePanel extends JPanel {
     private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
     private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25", "Ammo", "AMMO", "MaxAmmo", "MAX");
 
-    private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
+    private final Map<String, BufferedImage> weaponSprites = new HashMap<>();
      private final BulletEffects bulletEffects = new BulletEffects();
 
     public GamePanel(GameController controller) {
@@ -125,9 +125,9 @@ public class GamePanel extends JPanel {
         powerUpSprites.put("Ammo", loadImage(base + "ammo.png"));
         powerUpSprites.put("MaxAmmo", loadImage(base + "max_ammo.png"));
 
-        weaponSprites.put(Handgun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
-        weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
-        weaponSprites.put(Rifle.class, loadImage("/Resources/imagenes/weapons/rifle.png"));
+        weaponSprites.put("Handgun", loadImage("/Resources/imagenes/weapons/gun.png"));
+        weaponSprites.put("ShotGun", loadImage("/Resources/imagenes/weapons/shotgun.png"));
+        weaponSprites.put("Rifle", loadImage("/Resources/imagenes/weapons/rifle.png"));
 
 
         // ZOMBIES
@@ -269,9 +269,6 @@ public class GamePanel extends JPanel {
         camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
 
         this.controller.drawScene(this, g2); // reemplaza al translate y al drawImage del fondo
-
-        // Dibuja Armas en el suelo
-        drawGroundWeapons(g2); // [ARMAS] segundo, para que queden debajo de zombies y jugador
 
         // Dibuja a los enemigos
         if (zombieWalkAnimation != null) {
@@ -559,23 +556,19 @@ public class GamePanel extends JPanel {
         g2.drawString(texto, textX, textY);
     }
 
-    private void drawGroundWeapons(Graphics2D g2) {
-        for (WeaponItem item : this.controller.getState().getGroundWeapons()) {
-            BufferedImage sprite = weaponSprites.get(item.getWeapon().getClass());
-            int x = (int) item.getX();
-            int y = (int) item.getY();
-            int w = item.getWidth();
-            int h = item.getHeight();
+    public void drawGroundWeapon(Graphics2D g2, double x, double y, int w, int h, String type) {
+        BufferedImage sprite = weaponSprites.get(type);
+        int drawX = (int) x;
+        int drawY = (int) y;
 
-            if (sprite != null) {
-                g2.drawImage(sprite, x, y, w, h, null);
-            } else {
-                g2.setColor(Color.LIGHT_GRAY);
-                g2.fillRect(x, y, w, h);
-                g2.setColor(Color.WHITE);
-                g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                g2.drawString(item.getWeapon().getClass().getSimpleName(), x, y - 5);
-            }
+        if (sprite != null) {
+            g2.drawImage(sprite, drawX, drawY, w, h, null);
+        } else {
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.fillRect(drawX, drawY, w, h);
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            g2.drawString(type, drawX, drawY - 5);
         }
     }
 
