@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.Color;
-
 /**
  * Clase padre de todos los power ups.
  * Extiende Entity, así que reutiliza posición, tamaño y collidesWith().
@@ -29,10 +27,4 @@ public abstract class PowerUp extends Entity {
 
     /** Efecto concreto de cada power up sobre el jugador. */
     protected abstract void apply(Player player);
-
-    /** Texto corto que se dibuja sobre el power up (mientras no haya sprite). */
-    public abstract String getLabel();
-
-    /** Color con el que se dibuja el power up (mientras no haya sprite). */
-    public abstract Color getColor();
 }

@@ -1,10 +1,9 @@
 package controller;
 
-import model.Enemy;
-import model.GameModel;
-import model.GameState;
+import model.*;
 import view.GamePanel;
 
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -110,6 +109,36 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         }
     }
 
+    public void drawScene(GamePanel panel, Graphics2D g2) {
+        GameState state = this.model.getState();
+        Player player = state.getPlayer();
+
+        int screenWidth = panel.getWidth();
+        int screenHeight = panel.getHeight();
+        int mapWidth = state.getMapWidth();
+        int mapHeight = state.getMapHeight();
+
+        // Cálculo de cámara
+        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
+        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
+
+        // Cálculo para no irse del mapa
+        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
+        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
+
+        panel.applyCamera(g2, camX, camY);
+        panel.drawBackground(g2, mapWidth, mapHeight);
+
+        // Dibuja al power-up
+        drawPowerUps(panel, g2, state); // [POWER-UP] primero, para que queden debajo de zombies y jugador
+    }
+
+    private void drawPowerUps(GamePanel panel, Graphics2D g2, GameState state) {
+        for (PowerUp p : state.getPowerUps()) {
+            panel.drawPowerUp(g2, p.getX(), p.getY(), p.getWidth(), p.getHeight(), p.getClass().getSimpleName());
+        }
+    }
+
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
     // public class GameController extends MouseAdapter implements KeyListener {
     // Investigar.
@@ -120,25 +149,11 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     @Override
     public void mouseExited(MouseEvent e) {}
 
-    public GameState getState() {
-        return this.model.getState();
-    }
-    public double getPlayerX() {
-        return this.model.getState().getPlayer().getX();
-    }
-    public boolean getIsAlive() {
-        return this.model.getState().getPlayer().isAlive();
-    }
-    public GameModel.gameStatus getStatus() {
-        return this.model.getStatus();
-    }
-    public int getBossIntroStep() {
-        return this.model.getBossIntroStep();
-    }
-    public double getBossIntroProgress() {
-        return this.model.getBossIntroProgress();
-    }
-    public List<Enemy> getEnemies() {return this.model.getState().getEnemies();}
-
-
+    public GameState getState() { return this.model.getState(); }
+    public double getPlayerX() { return this.model.getState().getPlayer().getX(); }
+    public boolean getIsAlive() { return this.model.getState().getPlayer().isAlive(); }
+    public GameModel.gameStatus getStatus() { return this.model.getStatus(); }
+    public int getBossIntroStep() { return this.model.getBossIntroStep(); }
+    public double getBossIntroProgress() { return this.model.getBossIntroProgress(); }
+    public List<Enemy> getEnemies() { return this.model.getState().getEnemies(); }
 }

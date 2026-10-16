@@ -47,7 +47,9 @@ public class GamePanel extends JPanel {
     private final Map<Class<? extends Enemy>, Animation> zombieAnimations = new HashMap<>();
     private final Map<Class<? extends Enemy>, BufferedImage> zombieIdleSprites = new HashMap<>();
 
-    private final Map<Class<? extends PowerUp>, BufferedImage> powerUpSprites = new HashMap<>();
+    private final Map<String, BufferedImage> powerUpSprites = new HashMap<>();
+    private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
+    private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25", "Ammo", "AMMO", "MaxAmmo", "MAX");
 
     private final Map<Class<? extends FireArm>, BufferedImage> weaponSprites = new HashMap<>();
      private final BulletEffects bulletEffects = new BulletEffects();
@@ -117,11 +119,11 @@ public class GamePanel extends JPanel {
         }
 
         String base = "/Resources/imagenes/powerups/";
-        powerUpSprites.put(Heal.class, loadImage(base + "heal.png"));
-        powerUpSprites.put(Shield.class, loadImage(base + "shield.png"));
-        powerUpSprites.put(DamageBoost.class, loadImage(base + "damage.png"));
-        powerUpSprites.put(Ammo.class, loadImage(base + "ammo.png"));
-        powerUpSprites.put(MaxAmmo.class, loadImage(base + "max_ammo.png"));
+        powerUpSprites.put("Heal", loadImage(base + "heal.png"));
+        powerUpSprites.put("Shield", loadImage(base + "shield.png"));
+        powerUpSprites.put("DamageBoost", loadImage(base + "damage.png"));
+        powerUpSprites.put("Ammo", loadImage(base + "ammo.png"));
+        powerUpSprites.put("MaxAmmo", loadImage(base + "max_ammo.png"));
 
         weaponSprites.put(Handgun.class, loadImage("/Resources/imagenes/weapons/gun.png"));
         weaponSprites.put(ShotGun.class, loadImage("/Resources/imagenes/weapons/shotgun.png"));
@@ -249,34 +251,24 @@ public class GamePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        Player player = this.controller.getState().getPlayer();
-
         ///////////////////////////////////////
         // SEGUIMIENTO DE CAMARA A PERSONAJE //
         ///////////////////////////////////////
 
+        Player player = this.controller.getState().getPlayer();
+
         int screenWidth = getWidth();
         int screenHeight = getHeight();
-
         int mapWidth = this.controller.getState().getMapWidth();
         int mapHeight = this.controller.getState().getMapHeight();
 
-        // Calculo de camara
+        // Calculo de camara (queda duplicado con drawScene, es temporal)
         int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
         int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-
-        // Calculo para no irse del mapa
         camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
         camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
 
-        g2.translate(-camX, -camY);
-
-        if (backgroundForest != null) {
-            g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
-        }
-
-        // Dibuja PowerUps
-        drawPowerUps(g2); // [POWER-UP] primero, para que queden debajo de zombies y jugador
+        this.controller.drawScene(this, g2); // reemplaza al translate y al drawImage del fondo
 
         // Dibuja Armas en el suelo
         drawGroundWeapons(g2); // [ARMAS] segundo, para que queden debajo de zombies y jugador
@@ -506,18 +498,25 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private void drawFloating(Graphics2D g2, Entity e, Color glowColor, Consumer<Graphics2D> content) {
+    public void applyCamera(Graphics2D g2, int camX, int camY) {
+        g2.translate(-camX, -camY);
+    }
+
+    public void drawBackground(Graphics2D g2, int mapWidth, int mapHeight) {
+        if (backgroundForest != null) {
+            g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
+        }
+    }
+
+    private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor, Consumer<Graphics2D> content) {
         double t = System.currentTimeMillis() / 1000.0;
-        double phase = e.getX() * 0.05;                               // desfase por objeto
+        double phase = x * 0.05;                               // desfase por objeto
         double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
         double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
         int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
 
-        int w = e.getWidth();
-        int h = e.getHeight();
-
         AffineTransform old = g2.getTransform();
-        g2.translate(e.getX() + w / 2.0, e.getY() + h / 2.0 + bob);
+        g2.translate(x + w / 2.0, y + h / 2.0 + bob);
 
         g2.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowAlpha));
         g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
@@ -528,26 +527,24 @@ public class GamePanel extends JPanel {
         g2.setTransform(old);
     }
 
-    private void drawPowerUps(Graphics2D g2) {
-        for (PowerUp p : this.controller.getState().getPowerUps()) {
-            BufferedImage sprite = powerUpSprites.get(p.getClass());
-            int w = p.getWidth();
-            int h = p.getHeight();
+    public void drawPowerUp(Graphics2D g2, double x, double y, int w, int h, String type) {
+        BufferedImage sprite = powerUpSprites.get(type);
+        Color color = POWERUP_COLORS.getOrDefault(type, Color.WHITE);
+        String label = POWERUP_LABELS.getOrDefault(type, "?");
 
-            drawFloating(g2, p, p.getColor(), g -> {
-                if (sprite != null) {
-                    g.drawImage(sprite, -w / 2, -h / 2, w, h, null);
-                } else {
-                    g.setColor(p.getColor());
-                    g.fillOval(-w / 2, -h / 2, w, h);
-                    g.setColor(Color.BLACK);
-                    g.drawOval(-w / 2, -h / 2, w, h);
-                    g.setFont(new Font("Monospaced", Font.BOLD, 11));
-                    FontMetrics fm = g.getFontMetrics();
-                    g.drawString(p.getLabel(), -fm.stringWidth(p.getLabel()) / 2, fm.getAscent() / 2 - 2);
-                }
-            });
-        }
+        drawFloating(g2, x, y, w, h, color, g -> {
+            if (sprite != null) {
+                g.drawImage(sprite, -w / 2, -h / 2, w, h, null);
+            } else {
+                g.setColor(color);
+                g.fillOval(-w / 2, -h / 2, w, h);
+                g.setColor(Color.BLACK);
+                g.drawOval(-w / 2, -h / 2, w, h);
+                g.setFont(new Font("Monospaced", Font.BOLD, 11));
+                FontMetrics fm = g.getFontMetrics();
+                g.drawString(label, -fm.stringWidth(label) / 2, fm.getAscent() / 2 - 2);
+            }
+        });
     }
 
     private void showFinalMessage(Graphics2D g2, String texto, Color color) {

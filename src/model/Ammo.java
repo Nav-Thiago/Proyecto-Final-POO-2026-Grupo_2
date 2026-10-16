@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.Color;
-
 public class Ammo extends PowerUp {
 
     private final int amount;
@@ -15,10 +13,4 @@ public class Ammo extends PowerUp {
     protected void apply(Player player) {
         player.addAmmo(amount);
     }
-
-    @Override
-    public String getLabel() { return "+" + amount; }
-
-    @Override
-    public Color getColor() { return Color.YELLOW; }
 }

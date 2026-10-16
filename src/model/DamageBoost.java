@@ -1,7 +1,5 @@
 package model;
  
-import java.awt.Color;
- 
 public class DamageBoost extends PowerUp {
  
     private static final double BONUS = 25; // +25 de daño por bala (25 -> 50)
@@ -16,10 +14,4 @@ public class DamageBoost extends PowerUp {
     protected void apply(Player player) {
         player.decorateStats(s -> new DamageBoostDecorator(s, BONUS, duration));
     }
- 
-    @Override
-    public String getLabel() { return "+25"; }
- 
-    @Override
-    public Color getColor() { return Color.RED; }
 }
