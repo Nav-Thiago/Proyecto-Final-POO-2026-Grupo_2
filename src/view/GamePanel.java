@@ -54,6 +54,8 @@ public class GamePanel extends JPanel {
 
     private static final Font HUD_FONT = new Font("Monospaced", Font.BOLD, 20);
 
+    private Graphics2D g2;
+
     public GamePanel(GameController controller) {
         this.controller = controller;
         setPreferredSize(new Dimension(1920, 1080));
@@ -130,7 +132,6 @@ public class GamePanel extends JPanel {
         weaponSprites.put("Shotgun", loadImage("/Resources/imagenes/weapons/shotgun.png"));
         weaponSprites.put("Rifle", loadImage("/Resources/imagenes/weapons/rifle.png"));
 
-
         // ZOMBIES
         try {
             int frameQuantity = 16;
@@ -201,7 +202,7 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/poison_zombie/poison_idle_png");
+            InputStream in = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/poison_zombie/poison_idle.png");
             if (in != null) poisonIdleSprite = ImageIO.read(in);
         } catch (IOException e) {
             System.out.println("Error cargando sprite del poison zombie en reposo: " + e.getMessage());
@@ -246,16 +247,16 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+        this.g2 = (Graphics2D) g;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        this.controller.drawScene(this, g2);
+        this.controller.drawScene(this);
     }
 
     // Dibuja al jugador
-    public void drawPlayer(Graphics2D g2, double x, double y, int w, int h, double angle, boolean moving, String weaponType) {
+    public void drawPlayer(double x, double y, int w, int h, double angle, boolean moving, String weaponType) {
         AffineTransform transformOriginal = g2.getTransform();
 
         double centerX = x + (w / 2.0);
@@ -289,7 +290,7 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja al zombie
-    public void drawZombie(Graphics2D g2, double x, double y, int w, int h, double angle, int health, String type) {
+    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type) {
         double spriteAngle = angle + SPRITE_ROTATION.getOrDefault(type, 0.0);
 
         AffineTransform transformOriginal = g2.getTransform();
@@ -330,7 +331,7 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja los power-up
-    public void drawPowerUp(Graphics2D g2, double x, double y, int w, int h, String type) {
+    public void drawPowerUp(double x, double y, int w, int h, String type) {
         BufferedImage sprite = powerUpSprites.get(type);
         Color color = POWERUP_COLORS.getOrDefault(type, Color.WHITE);
         String label = POWERUP_LABELS.getOrDefault(type, "?");
@@ -351,7 +352,7 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja las armas
-    public void drawGroundWeapon(Graphics2D g2, double x, double y, int w, int h, String type) {
+    public void drawGroundWeapon(double x, double y, int w, int h, String type) {
         BufferedImage sprite = weaponSprites.get(type);
         int drawX = (int) x;
         int drawY = (int) y;
@@ -368,27 +369,27 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja balas de veneno
-    public void drawPoisonBullet(Graphics2D g2, double x, double y, int w, int h) {
+    public void drawPoisonBullet(double x, double y, int w, int h) {
         g2.setColor(new Color(50, 205, 50));
         g2.fillOval((int) x, (int) y, w, h);
     }
 
     // Primera capa
-    public void drawFirstLayer(Graphics2D g2, int mapWidth, int mapHeight) {
+    public void drawFirstLayer(int mapWidth, int mapHeight) {
         if (firstLayer != null) {
             g2.drawImage(firstLayer, 0, 0, mapWidth, mapHeight, null);
         }
     }
 
     // Mapa
-    public void drawBackground(Graphics2D g2, int mapWidth, int mapHeight) {
+    public void drawBackground(int mapWidth, int mapHeight) {
         if (backgroundForest != null) {
             g2.drawImage(backgroundForest, 0, 0, mapWidth, mapHeight, null);
         }
     }
 
     // Oscuridad
-    public void drawDarkness(Graphics2D g2, double playerX, double playerY, int playerW, int playerH, double playerAngle, int mapWidth, int mapHeight) {
+    public void drawDarkness(double playerX, double playerY, int playerW, int playerH, double playerAngle, int mapWidth, int mapHeight) {
         double centerX = playerX + (playerW / 2.0);
         double centerY = playerY + (playerH / 2.0);
 
@@ -422,38 +423,38 @@ public class GamePanel extends JPanel {
     }
 
     // HUD
-    public void drawHealth(Graphics2D g2, int health, int maxHealth) {
+    public void drawHealth(int health, int maxHealth) {
         g2.setColor(Color.WHITE);
         g2.setFont(HUD_FONT); // Configura la tipografía
         g2.drawString("Supervivencia: " + health + " / " + maxHealth, 20, 30); // Dibuja el texto en la esquina superior izquierda
     }
 
-    public void drawShield(Graphics2D g2, int shield) {
+    public void drawShield(int shield) {
         g2.setColor(Color.CYAN);
         g2.setFont(HUD_FONT);
         g2.drawString("Escudo: " + shield, 20, 55);
     }
 
-    public void drawDamageBonus(Graphics2D g2, double damageBonus) {
+    public void drawDamageBonus(double damageBonus) {
         g2.setColor(Color.RED);
         g2.setFont(HUD_FONT);
         g2.drawString("Daño +" + Math.round(damageBonus), 20, 80);
     }
 
-    public void drawFireArmInfo(Graphics2D g2, String weaponType, int ammo, int maxAmmo) {
+    public void drawFireArmInfo(String weaponType, int ammo, int maxAmmo) {
         g2.setColor(Color.WHITE);
         g2.setFont(HUD_FONT);
         g2.drawString("Arma: " + weaponType + " - Balas: " + ammo + " / " + maxAmmo, 20, 105);
     }
 
-    public void drawMeleeInfo(Graphics2D g2) {
+    public void drawMeleeInfo() {
         g2.setColor(Color.WHITE);
         g2.setFont(HUD_FONT);
         g2.drawString("Arma: cuchillo", 20, 105);
     }
 
     // Pantalla de intro del jefe final
-    public void drawBossIntro(Graphics2D g2, int step, double progress) {
+    public void drawBossIntro(int step, double progress) {
         // el texto aparece y se desvanece de a poco
         double fade = Math.max(0.0, Math.min(1.0, Math.min(progress / 0.25, (1.0 - progress) / 0.25)));
         int alpha = (int) (255 * fade);
@@ -515,20 +516,20 @@ public class GamePanel extends JPanel {
     }
 
     // Mensajes de estado
-    public void drawGameOver(Graphics2D g2) {
-        showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
+    public void drawGameOver() {
+        showFinalMessage(g2,"JUEGO TERMINADO", Color.RED);
     }
 
-    public void drawLevelCompleted(Graphics2D g2) {
-        showFinalMessage(g2, "¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
+    public void drawLevelCompleted() {
+        showFinalMessage(g2,"¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
     }
 
-    public void drawGameWon(Graphics2D g2) {
-        showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
+    public void drawGameWon() {
+        showFinalMessage(g2,"¡GANASTE!", Color.GREEN);
     }
 
-    public void drawPause(Graphics2D g2) {
-        showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
+    public void drawPause() {
+        showFinalMessage(g2,"PAUSA (ESC) para continuar)", Color.WHITE);
     }
 
     // Efectos para los power-ups
@@ -552,20 +553,20 @@ public class GamePanel extends JPanel {
     }
 
     // Efectos de la bala
-    public void drawBulletTracer(Graphics2D g2, double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String kind) {
+    public void drawBulletTracer(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String kind) {
         bulletEffects.drawTracer(g2, x, y, w, h, dirX, dirY, speed, age, kind);
     }
 
-    public void drawMuzzleFlash(Graphics2D g2, double x, double y, int w, int h, double angle, String weaponType, long lastShoot, double muzzleForward, double muzzleSide) {
+    public void drawMuzzleFlash(double x, double y, int w, int h, double angle, String weaponType, long lastShoot, double muzzleForward, double muzzleSide) {
         bulletEffects.drawMuzzleFlash(g2, x, y, w, h, angle, weaponType, lastShoot, muzzleForward, muzzleSide);
     }
 
     // Camara de seguimiento
-    public void applyCamera(Graphics2D g2, int camX, int camY) {
+    public void applyCamera(int camX, int camY) {
         g2.translate(-camX, -camY);
     }
 
-    public void resetCamera(Graphics2D g2, double camX, double camY) {
+    public void resetCamera(double camX, double camY) {
         g2.translate(camX, camY);
     }
 }

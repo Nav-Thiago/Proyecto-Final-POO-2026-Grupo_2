@@ -41,4 +41,16 @@ public abstract class Weapon {
     public abstract boolean attack(Player player, GameState state);
 
     public abstract boolean isAutomatic();
+
+    public boolean isRanged() {
+        return false;
+    }
+
+    public int getActualMunition() {
+        return 0;
+    }
+
+    public int getMaxMunition() {
+        return 0;
+    }
 }

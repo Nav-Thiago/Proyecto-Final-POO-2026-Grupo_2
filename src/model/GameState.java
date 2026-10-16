@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameState {
 
@@ -20,11 +21,11 @@ public class GameState {
 
     public GameState(Player player, int mapWidth, int mapHeight) {
         this.player = player;
-        this.enemies = new ArrayList<>();
-        this.playerBullets = new ArrayList<>();
-        this.poisonBullets = new ArrayList<>();
-        this.groundWeapons = new ArrayList<>();
-        this.powerUps = new ArrayList<>();
+        this.enemies = new CopyOnWriteArrayList<>();
+        this.playerBullets = new CopyOnWriteArrayList<>();
+        this.poisonBullets = new CopyOnWriteArrayList<>();
+        this.groundWeapons = new CopyOnWriteArrayList<>();
+        this.powerUps = new CopyOnWriteArrayList<>();
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
     }

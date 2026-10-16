@@ -48,9 +48,17 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
         this.actualMunition = this.maxMunition;
     }
 
+    @Override
+    public boolean isRanged() {
+        return true;
+    }
+
+    @Override
     public int getActualMunition() {
         return actualMunition;
     }
+
+    @Override
     public int getMaxMunition() {
         return maxMunition;
     }

@@ -3,8 +3,7 @@ package model;
 public class PoisonBullet extends Bullet {
 
     // Tamaño personalizado, lo usa BossSpit
-    public PoisonBullet(double x, double y, int width, int height,
-                        double dirX, double dirY, double speed, double damage) {
+    public PoisonBullet(double x, double y, int width, int height, double dirX, double dirY, double damage) {
         super(x, y, width, height, dirX, dirY, damage, 40);
     }
 

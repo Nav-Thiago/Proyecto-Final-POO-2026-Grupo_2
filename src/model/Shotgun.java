@@ -25,7 +25,7 @@ public class Shotgun extends FireArm {
                 // random.nextDouble() da un valor entre 0.0 y 1.0.
                 // Al restar 0.5 queda entre -0.5 y 0.5.
                 // Multiplicado por 0.6 genera una dispersión máxima de +/- 0.3 radianes.
-                double offset = (random.nextDouble() * 0.5) * 0.6;
+                double offset = (random.nextDouble() - 0.5) * 0.6;
                 double spreadAngle = player.getAngle() + offset;
  
                 double dirX = Math.cos(spreadAngle);
