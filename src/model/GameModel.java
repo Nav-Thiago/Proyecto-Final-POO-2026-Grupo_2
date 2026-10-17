@@ -35,14 +35,11 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 15);
+        this.spawner = new EnemySpawner(2000, 1);
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
 
         //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
-        /*double estacionamientoX = 6027.192493285801;
-        double estacionamientoY = 5056.252234340622;
-        state.addEnemy(new FinalBoss(estacionamientoX, estacionamientoY, state.getPoisonBullets()));
-        this.bossSpawned = true;*/
+        //spawnBoss(6027, 5056);
     }
 
     public void update() {
@@ -130,8 +127,8 @@ public class GameModel {
         }
     }
 
-    private void spawnBoss() {
-        state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets()));
+    private void spawnBoss(double x, double y) {
+        state.addEnemy(new FinalBoss(x, y, state.getPoisonBullets()));
         bossSpawned = true;
     }
 
