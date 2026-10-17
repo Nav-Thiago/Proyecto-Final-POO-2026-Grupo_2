@@ -32,7 +32,6 @@ public class MenuController implements MenuActions{
         menu.getPlayButton().addActionListener(e -> startGame());
         menu.getOptionButton().addActionListener(e -> optionMenu());
         menu.getExitButton().addActionListener(e -> System.exit(0));
-        
 
         mainContainer.add(uniSplash, "SPLASH_UNI");
         mainContainer.add(subjectSplash, "SPLASH_SUB");
@@ -106,7 +105,9 @@ public class MenuController implements MenuActions{
         boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj", mapCols, mapRows);
         state.setCollisionMatrix(matrix);
         state.getGroundWeapons().add(new WeaponItem(1753, 1415, new Shotgun(30, 800, 7, 7)));
+        state.getGroundWeapons().add(new WeaponItem(5774, 2226, new Shotgun(30, 800, 7, 7)));
         state.getGroundWeapons().add(new WeaponItem(2807, 323, new Rifle(30, 200, 30, 30)));
+        state.getGroundWeapons().add(new WeaponItem(4825, 5342, new Rifle(30, 200, 30, 30)));
 
         GameModel model = new GameModel(state, matchDAO);
         this.controller = new GameController(model);

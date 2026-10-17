@@ -10,7 +10,7 @@ public class GameModel {
     private final EnemySpawner spawner;
     private final PowerUpSpawner powerUpSpawner;
 
-    public enum GameStatus {PLAYING, PAUSED, BOSS_INTRO, LEVEL_COMPLETED, GAME_OVER, GAME_WON}
+    public enum GameStatus {PLAYING, PAUSED, BOSS_INTRO, GAME_OVER, GAME_WON}
     private GameStatus status = GameStatus.PLAYING;
     private boolean bossSpawned = false;
 
@@ -24,6 +24,10 @@ public class GameModel {
 
     private final MatchDAO matchDAO;
 
+    private long matchTimeMs;
+    private long bestTimeMs;
+    private boolean newRecord;
+
     public GameModel(GameState state, MatchDAO matchDAO) {
         this.state = state;
         this.matchDAO = matchDAO;
@@ -31,7 +35,7 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 10);
+        this.spawner = new EnemySpawner(2000, 15);
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
        //state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
     }
@@ -52,8 +56,8 @@ public class GameModel {
         // Mover jugador
         Player player = state.getPlayer();
         if (!player.isAlive()) {
-            status = GameStatus.GAME_OVER;
             saveMatch(false);
+            status = GameStatus.GAME_OVER;
             return;
         }
 
@@ -102,8 +106,8 @@ public class GameModel {
             if (!bossSpawned) {
                 startBossIntro();
             } else {
-                status = GameStatus.GAME_WON;
                 saveMatch(true);
+                status = GameStatus.GAME_WON;
             }
         }
     }
@@ -171,7 +175,25 @@ public class GameModel {
 
     public void saveMatch(boolean victory) {
         MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
+
+        List<MatchRecord> previousBest = matchDAO.bestSurvivalTimes(1);
+        long previousBestMs = previousBest.isEmpty() ? -1 : previousBest.get(0).getSurvivalTimeMs();
+
+        this.matchTimeMs = record.getSurvivalTimeMs();
+        this.newRecord = matchTimeMs > previousBestMs;
+        this.bestTimeMs = Math.max(matchTimeMs, previousBestMs);
+
         matchDAO.save(record);
+    }
+
+    public long getMatchTimeMs() {
+        return matchTimeMs;
+    }
+    public long getBestTimeMs() {
+        return bestTimeMs;
+    }
+    public boolean isNewRecord() {
+        return newRecord;
     }
 
     public GameState getState() {

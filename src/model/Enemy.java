@@ -58,7 +58,7 @@ public abstract class Enemy extends Character {
         double distance = Math.hypot(dx, dy);
         this.angle = Math.atan2(dy, dx);
 
-        if (distance > 800) {
+        if (distance > 1000) {
             return;
         }
 
