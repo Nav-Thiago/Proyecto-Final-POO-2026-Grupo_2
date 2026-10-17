@@ -509,17 +509,41 @@ public class GamePanel extends JPanel {
         g2.drawString(texto, textX, textY);
     }
 
+    private String formatTime(long ms) {
+        long totalSeconds = ms / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    private void drawCenterText(Graphics2D g2, String text, int y) {
+        FontMetrics fm = g2.getFontMetrics();
+        g2.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, y);
+    }
+
+    private void drawMatchSummary(Graphics2D g2, long matchTimeMs, long bestTimeMs, boolean newRecord) {
+        g2.setFont(new Font("Monospaced", Font.BOLD, 24));
+        int y = getHeight() / 2 + 50;
+
+        g2.setColor(Color.WHITE);
+        drawCenterText(g2, "Tu tiempo: " + formatTime(matchTimeMs), y);
+        drawCenterText(g2, "Mejor tiempo: " + formatTime(bestTimeMs), y + 35);
+
+        if (newRecord) {
+            g2.setColor(Color.YELLOW);
+            drawCenterText(g2, "¡NUEVO RÉCORD!", y + 80);
+        }
+    }
+
     // Mensajes de estado
-    public void drawGameOver() {
+    public void drawGameOver(long matchTimeMs, long bestTimeMS, boolean newRecord) {
         showFinalMessage(g2,"JUEGO TERMINADO", Color.RED);
+        drawMatchSummary(g2, matchTimeMs, bestTimeMS, newRecord);
     }
 
-    public void drawLevelCompleted() {
-        showFinalMessage(g2,"¡FELICITACIONES, HAS COMPLETADO EL NIVEL CON ÉXITO!", Color.YELLOW);
-    }
-
-    public void drawGameWon() {
+    public void drawGameWon(long matchTimeMs, long bestTimeMS, boolean newRecord) {
         showFinalMessage(g2,"¡GANASTE!", Color.GREEN);
+        drawMatchSummary(g2, matchTimeMs, bestTimeMS, newRecord);
     }
 
     public void drawPause() {
