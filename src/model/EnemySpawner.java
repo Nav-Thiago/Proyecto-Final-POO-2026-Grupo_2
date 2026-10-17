@@ -25,32 +25,22 @@ public class EnemySpawner {
             int mapWidth = state.getMapWidth();
             int mapHeight = state.getMapHeight();
             boolean[][] collisionMatrix = state.getCollisionMatrix();
-            int tileSize = GameState.TILE_SIZE;
 
             if (mapWidth <= 100 || mapHeight <= 100 || collisionMatrix == null) return;
 
             int spawnX = 0;
             int spawnY = 0;
             boolean validPosition = false;
-            int maxAttempts = 50; // Evita un bucle infinito si el mapa estuviera lleno
+            int maxAttempts = 50; 
             int attempts = 0;
+            int maxZombieWidth = 86;
+            int maxZombieHeight = 86;
 
-            // Buscamos una coordenada que no sea colisión
             while (!validPosition && attempts < maxAttempts) {
-                spawnX = random.nextInt(mapWidth - 100);
-                spawnY = random.nextInt(mapHeight - 100);
-                
-                int tileX = spawnX / tileSize;
-                int tileY = spawnY / tileSize;
-
-                // Verificamos que esté dentro de los límites de la matriz
-                if (tileX >= 0 && tileX < collisionMatrix.length && 
-                    tileY >= 0 && tileY < collisionMatrix[0].length) {
-                    
-                    // Si es false, significa que no hay colisión (es caminable)
-                    if (!collisionMatrix[tileX][tileY]) {
-                        validPosition = true;
-                    }
+                spawnX = random.nextInt(mapWidth - maxZombieWidth);
+                spawnY = random.nextInt(mapHeight - maxZombieHeight);
+                if (!isOnBlockedTile(spawnX, spawnY, maxZombieWidth, maxZombieHeight, collisionMatrix)) {
+                    validPosition = true;
                 }
                 attempts++;
             }
@@ -73,12 +63,29 @@ public class EnemySpawner {
         }
     }
 
+    // Método extraído de la lógica del PowerUpSpawner
+    private boolean isOnBlockedTile(double x, double y, int width, int height, boolean[][] map) {
+        int tile = GameState.TILE_SIZE;
+        int fromX = (int) x / tile;
+        int toX = (int) (x + width - 1) / tile;
+        int fromY = (int) y / tile;
+        int toY = (int) (y + height - 1) / tile;
+
+        for (int tx = fromX; tx <= toX; tx++) {
+            for (int ty = fromY; ty <= toY; ty++) {
+                if (tx < 0 || tx >= map.length || ty < 0 || ty >= map[0].length) return true;
+                if (map[tx][ty]) return true; // Hay colisión
+            }
+        }
+        return false; // Área completamente libre
+    }
+
     public boolean isWaveComplete(){
         return zombieSpawned >= waveLimit;
     }
 
     public void reset() {
-    this.zombieSpawned = 0; 
-    this.lastSpawnTime = System.currentTimeMillis();
+        this.zombieSpawned = 0; 
+        this.lastSpawnTime = System.currentTimeMillis();
     }
 }
