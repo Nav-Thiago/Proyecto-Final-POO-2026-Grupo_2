@@ -178,11 +178,12 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         panel.updateZombieAnimations();
         for (Enemy zombie : state.getEnemies()) {
             if (zombie.isAlive()) {
-                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName());
+                // Le pasamos zombie.isAttacking() al final
+                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking());
             }
         }
     }
-
+    
     private void drawPoisonBullets(GamePanel panel, GameState state) {
         for (Bullet poison : state.getPoisonBullets()) {
             panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight());
