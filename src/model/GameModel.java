@@ -9,8 +9,8 @@ public class GameModel {
     private final EnemySpawner spawner;
     private final PowerUpSpawner powerUpSpawner;
 
-    public enum gameStatus {PLAYING, PAUSED, BOSS_INTRO, LEVEL_COMPLETED, GAME_OVER, GAME_WON}
-    private gameStatus status = gameStatus.PLAYING;
+    public enum GameStatus {PLAYING, PAUSED, BOSS_INTRO, LEVEL_COMPLETED, GAME_OVER, GAME_WON}
+    private GameStatus status = GameStatus.PLAYING;
     private int actualLevel = 1;
     private final int totalLevels = 2;
     private boolean bossSpawned = false;
@@ -30,17 +30,17 @@ public class GameModel {
        // state.addEnemy(new FinalBoss(1000, 300, state.getPoisonBullets())); //PRUEBA PARA JEFE ZOMBIE FINAL
     }
 
-    public void update(int screenWidth, int screenHeight) {
-        if (status == gameStatus.BOSS_INTRO) {
+    public void update() {
+        if (status == GameStatus.BOSS_INTRO) {
             updateBossIntro();
             return;
         }
-        if (status != gameStatus.PLAYING) return;
+        if (status != GameStatus.PLAYING) return;
 
         // Mover jugador
         Player player = state.getPlayer();
         if (!player.isAlive()) {
-            status = gameStatus.GAME_OVER;
+            status = GameStatus.GAME_OVER;
             return;
         }
 
@@ -82,15 +82,15 @@ public class GameModel {
             if (!bossSpawned) {
                 startBossIntro();
             } else if (actualLevel < totalLevels) {
-                status = gameStatus.LEVEL_COMPLETED;
+                status = GameStatus.LEVEL_COMPLETED;
             } else {
-                status = gameStatus.GAME_WON;
+                status = GameStatus.GAME_WON;
             }
         }
     }
 
     private void startBossIntro() {
-        status = gameStatus.BOSS_INTRO;
+        status = GameStatus.BOSS_INTRO;
         bossIntroStart = System.currentTimeMillis();
     }
 
@@ -98,7 +98,7 @@ public class GameModel {
         long elapsed = System.currentTimeMillis() - bossIntroStart;
         if (elapsed >= INTRO_STEP_MS * INTRO_STEPS) {
             spawnBoss();
-            status = gameStatus.PLAYING;
+            status = GameStatus.PLAYING;
         }
     }
 
@@ -120,15 +120,15 @@ public class GameModel {
     }
 
     public void togglePause() {
-        if (status == gameStatus.PLAYING) {
-            status = gameStatus.PAUSED;
-        } else if (status == gameStatus.PAUSED) {
-            status = gameStatus.PLAYING;
+        if (status == GameStatus.PLAYING) {
+            status = GameStatus.PAUSED;
+        } else if (status == GameStatus.PAUSED) {
+            status = GameStatus.PLAYING;
         }
     }
 
     public void playerInteract() {
-        if (status != gameStatus.PLAYING) return;
+        if (status != GameStatus.PLAYING) return;
 
         List<WeaponItem> groundWeapons = state.getGroundWeapons();
         Player player = state.getPlayer();
@@ -151,18 +151,18 @@ public class GameModel {
     }
 
     public void nextLevel() {
-        if (status != gameStatus.LEVEL_COMPLETED) return;
+        if (status != GameStatus.LEVEL_COMPLETED) return;
         actualLevel++;
         bossSpawned = false;
         spawner.reset();
         state.purgeInactive();
-        status = gameStatus.PLAYING;
+        status = GameStatus.PLAYING;
     }
 
     public GameState getState() {
         return state;
     }
-    public gameStatus getStatus() {
+    public GameStatus getStatus() {
         return status;
     }
 }

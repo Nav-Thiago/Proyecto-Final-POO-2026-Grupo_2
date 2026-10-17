@@ -6,7 +6,6 @@ public class FinalBoss extends RangedEnemy{
 
     private static final long SPIT_COOLDOWN = 5000;
     private static final int SPIT_DAMAGE = 50;
-    private static final double SPIT_SPEED = 4.0;
 
     private long lastSpitTime;
 
@@ -22,7 +21,7 @@ public class FinalBoss extends RangedEnemy{
 
     @Override
     protected PoisonBullet createProjectile(double x, double y, double dirX, double dirY) {
-        return new BossSpit(x, y, dirX, dirY, SPIT_SPEED, SPIT_DAMAGE);
+        return new BossSpit(x, y, dirX, dirY, SPIT_DAMAGE);
     }
 
     @Override

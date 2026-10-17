@@ -53,29 +53,6 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     }
 
     // MOUSE
-
-    private void aimWithCamera(int screenmouseX, int screenmouseY) {
-        model.Player player = this.model.getState().getPlayer();
-
-        int screenWidth = gamePanel.getWidth();
-        int screenHeight = gamePanel.getHeight();
-
-        int mapWidth = this.model.getState().getMapWidth();
-        int mapHeight = this.model.getState().getMapHeight();
-
-        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
-        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-
-        // Cálculo para no irse del mapa
-        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
-        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
-
-        double worldMouseX = screenmouseX + camX;
-        double worldMouseY = screenmouseY + camY;
-
-        player.aimAt(worldMouseX, worldMouseY);
-    }
-
     @Override
     public void mouseMoved(MouseEvent e) {
         //this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
@@ -101,10 +78,37 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
         if (e.getButton() == MouseEvent.BUTTON1) {
             this.model.getState().getPlayer().setAttacking(false);
         }
+    }
+
+    private void aimWithCamera(int screenmouseX, int screenmouseY) {
+        model.Player player = this.model.getState().getPlayer();
+
+        int screenWidth = gamePanel.getWidth();
+        int screenHeight = gamePanel.getHeight();
+
+        int mapWidth = this.model.getState().getMapWidth();
+        int mapHeight = this.model.getState().getMapHeight();
+
+        int camX = calculateCameraX(player, screenWidth, mapWidth);
+        int camY = calculateCameraY(player, screenHeight, mapHeight);
+
+        double worldMouseX = screenmouseX + camX;
+        double worldMouseY = screenmouseY + camY;
+
+        player.aimAt(worldMouseX, worldMouseY);
+    }
+
+    private int calculateCameraX(Player player, int screenWidth, int mapWidth) {
+        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
+        return Math.max(0, Math.min(camX, mapWidth - screenWidth));
+    }
+
+    private int calculateCameraY(Player player, int screenHeight, int mapHeight) {
+        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
+        return Math.max(0, Math.min(camY, mapHeight - screenHeight));
     }
 
     public void drawScene(GamePanel panel) {
@@ -117,12 +121,8 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         int mapHeight = state.getMapHeight();
 
         // Cálculo de cámara
-        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
-        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-
-        // Cálculo para no irse del mapa
-        camX = Math.max(0, Math.min(camX, mapWidth - screenWidth));
-        camY = Math.max(0, Math.min(camY, mapHeight - screenHeight));
+        int camX = calculateCameraX(player, screenWidth, mapWidth);
+        int camY = calculateCameraY(player, screenHeight, mapHeight);
 
         panel.applyCamera(camX, camY);
         panel.drawBackground(mapWidth, mapHeight);
@@ -227,17 +227,17 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     }
 
     private void drawStatusMessage(GamePanel panel) {
-        GameModel.gameStatus status = this.model.getStatus();
+        GameModel.GameStatus status = this.model.getStatus();
 
-        if (status == GameModel.gameStatus.GAME_OVER) {
+        if (status == GameModel.GameStatus.GAME_OVER) {
             panel.drawGameOver();
-        } else if (status == GameModel.gameStatus.LEVEL_COMPLETED) {
+        } else if (status == GameModel.GameStatus.LEVEL_COMPLETED) {
             panel.drawLevelCompleted();
-        } else if (status == GameModel.gameStatus.GAME_WON) {
+        } else if (status == GameModel.GameStatus.GAME_WON) {
             panel.drawGameWon();
-        } else if (status == GameModel.gameStatus.PAUSED) {
+        } else if (status == GameModel.GameStatus.PAUSED) {
             panel.drawPause();
-        } else if (status == GameModel.gameStatus.BOSS_INTRO) {
+        } else if (status == GameModel.GameStatus.BOSS_INTRO) {
             panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
         }
     }

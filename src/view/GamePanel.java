@@ -319,12 +319,6 @@ public class GamePanel extends JPanel {
     }
 
     public void updateZombieAnimations() {
-        if (zombieWalkAnimation != null) {
-            zombieWalkAnimation.update();
-        }
-        if (tankWalkAnimation != null) {
-            tankWalkAnimation.update();
-        }
         for (Animation anim : zombieAnimations.values()) {
             anim.update();
         }

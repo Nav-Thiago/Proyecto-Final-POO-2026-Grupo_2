@@ -20,7 +20,7 @@ public class GameLoopThread extends Thread {
     @Override
     public void run() {  // Se redefine lo que debe hacer el hilo cuando se ejecute el .start()
         while (true) { // Game Loop
-            model.update(gamePanel.getWidth(), gamePanel.getHeight());
+            model.update();
             SwingUtilities.invokeLater(gamePanel :: repaint);
             try {
                 Thread.sleep(msPorFrame); // Se pide al hilo que "descanse" por 16 ms para que el bucle no use el 100% del procesador

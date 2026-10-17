@@ -18,7 +18,7 @@ public class PoisonZombie extends RangedEnemy {
 
     @Override
     protected PoisonBullet createProjectile(double x, double y, double dirX, double dirY) {
-        return new PoisonBullet(x, y, 3, 3, dirX, dirY, 4.0, 10.0);
+        return new PoisonBullet(x, y, 3, 3, dirX, dirY,10.0);
     }
 
     @Override

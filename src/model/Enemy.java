@@ -1,8 +1,5 @@
 package model;
 
-import java.util.Map;
-import java.util.Random;
-
 public abstract class Enemy extends Character {
 
     private final int ATTACK_COOLDOWN= 1000;

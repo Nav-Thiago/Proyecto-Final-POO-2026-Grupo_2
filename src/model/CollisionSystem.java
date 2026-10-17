@@ -4,7 +4,7 @@ public class CollisionSystem {
 
     public void update (GameState state) {
         checkBulletZombieCollision(state);
-        chekBulletMapCollision(state);
+        checkBulletMapCollision(state);
         checkPoisonPlayerCollision(state);
         checkZombiePlayerCollision(state);
     }
@@ -23,7 +23,7 @@ public class CollisionSystem {
         }
     }
 
-    private void chekBulletMapCollision (GameState state) {
+    private void checkBulletMapCollision (GameState state) {
         boolean[][] map = state.getCollisionMatrix();
         if (map == null) return;
 
