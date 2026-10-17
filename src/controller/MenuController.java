@@ -1,7 +1,6 @@
 package controller;
 
 import model.*;
-import persistence.MatchDAOMemory;
 import view.*;
 
 import java.awt.CardLayout;
@@ -17,9 +16,10 @@ public class MenuController implements MenuActions{
     private CardLayout cardLayout;
     private JPanel mainContainer;
 
-    private final MatchDAO matchDAO = new MatchDAOMemory();
+    private final MatchDAO matchDAO;
 
-    public MenuController() {
+    public MenuController(MatchDAO matchDAO) {
+        this.matchDAO = matchDAO;
         mainFrame = new MainFrame();
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
