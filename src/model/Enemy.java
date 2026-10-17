@@ -123,4 +123,8 @@ public abstract class Enemy extends Character {
     }
 
     public abstract int attack();
+
+    public boolean isAttacking() {
+        return (System.currentTimeMillis() - lastAttackTime < 500);
+    }
 }
