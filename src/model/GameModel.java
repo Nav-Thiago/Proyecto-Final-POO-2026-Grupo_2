@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class GameModel {
@@ -11,8 +12,6 @@ public class GameModel {
 
     public enum GameStatus {PLAYING, PAUSED, BOSS_INTRO, LEVEL_COMPLETED, GAME_OVER, GAME_WON}
     private GameStatus status = GameStatus.PLAYING;
-    private int actualLevel = 1;
-    private final int totalLevels = 2;
     private boolean bossSpawned = false;
 
     // Intro del jefe: 2 mensajes de INTRO_STEP_MS cada uno
@@ -20,9 +19,16 @@ public class GameModel {
     private static final long INTRO_STEP_MS = 3500;
     private long bossIntroStart;
 
-    public GameModel(GameState state) {
+    private final MatchStats stats;
+    private long lastUpdateTime = System.currentTimeMillis();
+
+    private final MatchDAO matchDAO;
+
+    public GameModel(GameState state, MatchDAO matchDAO) {
         this.state = state;
+        this.matchDAO = matchDAO;
         this.collisionSystem = new CollisionSystem();
+        this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
         this.spawner = new EnemySpawner(2000, 10);
@@ -31,16 +37,23 @@ public class GameModel {
     }
 
     public void update() {
+        long now = System.currentTimeMillis();
+        long delta = now - lastUpdateTime;
+        lastUpdateTime = now;
+
         if (status == GameStatus.BOSS_INTRO) {
             updateBossIntro();
             return;
         }
         if (status != GameStatus.PLAYING) return;
 
+        stats.addPlayedTime(delta);
+
         // Mover jugador
         Player player = state.getPlayer();
         if (!player.isAlive()) {
             status = GameStatus.GAME_OVER;
+            saveMatch(false);
             return;
         }
 
@@ -74,6 +87,13 @@ public class GameModel {
         // Sistema de colisiones (daño)
         collisionSystem.update(state);
 
+        // Los zombies muertos en este tick cuentan como eliminados
+        for (Enemy zombie : state.getEnemies()) {
+            if (!zombie.isAlive()) {
+                stats.addKill();
+            }
+        }
+
         // Limpia los inactivos
         state.purgeInactive();
 
@@ -81,10 +101,9 @@ public class GameModel {
         if (state.getEnemies().isEmpty() && spawner.isWaveComplete()) {
             if (!bossSpawned) {
                 startBossIntro();
-            } else if (actualLevel < totalLevels) {
-                status = GameStatus.LEVEL_COMPLETED;
             } else {
                 status = GameStatus.GAME_WON;
+                saveMatch(true);
             }
         }
     }
@@ -150,13 +169,9 @@ public class GameModel {
         }
     }
 
-    public void nextLevel() {
-        if (status != GameStatus.LEVEL_COMPLETED) return;
-        actualLevel++;
-        bossSpawned = false;
-        spawner.reset();
-        state.purgeInactive();
-        status = GameStatus.PLAYING;
+    public void saveMatch(boolean victory) {
+        MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
+        matchDAO.save(record);
     }
 
     public GameState getState() {

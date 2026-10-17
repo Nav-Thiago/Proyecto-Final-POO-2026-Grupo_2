@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import persistence.MatchDAOMemory;
 import view.*;
 
 import java.awt.CardLayout;
@@ -15,6 +16,8 @@ public class MenuController implements MenuActions{
 
     private CardLayout cardLayout;
     private JPanel mainContainer;
+
+    private final MatchDAO matchDAO = new MatchDAOMemory();
 
     public MenuController() {
         mainFrame = new MainFrame();
@@ -105,7 +108,7 @@ public class MenuController implements MenuActions{
         state.getGroundWeapons().add(new WeaponItem(1753, 1415, new Shotgun(30, 800, 7, 7)));
         state.getGroundWeapons().add(new WeaponItem(2807, 323, new Rifle(30, 200, 30, 30)));
 
-        GameModel model = new GameModel(state);
+        GameModel model = new GameModel(state, matchDAO);
         this.controller = new GameController(model);
         GamePanel gamePanel = new GamePanel(this.controller);
         this.controller.setGamePanel(gamePanel);

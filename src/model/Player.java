@@ -28,6 +28,8 @@ public class Player extends Character {
     private long lastDamageTime = 0;
     private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
 
+    private int damageTaken = 0;
+
     public Player(double x, double y) {
         super(x, y, 64, 64, 8 , 100, 100);
 
@@ -170,8 +172,14 @@ public class Player extends Character {
         // Evaluamos el cooldown de choque antes de procesar el daño
         if (currentTime - lastDamageTime >= invulnerabilityCooldown) {
             // Los decoradores de escudo absorben primero; a la vida llega lo que sobra
-            super.takeDamage(stats.absorbDamage(amount));
-            
+            int reachesHealth = stats.absorbDamage(amount);
+            int absorbedByShield = amount - reachesHealth;
+
+            int healthBefore = getHealth();
+            super.takeDamage(reachesHealth);
+
+            damageTaken += absorbedByShield + (healthBefore - getHealth());
+
             // Reiniciamos el temporizador de inmunidad
             this.lastDamageTime = currentTime;
         }
@@ -189,5 +197,9 @@ public class Player extends Character {
         if (this.ammoHolder != null) {
             this.ammoHolder.refillAmmo();
         }
+    }
+
+    public int getDamageTaken() {
+        return damageTaken;
     }
 }

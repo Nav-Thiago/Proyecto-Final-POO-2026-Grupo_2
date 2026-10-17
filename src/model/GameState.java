@@ -19,6 +19,8 @@ public class GameState {
     public static final int TILE_SIZE = 32;
     private boolean[][] collisionMatrix;
 
+    private final MatchStats matchStats = new MatchStats();
+
     public GameState(Player player, int mapWidth, int mapHeight) {
         this.player = player;
         this.enemies = new CopyOnWriteArrayList<>();
@@ -59,6 +61,9 @@ public class GameState {
     }
     public int getMapHeight(){
         return mapHeight;
+    }
+    public MatchStats getMatchStats() {
+        return matchStats;
     }
 
     public void setCollisionMatrix(boolean[][] matrix) {

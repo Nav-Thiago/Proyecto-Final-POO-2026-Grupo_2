@@ -16,7 +16,10 @@ public class CollisionSystem {
             for (Enemy zombie : state.getEnemies()) {
                 if (zombie.isAlive() && bullet.collidesWith(zombie)) {
                     bullet.setActive(false);
+
+                    int healthBefore = zombie.getHealth();
                     zombie.takeDamage((int) bullet.getDamage());
+                    state.getMatchStats().addDamageDealt(healthBefore - zombie.getHealth());
                     break;
                 }
             }

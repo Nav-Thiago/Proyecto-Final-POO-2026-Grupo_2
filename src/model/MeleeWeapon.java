@@ -41,7 +41,9 @@ public class MeleeWeapon extends Weapon {
                     angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
 
                     if (Math.abs(angleDiff) <= this.arcAngle / 2.0) {
+                        int healthBefore = zombie.getHealth();
                         zombie.takeDamage((int) totalDamage);
+                        state.getMatchStats().addDamageDealt(healthBefore - zombie.getHealth());
                         hitSomething = true;
                     }
                 }
