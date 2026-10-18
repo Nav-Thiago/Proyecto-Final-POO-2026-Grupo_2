@@ -35,11 +35,8 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 1);
+        this.spawner = new EnemySpawner(2000, 15);
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
-
-        //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
-        spawnBoss(6027, 5056);
     }
 
     public void update() {
