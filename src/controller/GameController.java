@@ -74,10 +74,6 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             this.model.getState().getPlayer().attack(model.getState());
             this.model.getState().getPlayer().setAttacking(true);
         }
-
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            System.out.println("X: " + model.getState().getPlayer().getX() + "| Y: " + model.getState().getPlayer().getY());
-        }
     }
 
     @Override
@@ -235,7 +231,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         GameModel.GameStatus status = this.model.getStatus();
 
         if (status == GameModel.GameStatus.GAME_OVER) {
-            panel.drawGameOver(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
+            panel.drawGameOver(model.getMatchTimeMs());
         } else if (status == GameModel.GameStatus.GAME_WON) {
             panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
         } else if (status == GameModel.GameStatus.PAUSED) {

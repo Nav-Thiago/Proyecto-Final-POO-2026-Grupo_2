@@ -20,12 +20,20 @@ public class MatchDAOMemory implements MatchDAO {
     }
 
     @Override
-    public List<MatchRecord> bestSurvivalTimes(int limit) {
+    public List<MatchRecord> fastestVictories(int limit) {
         if (limit <= 0) {
             return new ArrayList<>();
         }
-        List<MatchRecord> sorted = new ArrayList<>(matches);
-        sorted.sort(Comparator.comparingLong(MatchRecord::getSurvivalTimeMs).reversed());
-        return new ArrayList<>(sorted.subList(0, Math.min(limit, sorted.size())));
+
+        List<MatchRecord> victories = new ArrayList<>();
+
+        for (MatchRecord match : matches) {
+            if (match.isVictory()) {
+                victories.add(match);
+            }
+        }
+
+        victories.sort(Comparator.comparingLong(MatchRecord::getSurvivalTimeMs));
+        return new ArrayList<>(victories.subList(0, Math.min(limit, victories.size())));
     }
 }
