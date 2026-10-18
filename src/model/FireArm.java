@@ -49,6 +49,9 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
     }
 
     @Override
+    public abstract int getAmmoPerPickup();
+
+    @Override
     public boolean isRanged() {
         return true;
     }

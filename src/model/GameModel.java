@@ -39,7 +39,7 @@ public class GameModel {
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
 
         //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
-        spawnBoss(6027, 5056);
+        //spawnBoss(6027, 5056);
     }
 
     public void update() {

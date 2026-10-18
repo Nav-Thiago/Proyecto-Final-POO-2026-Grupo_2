@@ -115,7 +115,7 @@ public class PowerUpSpawner {
             case 0 -> new Heal(x, y, 25);
             case 1 -> new Shield(x, y, 50);
             case 2 -> new DamageBoost(x, y, 10000);
-            case 3 -> new Ammo(x, y, 30);
+            case 3 -> new Ammo(x, y);
             default -> new MaxAmmo(x, y);
         };
     }

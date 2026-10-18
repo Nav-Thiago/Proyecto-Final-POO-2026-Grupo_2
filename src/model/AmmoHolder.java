@@ -7,4 +7,5 @@ package model;
 public interface AmmoHolder {
     void addAmmo(int amount);
     void refillAmmo();
+    int getAmmoPerPickup();
 }
