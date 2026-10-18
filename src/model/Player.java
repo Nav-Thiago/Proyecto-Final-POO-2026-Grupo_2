@@ -3,7 +3,11 @@ package model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.UnaryOperator;
+
+import view.hud.Hud;
 
 public class Player extends Character {
 
@@ -27,8 +31,11 @@ public class Player extends Character {
     // --- VARIABLES DE INMUNIDAD (I-FRAMES) ---
     private long lastDamageTime = 0;
     private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
-
+     
+    //variable para llevar un registro del daño total recibido por el jugador(HUD)
     private int damageTaken = 0;
+
+    private final Queue<String> pickupEvents = new ConcurrentLinkedQueue<>();
 
     public Player(double x, double y) {
         super(x, y, 64, 64, 8 , 100, 100);
@@ -36,6 +43,8 @@ public class Player extends Character {
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
+
+    private final Hud hud = new Hud();
 
     public void setMoveUp(boolean moveUp) {
         this.moveUp = moveUp;
@@ -202,4 +211,10 @@ public class Player extends Character {
     public int getDamageTaken() {
         return damageTaken;
     }
+
+    //public void notifyPickup(String powerUpType) { pickupEvents.add(powerUpType); }
+    public String pollPickup() { return pickupEvents.poll(); }
+
+   
+
 }

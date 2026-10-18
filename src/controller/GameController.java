@@ -2,6 +2,7 @@ package controller;
 
 import model.*;
 import view.GamePanel;
+import view.hud.HudData;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -211,24 +212,24 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     }
 
     private void drawHud(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
+         Player player = state.getPlayer();
 
-        panel.drawHealth(player.getHealth(), player.getMaxHealth());
+         String pickup;
+          while ((pickup = player.pollPickup()) != null) {
+          panel.onPowerUpPickup(pickup);
+}
 
-        if (player.getShield() > 0) {
-            panel.drawShield(player.getShield());
-        }
+Weapon weapon = player.getActiveWeapon();
+boolean ranged = weapon.isRanged();
 
-        if (player.getDamageBonus() > 0) {
-            panel.drawDamageBonus(player.getDamageBonus());
-        }
-
-        Weapon weapon = player.getActiveWeapon();
-        if (weapon.isRanged()) {
-            panel.drawFireArmInfo(weapon.getClass().getSimpleName(), weapon.getActualMunition(), weapon.getMaxMunition());
-        } else {
-            panel.drawMeleeInfo();
-        }
+panel.drawHud(new HudData(
+        player.getHealth(), player.getMaxHealth(),
+        player.getShield(), ShieldDecorator.MAX_SHIELD,
+        player.getDamageBonus(),
+        ranged, weapon.getClass().getSimpleName(),
+        ranged ? weapon.getActualMunition() : 0,
+        ranged ? weapon.getMaxMunition() : 0));
+        
     }
 
     private void drawStatusMessage(GamePanel panel) {

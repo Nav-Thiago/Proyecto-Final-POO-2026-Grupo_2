@@ -1,6 +1,7 @@
 package view;
 
 import controller.GameController;
+import view.hud.HudData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,6 +18,8 @@ import java.awt.geom.Area;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+
+import view.hud.Hud;
 
 public class GamePanel extends JPanel {
 
@@ -42,7 +45,7 @@ public class GamePanel extends JPanel {
     private final Map<String, BufferedImage> weaponSprites = new HashMap<>();
     private final BulletEffects bulletEffects = new BulletEffects();
 
-    private static final Font HUD_FONT = new Font("Monospaced", Font.BOLD, 20);
+    private final Hud hud = new Hud();
 
     private Graphics2D g2;
 
@@ -445,35 +448,9 @@ public class GamePanel extends JPanel {
     }
 
     // HUD
-    public void drawHealth(int health, int maxHealth) {
-        g2.setColor(Color.WHITE);
-        g2.setFont(HUD_FONT); // Configura la tipografía
-        g2.drawString("Supervivencia: " + health + " / " + maxHealth, 20, 30); // Dibuja el texto en la esquina superior izquierda
-    }
-
-    public void drawShield(int shield) {
-        g2.setColor(Color.CYAN);
-        g2.setFont(HUD_FONT);
-        g2.drawString("Escudo: " + shield, 20, 55);
-    }
-
-    public void drawDamageBonus(double damageBonus) {
-        g2.setColor(Color.RED);
-        g2.setFont(HUD_FONT);
-        g2.drawString("Daño +" + Math.round(damageBonus), 20, 80);
-    }
-
-    public void drawFireArmInfo(String weaponType, int ammo, int maxAmmo) {
-        g2.setColor(Color.WHITE);
-        g2.setFont(HUD_FONT);
-        g2.drawString("Arma: " + weaponType + " - Balas: " + ammo + " / " + maxAmmo, 20, 105);
-    }
-
-    public void drawMeleeInfo() {
-        g2.setColor(Color.WHITE);
-        g2.setFont(HUD_FONT);
-        g2.drawString("Arma: cuchillo", 20, 105);
-    }
+    
+       public void drawHud(HudData data) { hud.draw(g2, data, getWidth(), getHeight()); }
+public void onPowerUpPickup(String type) { hud.onPickup(type); }
 
     // Pantalla de intro del jefe final
     public void drawBossIntro(int step, double progress) {
