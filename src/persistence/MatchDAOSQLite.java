@@ -53,7 +53,7 @@ public class MatchDAOSQLite implements MatchDAO {
     }
 
     @Override
-    public List<MatchRecord> bestSurvivalTimes(int limit) {
+    public List<MatchRecord> fastestVictories(int limit) {
         List<MatchRecord> result = new ArrayList<>();
 
         if (limit <= 0) {
@@ -61,7 +61,8 @@ public class MatchDAOSQLite implements MatchDAO {
         }
 
         String sql = "SELECT match_date, survival_time_ms, zombies_killed, damage_dealt,"
-                + "damage_taken, victory FROM matches ORDER BY survival_time_ms DESC LIMIT ?";
+                + "damage_taken, victory FROM matches WHERE victory = 1 "
+                + " ORDER BY survival_time_ms ASC LIMIT ?";
 
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setInt(1, limit);

@@ -526,29 +526,37 @@ public void onPowerUpPickup(String type) { hud.onPickup(type); }
         g2.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, y);
     }
 
-    private void drawMatchSummary(Graphics2D g2, long matchTimeMs, long bestTimeMs, boolean newRecord) {
+    private void drawTime(Graphics2D g2, long matchTimeMs) {
         g2.setFont(new Font("Monospaced", Font.BOLD, 24));
         int y = getHeight() / 2 + 50;
 
         g2.setColor(Color.WHITE);
         drawCenterText(g2, "Tu tiempo: " + formatTime(matchTimeMs), y);
-        drawCenterText(g2, "Mejor tiempo: " + formatTime(bestTimeMs), y + 35);
+    }
+
+    private void drawRecord(Graphics2D g2, long bestTimeMs, boolean newRecord) {
+        g2.setFont(new Font("Monospaced", Font.BOLD, 24));
+        int y = getHeight() / 2 + 85;
+
+        g2.setColor(Color.WHITE);
+        drawCenterText(g2, "Mejor tiempo: " + formatTime(bestTimeMs), y);
 
         if (newRecord) {
             g2.setColor(Color.YELLOW);
-            drawCenterText(g2, "¡NUEVO RÉCORD!", y + 80);
+            drawCenterText(g2, "¡NUEVO RÉCORD!", y + 45);
         }
     }
 
     // Mensajes de estado
-    public void drawGameOver(long matchTimeMs, long bestTimeMS, boolean newRecord) {
+    public void drawGameOver(long matchTimeMs) {
         showFinalMessage(g2,"JUEGO TERMINADO", Color.RED);
-        drawMatchSummary(g2, matchTimeMs, bestTimeMS, newRecord);
+        drawTime(g2, matchTimeMs);
     }
 
     public void drawGameWon(long matchTimeMs, long bestTimeMS, boolean newRecord) {
         showFinalMessage(g2,"¡GANASTE!", Color.GREEN);
-        drawMatchSummary(g2, matchTimeMs, bestTimeMS, newRecord);
+        drawTime(g2, matchTimeMs);
+        drawRecord(g2, bestTimeMS, newRecord);
     }
 
     public void drawPause() {

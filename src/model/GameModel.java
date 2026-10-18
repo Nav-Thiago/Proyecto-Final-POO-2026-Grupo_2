@@ -35,7 +35,7 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 1);
+        this.spawner = new EnemySpawner(2000, 15);
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
 
         //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
@@ -122,7 +122,7 @@ public class GameModel {
     private void updateBossIntro() {
         long elapsed = System.currentTimeMillis() - bossIntroStart;
         if (elapsed >= INTRO_STEP_MS * INTRO_STEPS) {
-            spawnBoss(6027, 5056); 
+            spawnBoss(6027, 5056);
             status = GameStatus.PLAYING;
         }
     }
@@ -178,12 +178,18 @@ public class GameModel {
     public void saveMatch(boolean victory) {
         MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
 
-        List<MatchRecord> previousBest = matchDAO.bestSurvivalTimes(1);
-        long previousBestMs = previousBest.isEmpty() ? -1 : previousBest.get(0).getSurvivalTimeMs();
+
 
         this.matchTimeMs = record.getSurvivalTimeMs();
-        this.newRecord = matchTimeMs > previousBestMs;
-        this.bestTimeMs = Math.max(matchTimeMs, previousBestMs);
+
+        if (victory) {
+            List<MatchRecord> previousBest = matchDAO.fastestVictories(1);
+            boolean noPrevious = previousBest.isEmpty();
+            long previousBestMs = noPrevious ? matchTimeMs : previousBest.get(0).getSurvivalTimeMs();
+            this.newRecord = noPrevious || matchTimeMs < previousBestMs;
+            this.bestTimeMs = newRecord ? matchTimeMs : previousBestMs;
+
+        }
 
         matchDAO.save(record);
     }
