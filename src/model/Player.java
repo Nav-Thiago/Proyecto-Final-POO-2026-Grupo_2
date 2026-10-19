@@ -212,8 +212,11 @@ public class Player extends Character {
         return damageTaken;
     }
 
-    //public void notifyPickup(String powerUpType) { pickupEvents.add(powerUpType); }
-    public String pollPickup() { return pickupEvents.poll(); }
+    public void notifyPickup(String powerUpType) {
+        pickupEvents.add(powerUpType); }
+
+    public String pollPickup() {
+        return pickupEvents.poll(); }
 
    
 
