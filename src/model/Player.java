@@ -7,8 +7,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.UnaryOperator;
 
-import view.hud.Hud;
-
 public class Player extends Character {
 
     private boolean moveUp;
@@ -43,8 +41,6 @@ public class Player extends Character {
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
-
-    private final Hud hud = new Hud();
 
     public void setMoveUp(boolean moveUp) {
         this.moveUp = moveUp;

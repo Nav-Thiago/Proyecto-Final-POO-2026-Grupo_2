@@ -178,8 +178,6 @@ public class GameModel {
     public void saveMatch(boolean victory) {
         MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
 
-
-
         this.matchTimeMs = record.getSurvivalTimeMs();
 
         if (victory) {
@@ -188,7 +186,6 @@ public class GameModel {
             long previousBestMs = noPrevious ? matchTimeMs : previousBest.get(0).getSurvivalTimeMs();
             this.newRecord = noPrevious || matchTimeMs < previousBestMs;
             this.bestTimeMs = newRecord ? matchTimeMs : previousBestMs;
-
         }
 
         matchDAO.save(record);

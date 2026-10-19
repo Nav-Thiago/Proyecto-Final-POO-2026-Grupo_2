@@ -47,8 +47,8 @@ public class Shotgun extends FireArm {
         return false;
     }
 
-@Override
-public int getAmmoPerPickup() {
-    return 3;// recibe 3 balas por cada power up de munición
-}
+    @Override
+    public int getAmmoPerPickup() {
+    return 3;
+} // recibe 3 balas por cada power up de munición
 }

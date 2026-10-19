@@ -11,9 +11,9 @@ public class Handgun extends FireArm {
         return false;
     }
 
-@Override
-public int getAmmoPerPickup() {
-    return 8; // recibe 8 balas por cada power up de munición
-}
+    @Override
+    public int getAmmoPerPickup() {
+    return 8;
+    } // recibe 8 balas por cada power up de munición
 
 }

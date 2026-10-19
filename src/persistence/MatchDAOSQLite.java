@@ -36,8 +36,7 @@ public class MatchDAOSQLite implements MatchDAO {
             return false;
         }
 
-        String sql = "INSERT INTO matches (match_date, survival_time_ms, zombies_killed, damage_dealt, damage_taken, victory)"
-                + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO matches (match_date, survival_time_ms, zombies_killed, damage_dealt, damage_taken, victory) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setString(1, match.getDate().toString());
