@@ -7,7 +7,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.UnaryOperator;
 
-import view.hud.Hud;
+
 
 public class Player extends Character {
 
@@ -44,7 +44,7 @@ public class Player extends Character {
         this.activeWeapon = this.knife;
     }
 
-    private final Hud hud = new Hud();
+    
 
     public void setMoveUp(boolean moveUp) {
         this.moveUp = moveUp;
@@ -216,8 +216,11 @@ public class Player extends Character {
         return damageTaken;
     }
 
-    //public void notifyPickup(String powerUpType) { pickupEvents.add(powerUpType); }
-    public String pollPickup() { return pickupEvents.poll(); }
+    public void notifyPickup(String powerUpType) { 
+        pickupEvents.add(powerUpType); }
+
+    public String pollPickup() { 
+        return pickupEvents.poll(); }
 
    
 
