@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import view.GamePanel;
-import view.hud.HudData;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -14,9 +13,11 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     private final GameModel model;
     private GamePanel gamePanel;
+    private final SceneDrawer sceneDrawer;
 
     public GameController(GameModel model) {
         this.model = model;
+        this.sceneDrawer = new SceneDrawer(model);
     }
 
     public void setGamePanel (GamePanel gamePanel) {
@@ -84,7 +85,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         }
     }
 
-    private void aimWithCamera(int screenmouseX, int screenmouseY) {
+    private void aimWithCamera(int screenMouseX, int screenMouseY) {
         model.Player player = this.model.getState().getPlayer();
 
         int screenWidth = gamePanel.getWidth();
@@ -93,171 +94,19 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         int mapWidth = this.model.getState().getMapWidth();
         int mapHeight = this.model.getState().getMapHeight();
 
-        int camX = calculateCameraX(player, screenWidth, mapWidth);
-        int camY = calculateCameraY(player, screenHeight, mapHeight);
+        int camX = Camera.calculateX(player, screenWidth, mapWidth);
+        int camY = Camera.calculateY(player, screenHeight, mapHeight);
 
-        double worldMouseX = screenmouseX + camX;
-        double worldMouseY = screenmouseY + camY;
+        double worldMouseX = screenMouseX + camX;
+        double worldMouseY = screenMouseY + camY;
 
         player.aimAt(worldMouseX, worldMouseY);
     }
 
-    private int calculateCameraX(Player player, int screenWidth, int mapWidth) {
-        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
-        return Math.max(0, Math.min(camX, mapWidth - screenWidth));
-    }
-
-    private int calculateCameraY(Player player, int screenHeight, int mapHeight) {
-        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-        return Math.max(0, Math.min(camY, mapHeight - screenHeight));
-    }
-
     public void drawScene(GamePanel panel) {
-        GameState state = this.model.getState();
-        Player player = state.getPlayer();
-
-        int screenWidth = panel.getWidth();
-        int screenHeight = panel.getHeight();
-        int mapWidth = state.getMapWidth();
-        int mapHeight = state.getMapHeight();
-
-        // Cálculo de cámara
-        int camX = calculateCameraX(player, screenWidth, mapWidth);
-        int camY = calculateCameraY(player, screenHeight, mapHeight);
-
-        panel.applyCamera(camX, camY);
-        panel.drawBackground(mapWidth, mapHeight);
-
-        // Dibuja al power-up
-        drawPowerUps(panel, state); // [POWER-UP] primero, para que queden debajo de zombies y jugador
-
-        // Dibuja Armas en el suelo
-        drawGroundWeapons(panel, state); // [ARMAS] segundo, para que queden debajo de zombies y jugador
-
-        // Dibuja los zombies
-        drawZombies(panel, state);
-
-        // Dibuja a las balas venenosas
-        drawPoisonBullets(panel, state);
-
-        // Dibuja al jugador
-        drawPlayer(panel, state);
-
-        // Dibuja la primera capa del mapa
-        drawFirstLayer(panel, state);
-
-        // Dibuja la oscuridad y el cono de visión
-        drawDarkness(panel, state);
-
-        // Dibuja los disparos de las armas
-        drawBulletTracers(panel, state);
-        drawMuzzleFlash(panel, state);
-
-        // Deshace la cámara
-        panel.resetCamera(camX, camY);
-
-        // Dibuja el HUD
-        drawHud(panel, state);
-
-        // Dibuja los mensajes de estado
-        drawStatusMessage(panel);
+        sceneDrawer.drawScene(panel);
     }
 
-    private void drawPowerUps(GamePanel panel, GameState state) {
-        for (PowerUp p : state.getPowerUps()) {
-            panel.drawPowerUp(p.getX(), p.getY(), p.getWidth(), p.getHeight(), p.getClass().getSimpleName());
-        }
-    }
-
-    private void drawGroundWeapons(GamePanel panel, GameState state) {
-        for (WeaponItem item : state.getGroundWeapons()) {
-            panel.drawGroundWeapon(item.getX(), item.getY(), item.getWidth(), item.getHeight(), item.getWeapon().getClass().getSimpleName());
-        }
-    }
-
-    private void drawZombies(GamePanel panel, GameState state) {
-        panel.updateZombieAnimations();
-        for (Enemy zombie : state.getEnemies()) {
-            if (zombie.isAlive()) {
-                // Le pasamos zombie.isAttacking() al final
-                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking());
-            }
-        }
-    }
-    
-    private void drawPoisonBullets(GamePanel panel, GameState state) {
-        for (Bullet poison : state.getPoisonBullets()) {
-            panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight());
-        }
-    }
-
-    private void drawPlayer(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        if (player.isAlive()) {
-            panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), player.isMoving(), player.getActiveWeapon().getClass().getSimpleName());
-        }
-    }
-
-    private void drawFirstLayer(GamePanel panel, GameState state) {
-        panel.drawFirstLayer(state.getMapWidth(), state.getMapHeight());
-    }
-
-    private void drawDarkness(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        panel.drawDarkness(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), state.getMapWidth(), state.getMapHeight());
-    }
-
-    private void drawHud(GamePanel panel, GameState state) {
-         Player player = state.getPlayer();
-
-         String pickup;
-          while ((pickup = player.pollPickup()) != null) {
-          panel.onPowerUpPickup(pickup);
-}
-
-Weapon weapon = player.getActiveWeapon();
-boolean ranged = weapon.isRanged();
-
-panel.drawHud(new HudData(
-        player.getHealth(), player.getMaxHealth(),
-        player.getShield(), ShieldDecorator.MAX_SHIELD,
-        player.getDamageBonus(),
-        ranged, weapon.getClass().getSimpleName(),
-        ranged ? weapon.getActualMunition() : 0,
-        ranged ? weapon.getMaxMunition() : 0));
-        
-    }
-
-    private void drawStatusMessage(GamePanel panel) {
-        GameModel.GameStatus status = this.model.getStatus();
-
-        if (status == GameModel.GameStatus.GAME_OVER) {
-            panel.drawGameOver(model.getMatchTimeMs());
-        } else if (status == GameModel.GameStatus.GAME_WON) {
-            panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
-        } else if (status == GameModel.GameStatus.PAUSED) {
-            panel.drawPause();
-        } else if (status == GameModel.GameStatus.BOSS_INTRO) {
-            panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
-        }
-    }
-
-    private void drawBulletTracers(GamePanel panel, GameState state) {
-        for (Bullet bullet : state.getPlayerBullets()) {
-            if (bullet.isActive()) {
-                panel.drawBulletTracer(bullet.getX(), bullet.getY(), bullet.getWidth(), bullet.getHeight(), bullet.getDirX(), bullet.getDirY(), bullet.getSpeed(), bullet.getAge(), bullet.getKind().name());
-            }
-        }
-    }
-
-    private void drawMuzzleFlash(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        Weapon weapon = player.getActiveWeapon();
-
-        if (player.isAlive() && weapon.isRanged()) {
-            panel.drawMuzzleFlash(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), weapon.getClass().getSimpleName(), weapon.getLastShoot(), Weapon.MUZZLE_FORWARD, Weapon.MUZZLE_SIDE);
-        }
-    }
 
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
     // public class GameController extends MouseAdapter implements KeyListener {
