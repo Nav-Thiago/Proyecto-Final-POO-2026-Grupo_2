@@ -1,5 +1,6 @@
 import controller.MenuController;
 import model.MatchDAO;
+import persistence.AsyncMatchDAO;
 import persistence.DatabaseConnection;
 import persistence.MatchDAOMemory;
 import persistence.MatchDAOSQLite;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) {
-        MatchDAO matchDAO = createMatchDAO();
+        MatchDAO matchDAO = new AsyncMatchDAO(createMatchDAO());
         new MenuController(matchDAO);
     }
 
