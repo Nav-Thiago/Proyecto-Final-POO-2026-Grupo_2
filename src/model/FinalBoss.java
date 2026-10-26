@@ -33,7 +33,13 @@ public class FinalBoss extends RangedEnemy{
         long now = System.currentTimeMillis();
         if (now - lastSpitTime >= SPIT_COOLDOWN) {
             shootAt(player);
+            resetAttackCooldown(); 
             lastSpitTime = now;
         }
+    }
+
+    @Override
+    public boolean isSpitting() {
+        return (System.currentTimeMillis() - lastSpitTime < 500);
     }
 }
