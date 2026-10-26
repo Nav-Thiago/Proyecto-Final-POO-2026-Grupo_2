@@ -2,7 +2,6 @@ import controller.MenuController;
 import model.MatchDAO;
 import persistence.AsyncMatchDAO;
 import persistence.DatabaseConnection;
-import persistence.MatchDAOMemory;
 import persistence.MatchDAOSQLite;
 
 import java.sql.Connection;
@@ -11,16 +10,14 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) {
-        MatchDAO matchDAO = new AsyncMatchDAO(createMatchDAO());
-        new MenuController(matchDAO);
-    }
-
-    private static MatchDAO createMatchDAO() {
         try {
             Connection connection = DatabaseConnection.getInstance().getConnection();
-            return new MatchDAOSQLite(connection);
+            MatchDAO matchDAO = new AsyncMatchDAO(new MatchDAOSQLite(connection));
+            new MenuController(matchDAO);
         } catch (SQLException e) {
-            return new MatchDAOMemory();
+            System.err.println("ERROR: No se pudo conectar a la base de datos");
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }
