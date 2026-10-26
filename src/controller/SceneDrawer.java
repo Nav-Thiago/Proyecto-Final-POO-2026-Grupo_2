@@ -61,8 +61,7 @@ public class SceneDrawer {
         panel.updateZombieAnimations();
         for (Enemy zombie : state.getEnemies()) {
             if (zombie.isAlive()) {
-                // Le pasamos zombie.isAttacking() al final
-                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking());
+                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking(), zombie.isSpitting());
             }
         }
     }
