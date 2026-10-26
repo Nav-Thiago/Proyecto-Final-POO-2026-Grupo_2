@@ -127,4 +127,8 @@ public abstract class Enemy extends Character {
     public boolean isAttacking() {
         return (System.currentTimeMillis() - lastAttackTime < 500);
     }
+
+    public boolean isSpitting() {
+        return false; 
+    }
 }
