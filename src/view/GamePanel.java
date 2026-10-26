@@ -1,6 +1,8 @@
 package view;
 
 import controller.GameController;
+import model.Enemy;
+import model.FinalBoss;
 import view.hud.HudData;
 
 import javax.imageio.ImageIO;
@@ -35,8 +37,10 @@ public class GamePanel extends JPanel {
     private final Map<String, Animation> zombieAnimations = new HashMap<>();
     private final Map<String, BufferedImage> zombieIdleSprites = new HashMap<>();
     private final Map<String, Animation> zombieAttackAnimations = new HashMap<>();
+    private final Map<String, Animation> zombieSpitAnimations = new HashMap<>();
 
     private static final Map<String, Double> SPRITE_ROTATION = Map.of("FastZombie", Math.PI / 2, "PoisonZombie", Math.PI / 2, "TankZombie", -Math.PI / 2, "FinalBoss", -Math.PI / 2);
+    private static final Map<String, Double> ATTACK_SCALES = Map.of("FinalBoss", 2.0);
 
     private final Map<String, BufferedImage> powerUpSprites = new HashMap<>();
     private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
@@ -245,7 +249,16 @@ public class GamePanel extends JPanel {
                  InputStream in = getClass().getResourceAsStream(route);
                  if (in != null) walkFrames[i] = ImageIO.read(in);
             }
-            zombieAnimations.put("FinalBoss", new Animation(150, walkFrames));
+            zombieAnimations.put("FinalBoss", new Animation(100, walkFrames));
+
+            int bossSpitFramesCount = 36; 
+            BufferedImage[] bossSpitFrames = new BufferedImage[bossSpitFramesCount];
+            for(int i = 0; i < bossSpitFramesCount; i++){
+                 String route = "/Resources/imagenes/entitys/zombie_forest/boss_zombie/boss_spit/boss_spit_" + (i+1) + ".png";
+                 InputStream in = getClass().getResourceAsStream(route);
+                 if (in != null) bossSpitFrames[i] = ImageIO.read(in);
+            }
+            zombieSpitAnimations.put("FinalBoss", new Animation(150, bossSpitFrames)); 
 
             int attackFramesCount = 36; 
             BufferedImage[] attackFrames = new BufferedImage[attackFramesCount];
@@ -254,7 +267,7 @@ public class GamePanel extends JPanel {
                  InputStream in = getClass().getResourceAsStream(route);
                  if (in != null) attackFrames[i] = ImageIO.read(in);
             }
-            zombieAttackAnimations.put("FinalBoss", new Animation(100, attackFrames));
+            zombieAttackAnimations.put("FinalBoss", new Animation(150, attackFrames));
 
         } catch (Exception e) {
              System.err.println("Error cargando animaciones del FinalBoss: " + e.getMessage());
@@ -270,6 +283,7 @@ public class GamePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         this.controller.drawScene(this);
+
     }
 
     // Dibuja al jugador
@@ -308,7 +322,7 @@ public class GamePanel extends JPanel {
 
     // Dibuja al zombie
     // NOTA: Se agregó el parámetro 'boolean isAttacking'
-    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type, boolean isAttacking) {
+    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type, boolean isAttacking, boolean isSpitting) {
         double spriteAngle = angle + SPRITE_ROTATION.getOrDefault(type, 0.0);
 
         AffineTransform transformOriginal = g2.getTransform();
@@ -318,15 +332,21 @@ public class GamePanel extends JPanel {
         g2.translate(centerX, centerY);
         g2.rotate(spriteAngle);
 
+        Animation spitAnim = zombieSpitAnimations.get(type);
         Animation attackAnim = zombieAttackAnimations.get(type);
         Animation walkAnim = zombieAnimations.get(type);
         BufferedImage idle = zombieIdleSprites.get(type);
 
         BufferedImage frameToDraw = null;
+        double scale = 1.0;
 
-        // Lógica de prioridad: Ataque -> Caminar -> Reposo -> Círculo rojo de error
-        if (isAttacking && attackAnim != null && attackAnim.getCurrentFrame() != null) {
+        // Lógica de prioridad: Escupir -> Ataque -> Caminar -> Reposo -> Círculo rojo de error
+        if (isSpitting && spitAnim != null && spitAnim.getCurrentFrame() != null) {
+            frameToDraw = spitAnim.getCurrentFrame();
+            scale = ATTACK_SCALES.getOrDefault(type, 1.0);
+        } else if (isAttacking && attackAnim != null && attackAnim.getCurrentFrame() != null) {
             frameToDraw = attackAnim.getCurrentFrame();
+            scale = ATTACK_SCALES.getOrDefault(type, 1.0);
         } else if (walkAnim != null && walkAnim.getCurrentFrame() != null) {
             frameToDraw = walkAnim.getCurrentFrame();
         } else if (idle != null) {
@@ -334,7 +354,14 @@ public class GamePanel extends JPanel {
         }
 
         if (frameToDraw != null) {
-            g2.drawImage(frameToDraw, -w / 2, -h / 2, w, h, null);
+            double imgW = frameToDraw.getWidth();
+            double imgH = frameToDraw.getHeight();
+            double ratio = imgW / imgH;
+
+            int drawH = (int) (h * scale);
+            int drawW = (int) (drawH * ratio); 
+            
+            g2.drawImage(frameToDraw, -drawW / 2, -drawH / 2, drawW, drawH, null);
         } else {
             g2.setColor(Color.RED);
             g2.fillOval(-w / 2, -h / 2, w, h);
@@ -352,6 +379,9 @@ public class GamePanel extends JPanel {
         }
         for (Animation anim : zombieAttackAnimations.values()) {
             anim.update();
+        }
+        for (Animation anim : zombieSpitAnimations.values()) {
+        anim.update();
         }
     }
 
@@ -394,6 +424,7 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja balas de veneno
+    // Dibuja balas de veneno (solo el círculo verde)
     public void drawPoisonBullet(double x, double y, int w, int h) {
         g2.setColor(new Color(50, 205, 50));
         g2.fillOval((int) x, (int) y, w, h);
