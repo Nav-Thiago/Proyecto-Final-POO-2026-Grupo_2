@@ -8,7 +8,7 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class MenuController implements MenuActions{
+public class MenuController implements MenuActions {
 
     private MainFrame mainFrame;
     private GameController controller;
@@ -72,12 +72,13 @@ public class MenuController implements MenuActions{
 
     private void showMainMenu() {
         cardLayout.show(mainContainer, "MENU");
-        //AudioManager.playMusic("Resources/audio/soundtrack1.wav");
-        //AudioManager.setVolume(50);
+        // AudioManager.playMusic("Resources/audio/soundtrack1.wav");
+        // AudioManager.setVolume(50);
     }
 
-    // Implemento el método de la interfaz "MenuActions" para poder utilizarlo en "MenuPanel"
-    @Override 
+    // Implemento el método de la interfaz "MenuActions" para poder utilizarlo en
+    // "MenuPanel"
+    @Override
     public void backToMenu() {
         showMainMenu();
     }
@@ -86,25 +87,26 @@ public class MenuController implements MenuActions{
         cardLayout.show(mainContainer, "OPTIONS");
     }
 
-    @Override 
+    @Override
     public void optionMenu() {
         showOptionsMenu();
     }
 
-    @Override 
+    @Override
     public void startGame() {
         AudioManager.stopMusic();
         Player player = new Player(128, 3040);
         player.equipWeapon(new Handgun(20, 400, 20, 20));
 
-        // Dimensiones del mapa 
+        // Dimensiones del mapa
         int mapCols = 200;
         int mapRows = 200;
         int widthPixels = mapCols * 32;
         int heightPixels = mapRows * 32;
 
         GameState state = new GameState(player, widthPixels, heightPixels);
-        boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj", mapCols, mapRows);
+        boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj",
+                mapCols, mapRows);
         state.setCollisionMatrix(matrix);
         state.getGroundWeapons().add(new WeaponItem(1753, 1415, new Shotgun(30, 800, 7, 7)));
         state.getGroundWeapons().add(new WeaponItem(5774, 2226, new Shotgun(30, 800, 7, 7)));
@@ -113,12 +115,13 @@ public class MenuController implements MenuActions{
 
         GameModel model = new GameModel(state, matchDAO);
         this.controller = new GameController(model);
-        GamePanel gamePanel = new GamePanel(this.controller, new GameAssets(stage -> {}));
+        GamePanel gamePanel = new GamePanel(this.controller, new GameAssets(stage -> {
+        }));
         this.controller.setGamePanel(gamePanel);
 
-        //gamePanel.addKeyListener(controller);
-        //gamePanel.addMouseMotionListener(controller);
-        //gamePanel.addMouseListener(controller);
+        // gamePanel.addKeyListener(controller);
+        // gamePanel.addMouseMotionListener(controller);
+        // gamePanel.addMouseListener(controller);
 
         mainContainer.add(gamePanel, "GAME");
         mainContainer.revalidate();
@@ -128,14 +131,14 @@ public class MenuController implements MenuActions{
         gamePanel.requestFocusInWindow();
 
         gamePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override 
+            @Override
             public void componentShown(java.awt.event.ComponentEvent e) {
                 gamePanel.requestFocusInWindow();
             }
         });
 
         if (gameLoop != null) {
-            gameLoop.stop();   // por si quedó el ciclo de una partida anterior
+            gameLoop.stop(); // por si quedó el ciclo de una partida anterior
         }
         gameLoop = new GameLoop(model, gamePanel);
         gameLoop.start();

@@ -9,11 +9,11 @@
             "scaleInEditor": 1
         },
         "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx": {
-            "scale": 0.25,
-            "selectedLayer": 0,
+            "scale": 1,
+            "selectedLayer": 11,
             "viewCenter": {
-                "x": 3178,
-                "y": 6150
+                "x": 2119.5,
+                "y": 4633.5
             }
         },
         "../mapa_bosque_ultimo-111026/mapa_bosque_NWB (ULTIMO).tmx#CAMPER_Burnt_000": {
