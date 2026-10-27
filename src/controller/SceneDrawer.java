@@ -67,10 +67,12 @@ public class SceneDrawer {
     }
 
     private void drawPoisonBullets(GamePanel panel, GameState state) {
-        for (Bullet poison : state.getPoisonBullets()) {
-            panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight());
-        }
+    for (Bullet poison : state.getPoisonBullets()) {
+        panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight(),
+                poison.getDirX(), poison.getDirY(), poison.getSpeed(), poison.getAge(),
+                poison.getClass().getSimpleName());
     }
+}
 
     private void drawPlayer(GamePanel panel, GameState state) {
         Player player = state.getPlayer();

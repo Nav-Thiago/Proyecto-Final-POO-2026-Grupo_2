@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Viñeta de color en los bordes de la pantalla: rojo al recibir daño, celeste si lo absorbe el escudo, color del power up al agarrarlo. */
+// Viñeta de color en los bordes de la pantalla: rojo al recibir daño, celeste si lo absorbe el escudo, color del power up al agarrarlo. 
 public class ScreenFlash extends HudElement {
 
     private static class Pulse {

@@ -1,6 +1,6 @@
 package view.hud;
 
-/** Foto inmutable de lo que el HUD necesita mostrar en este frame. */
+// Foto inmutable de lo que el HUD necesita mostrar en este frame.
 public final class HudData {
 
     private final int health;

@@ -5,19 +5,19 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 
 /**
- * Clase base de todo lo que se dibuja en el HUD.
- * El Hud los trata a todos igual (update + draw); cada hijo decide cómo se ve y cómo reacciona.
+  Clase base de todo lo que se dibuja en el HUD.
+  El Hud los trata a todos igual (update + draw); cada hijo decide cómo se ve y cómo reacciona.
  */
 public abstract class HudElement {
 
     protected static final int MARGIN = 24;
     protected static final Font FONT = new Font("SansSerif", Font.BOLD, 14);
 
-    /** Se llama una vez por frame con los datos actuales y el tiempo transcurrido en segundos. */
+    // Se llama una vez por frame con los datos actuales y el tiempo transcurrido en segundos. 
     public void update(HudData data, double dt) {
     }
 
-    /** Se llama cuando el jugador agarra un power up, para que el elemento reaccione. */
+    // Se llama cuando el jugador agarra un power up, para que el elemento reaccione. 
     public void onPickup(PowerUpStyle style) {
     }
 

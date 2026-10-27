@@ -11,7 +11,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Avisos que bajan desde arriba al agarrar un power up ("ESCUDO - Absorbe el daño recibido"). */
+// Avisos que bajan desde arriba al agarrar un power up ("ESCUDO - Absorbe el daño recibido"). 
 public class PickupToasts extends HudElement {
 
     private static final double LIFE = 2.6;   // segundos en pantalla

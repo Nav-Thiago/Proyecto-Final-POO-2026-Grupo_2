@@ -1,6 +1,6 @@
 package model;
 
-/** Suma daño extra a cada ataque durante un tiempo limitado. */
+// Suma daño extra a cada ataque durante un tiempo limitado.
 public class DamageBoostDecorator extends StatsDecorator {
 
     private final double bonus;

@@ -8,9 +8,9 @@ import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Barra animada genérica (la usan la vida y el escudo).
- * Se encarga de lo común: valor suavizado, estela blanca del daño recibido, flash y temblor.
- * Los hijos solo definen colores, icono y qué hacer al perder/ganar.
+  Barra animada genérica (la usan la vida y el escudo).
+  Se encarga de lo común: valor suavizado, estela blanca del daño recibido, flash y temblor.
+  Los hijos solo definen colores, icono y qué hacer al perder/ganar.
  */
 abstract class StatBar extends HudElement {
 

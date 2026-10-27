@@ -1,6 +1,7 @@
-﻿===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\Main.java =====
+﻿// ===== Main.java =====
 import controller.MenuController;
 import model.MatchDAO;
+import persistence.AsyncMatchDAO;
 import persistence.DatabaseConnection;
 import persistence.MatchDAOMemory;
 import persistence.MatchDAOSQLite;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) {
-        MatchDAO matchDAO = createMatchDAO();
+        MatchDAO matchDAO = new AsyncMatchDAO(createMatchDAO());
         new MenuController(matchDAO);
     }
 
@@ -25,7 +26,7 @@ public class Main {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\controller\AudioManager.java =====
+// ===== AudioManager.java =====
 package controller;
 
 import javax.sound.sampled.*;
@@ -84,12 +85,31 @@ public class AudioManager {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\controller\GameController.java =====
+// ===== Camera.java =====
+package controller;
+
+import model.Player;
+
+public class Camera {
+
+    private Camera(){}
+
+    public static int calculateX(Player player, int screenWidth, int mapWidth) {
+        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
+        return Math.max(0, Math.min(camX, mapWidth - screenWidth));
+    }
+
+    public static int calculateY(Player player, int screenHeight, int mapHeight) {
+        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
+        return Math.max(0, Math.min(camY, mapHeight - screenHeight));
+    }
+}
+
+// ===== GameController.java =====
 package controller;
 
 import model.*;
 import view.GamePanel;
-import view.hud.HudData;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -101,9 +121,11 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     private final GameModel model;
     private GamePanel gamePanel;
+    private final SceneDrawer sceneDrawer;
 
     public GameController(GameModel model) {
         this.model = model;
+        this.sceneDrawer = new SceneDrawer(model);
     }
 
     public void setGamePanel (GamePanel gamePanel) {
@@ -171,7 +193,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         }
     }
 
-    private void aimWithCamera(int screenmouseX, int screenmouseY) {
+    private void aimWithCamera(int screenMouseX, int screenMouseY) {
         model.Player player = this.model.getState().getPlayer();
 
         int screenWidth = gamePanel.getWidth();
@@ -180,171 +202,19 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
         int mapWidth = this.model.getState().getMapWidth();
         int mapHeight = this.model.getState().getMapHeight();
 
-        int camX = calculateCameraX(player, screenWidth, mapWidth);
-        int camY = calculateCameraY(player, screenHeight, mapHeight);
+        int camX = Camera.calculateX(player, screenWidth, mapWidth);
+        int camY = Camera.calculateY(player, screenHeight, mapHeight);
 
-        double worldMouseX = screenmouseX + camX;
-        double worldMouseY = screenmouseY + camY;
+        double worldMouseX = screenMouseX + camX;
+        double worldMouseY = screenMouseY + camY;
 
         player.aimAt(worldMouseX, worldMouseY);
     }
 
-    private int calculateCameraX(Player player, int screenWidth, int mapWidth) {
-        int camX = (int) player.getX() - (screenWidth / 2) + (player.getWidth() / 2);
-        return Math.max(0, Math.min(camX, mapWidth - screenWidth));
-    }
-
-    private int calculateCameraY(Player player, int screenHeight, int mapHeight) {
-        int camY = (int) player.getY() - (screenHeight / 2) + (player.getHeight() / 2);
-        return Math.max(0, Math.min(camY, mapHeight - screenHeight));
-    }
-
     public void drawScene(GamePanel panel) {
-        GameState state = this.model.getState();
-        Player player = state.getPlayer();
-
-        int screenWidth = panel.getWidth();
-        int screenHeight = panel.getHeight();
-        int mapWidth = state.getMapWidth();
-        int mapHeight = state.getMapHeight();
-
-        // CÃ¡lculo de cÃ¡mara
-        int camX = calculateCameraX(player, screenWidth, mapWidth);
-        int camY = calculateCameraY(player, screenHeight, mapHeight);
-
-        panel.applyCamera(camX, camY);
-        panel.drawBackground(mapWidth, mapHeight);
-
-        // Dibuja al power-up
-        drawPowerUps(panel, state); // [POWER-UP] primero, para que queden debajo de zombies y jugador
-
-        // Dibuja Armas en el suelo
-        drawGroundWeapons(panel, state); // [ARMAS] segundo, para que queden debajo de zombies y jugador
-
-        // Dibuja los zombies
-        drawZombies(panel, state);
-
-        // Dibuja a las balas venenosas
-        drawPoisonBullets(panel, state);
-
-        // Dibuja al jugador
-        drawPlayer(panel, state);
-
-        // Dibuja la primera capa del mapa
-        drawFirstLayer(panel, state);
-
-        // Dibuja la oscuridad y el cono de visiÃ³n
-        drawDarkness(panel, state);
-
-        // Dibuja los disparos de las armas
-        drawBulletTracers(panel, state);
-        drawMuzzleFlash(panel, state);
-
-        // Deshace la cÃ¡mara
-        panel.resetCamera(camX, camY);
-
-        // Dibuja el HUD
-        drawHud(panel, state);
-
-        // Dibuja los mensajes de estado
-        drawStatusMessage(panel);
+        sceneDrawer.drawScene(panel);
     }
 
-    private void drawPowerUps(GamePanel panel, GameState state) {
-        for (PowerUp p : state.getPowerUps()) {
-            panel.drawPowerUp(p.getX(), p.getY(), p.getWidth(), p.getHeight(), p.getClass().getSimpleName());
-        }
-    }
-
-    private void drawGroundWeapons(GamePanel panel, GameState state) {
-        for (WeaponItem item : state.getGroundWeapons()) {
-            panel.drawGroundWeapon(item.getX(), item.getY(), item.getWidth(), item.getHeight(), item.getWeapon().getClass().getSimpleName());
-        }
-    }
-
-    private void drawZombies(GamePanel panel, GameState state) {
-        panel.updateZombieAnimations();
-        for (Enemy zombie : state.getEnemies()) {
-            if (zombie.isAlive()) {
-                // Le pasamos zombie.isAttacking() al final
-                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking());
-            }
-        }
-    }
-    
-    private void drawPoisonBullets(GamePanel panel, GameState state) {
-        for (Bullet poison : state.getPoisonBullets()) {
-            panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight());
-        }
-    }
-
-    private void drawPlayer(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        if (player.isAlive()) {
-            panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), player.isMoving(), player.getActiveWeapon().getClass().getSimpleName());
-        }
-    }
-
-    private void drawFirstLayer(GamePanel panel, GameState state) {
-        panel.drawFirstLayer(state.getMapWidth(), state.getMapHeight());
-    }
-
-    private void drawDarkness(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        panel.drawDarkness(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), state.getMapWidth(), state.getMapHeight());
-    }
-
-    private void drawHud(GamePanel panel, GameState state) {
-         Player player = state.getPlayer();
-
-         String pickup;
-          while ((pickup = player.pollPickup()) != null) {
-          panel.onPowerUpPickup(pickup);
-}
-
-Weapon weapon = player.getActiveWeapon();
-boolean ranged = weapon.isRanged();
-
-panel.drawHud(new HudData(
-        player.getHealth(), player.getMaxHealth(),
-        player.getShield(), ShieldDecorator.MAX_SHIELD,
-        player.getDamageBonus(),
-        ranged, weapon.getClass().getSimpleName(),
-        ranged ? weapon.getActualMunition() : 0,
-        ranged ? weapon.getMaxMunition() : 0));
-        
-    }
-
-    private void drawStatusMessage(GamePanel panel) {
-        GameModel.GameStatus status = this.model.getStatus();
-
-        if (status == GameModel.GameStatus.GAME_OVER) {
-            panel.drawGameOver(model.getMatchTimeMs());
-        } else if (status == GameModel.GameStatus.GAME_WON) {
-            panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
-        } else if (status == GameModel.GameStatus.PAUSED) {
-            panel.drawPause();
-        } else if (status == GameModel.GameStatus.BOSS_INTRO) {
-            panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
-        }
-    }
-
-    private void drawBulletTracers(GamePanel panel, GameState state) {
-        for (Bullet bullet : state.getPlayerBullets()) {
-            if (bullet.isActive()) {
-                panel.drawBulletTracer(bullet.getX(), bullet.getY(), bullet.getWidth(), bullet.getHeight(), bullet.getDirX(), bullet.getDirY(), bullet.getSpeed(), bullet.getAge(), bullet.getKind().name());
-            }
-        }
-    }
-
-    private void drawMuzzleFlash(GamePanel panel, GameState state) {
-        Player player = state.getPlayer();
-        Weapon weapon = player.getActiveWeapon();
-
-        if (player.isAlive() && weapon.isRanged()) {
-            panel.drawMuzzleFlash(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), weapon.getClass().getSimpleName(), weapon.getLastShoot(), Weapon.MUZZLE_FORWARD, Weapon.MUZZLE_SIDE);
-        }
-    }
 
     // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
     // public class GameController extends MouseAdapter implements KeyListener {
@@ -357,7 +227,7 @@ panel.drawHud(new HudData(
     public void mouseExited(MouseEvent e) {}
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\controller\GameLoopThread.java =====
+// ===== GameLoopThread.java =====
 package controller;
 
 import model.GameModel;
@@ -392,7 +262,7 @@ public class GameLoopThread extends Thread {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\controller\MenuActions.java =====
+// ===== MenuActions.java =====
 package controller;
 
 public interface MenuActions {
@@ -401,7 +271,7 @@ public interface MenuActions {
     void startGame();
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\controller\MenuController.java =====
+// ===== MenuController.java =====
 package controller;
 
 import model.*;
@@ -421,6 +291,8 @@ public class MenuController implements MenuActions{
     private JPanel mainContainer;
 
     private final MatchDAO matchDAO;
+
+    private Timer gameLoop;
 
     public MenuController(MatchDAO matchDAO) {
         this.matchDAO = matchDAO;
@@ -538,6 +410,17 @@ public class MenuController implements MenuActions{
 
         GameLoopThread loopThread = new GameLoopThread(gamePanel, model);
         loopThread.start(); // Le pide al sistema operativo que cree un nuevo hilo de procesamiento real y que dentro de ese hilo ejecute el mÃ©todo run()
+
+        /*
+        if (gameLoop != null) {
+            gameLoop.stop();   // por si quedÃ³ el ciclo de una partida anterior
+        }
+        gameLoop = new Timer(16, e -> {
+            model.update();
+            gamePanel.repaint();
+        });
+        gameLoop.start();
+        */
     }
 
     public void changeResolution(int width, int height) {
@@ -548,7 +431,153 @@ public class MenuController implements MenuActions{
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Ammo.java =====
+// ===== SceneDrawer.java =====
+package controller;
+
+import model.*;
+import view.GamePanel;
+import view.hud.HudData;
+
+public class SceneDrawer {
+
+    private final GameModel model;
+
+    public SceneDrawer(GameModel model) {
+        this.model = model;
+    }
+
+    public void drawScene(GamePanel panel) {
+        GameState state = this.model.getState();
+        Player player = state.getPlayer();
+
+        int screenWidth = panel.getWidth();
+        int screenHeight = panel.getHeight();
+        int mapWidth = state.getMapWidth();
+        int mapHeight = state.getMapHeight();
+
+        // CÃ¡lculo de cÃ¡mara
+        int camX = Camera.calculateX(player, screenWidth, mapWidth);
+        int camY = Camera.calculateY(player, screenHeight, mapHeight);
+
+        panel.applyCamera(camX, camY);
+        panel.drawBackground(mapWidth, mapHeight);
+
+
+        drawPowerUps(panel, state); // [POWER-UP] primero, para que queden debajo de zombies y jugador
+        drawGroundWeapons(panel, state); // [ARMAS] segundo, para que queden debajo de zombies y jugador
+        drawZombies(panel, state);
+        drawPoisonBullets(panel, state);
+        drawPlayer(panel, state);
+        drawFirstLayer(panel, state);
+        drawDarkness(panel, state);
+        drawBulletTracers(panel, state);
+        drawMuzzleFlash(panel, state);
+
+        panel.resetCamera(camX, camY);
+
+        drawHud(panel, state);
+        drawStatusMessage(panel);
+    }
+
+    private void drawPowerUps(GamePanel panel, GameState state) {
+        for (PowerUp p : state.getPowerUps()) {
+            panel.drawPowerUp(p.getX(), p.getY(), p.getWidth(), p.getHeight(), p.getClass().getSimpleName());
+        }
+    }
+
+    private void drawGroundWeapons(GamePanel panel, GameState state) {
+        for (WeaponItem item : state.getGroundWeapons()) {
+            panel.drawGroundWeapon(item.getX(), item.getY(), item.getWidth(), item.getHeight(), item.getWeapon().getClass().getSimpleName());
+        }
+    }
+
+    private void drawZombies(GamePanel panel, GameState state) {
+        panel.updateZombieAnimations();
+        for (Enemy zombie : state.getEnemies()) {
+            if (zombie.isAlive()) {
+                // Le pasamos zombie.isAttacking() al final
+                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking());
+            }
+        }
+    }
+
+    private void drawPoisonBullets(GamePanel panel, GameState state) {
+    for (Bullet poison : state.getPoisonBullets()) {
+        panel.drawPoisonBullet(poison.getX(), poison.getY(), poison.getWidth(), poison.getHeight(),
+                poison.getDirX(), poison.getDirY(), poison.getSpeed(), poison.getAge(),
+                poison.getClass().getSimpleName());
+    }
+}
+
+    private void drawPlayer(GamePanel panel, GameState state) {
+        Player player = state.getPlayer();
+        if (player.isAlive()) {
+            panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), player.isMoving(), player.getActiveWeapon().getClass().getSimpleName());
+        }
+    }
+
+    private void drawFirstLayer(GamePanel panel, GameState state) {
+        panel.drawFirstLayer(state.getMapWidth(), state.getMapHeight());
+    }
+
+    private void drawDarkness(GamePanel panel, GameState state) {
+        Player player = state.getPlayer();
+        panel.drawDarkness(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), state.getMapWidth(), state.getMapHeight());
+    }
+
+    private void drawBulletTracers(GamePanel panel, GameState state) {
+        for (Bullet bullet : state.getPlayerBullets()) {
+            if (bullet.isActive()) {
+                panel.drawBulletTracer(bullet.getX(), bullet.getY(), bullet.getWidth(), bullet.getHeight(), bullet.getDirX(), bullet.getDirY(), bullet.getSpeed(), bullet.getAge(), bullet.getKind().name());
+            }
+        }
+    }
+
+    private void drawMuzzleFlash(GamePanel panel, GameState state) {
+        Player player = state.getPlayer();
+        Weapon weapon = player.getActiveWeapon();
+
+        if (player.isAlive() && weapon.isRanged()) {
+            panel.drawMuzzleFlash(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), weapon.getClass().getSimpleName(), weapon.getLastShoot(), Weapon.MUZZLE_FORWARD, Weapon.MUZZLE_SIDE);
+        }
+    }
+
+    private void drawHud(GamePanel panel, GameState state) {
+        Player player = state.getPlayer();
+
+        String pickup;
+        while ((pickup = player.pollPickup()) != null) {
+            panel.onPowerUpPickup(pickup);
+        }
+
+        Weapon weapon = player.getActiveWeapon();
+        boolean ranged = weapon.isRanged();
+
+        panel.drawHud(new HudData(
+                player.getHealth(), player.getMaxHealth(),
+                player.getShield(), ShieldDecorator.MAX_SHIELD,
+                player.getDamageBonus(),
+                ranged, weapon.getClass().getSimpleName(),
+                ranged ? weapon.getActualMunition() : 0,
+                ranged ? weapon.getMaxMunition() : 0));
+    }
+
+    private void drawStatusMessage(GamePanel panel) {
+        GameModel.GameStatus status = this.model.getStatus();
+
+        if (status == GameModel.GameStatus.GAME_OVER) {
+            panel.drawGameOver(model.getMatchTimeMs());
+        } else if (status == GameModel.GameStatus.GAME_WON) {
+            panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
+        } else if (status == GameModel.GameStatus.PAUSED) {
+            panel.drawPause();
+        } else if (status == GameModel.GameStatus.BOSS_INTRO) {
+            panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
+        }
+    }
+}
+
+// ===== Ammo.java =====
 package model;
 
 public class Ammo extends PowerUp {
@@ -563,20 +592,20 @@ public class Ammo extends PowerUp {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\AmmoHolder.java =====
+// ===== AmmoHolder.java =====
 package model;
 
-/* 
- * Contrato que tiene que cumplir cualquier arma que quiera recibir municiÃ³n de los power ups.
  
- */
+ // Contrato que tiene que cumplir cualquier arma que quiera recibir municiÃ³n de los power ups.
+ 
+ 
 public interface AmmoHolder {
     void addAmmo(int amount);
     void refillAmmo();
     int getAmmoPerPickup();
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\BaseStats.java =====
+// ===== BaseStats.java =====
 package model;
 
 /** COMPONENTE CONCRETO: el jugador sin ningÃºn power up activo. */
@@ -608,7 +637,7 @@ public class BaseStats implements PlayerStats {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\BossSpit.java =====
+// ===== BossSpit.java =====
 package model;
 
 public class BossSpit extends PoisonBullet {
@@ -626,7 +655,7 @@ public class BossSpit extends PoisonBullet {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Bullet.java =====
+// ===== Bullet.java =====
 package model;
 
 public class Bullet extends Entity {
@@ -698,16 +727,16 @@ public class Bullet extends Entity {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\BulletKind.java =====
+// ===== BulletKind.java =====
 package model;
 
-/** Tipo de proyectil. La vista lo usa para decidir cÃ³mo dibujar la estela. */
+// Tipo de proyectil. La vista lo usa para decidir cÃ³mo dibujar la estela. 
 public enum BulletKind {
     STANDARD, // pistola / rifle
     PELLET    // perdigÃ³n de escopeta
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Character.java =====
+// ===== Character.java =====
 package model;
 
 public abstract class Character extends Entity {
@@ -796,7 +825,7 @@ public abstract class Character extends Entity {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\CollisionSystem.java =====
+// ===== CollisionSystem.java =====
 package model;
 
 public class CollisionSystem {
@@ -897,7 +926,7 @@ public class CollisionSystem {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\DamageBoost.java =====
+// ===== DamageBoost.java =====
 package model;
  
 public class DamageBoost extends PowerUp {
@@ -916,10 +945,10 @@ public class DamageBoost extends PowerUp {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\DamageBoostDecorator.java =====
+// ===== DamageBoostDecorator.java =====
 package model;
 
-/** Suma daÃ±o extra a cada ataque durante un tiempo limitado. */
+// Suma daÃ±o extra a cada ataque durante un tiempo limitado.
 public class DamageBoostDecorator extends StatsDecorator {
 
     private final double bonus;
@@ -942,7 +971,7 @@ public class DamageBoostDecorator extends StatsDecorator {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Effect.java =====
+// ===== Effect.java =====
 package model;
 
 /** Efecto que se aplica sobre el jugador y puede vencer con el tiempo. */
@@ -954,7 +983,7 @@ public interface Effect {
     default void update (Player player){}
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Enemy.java =====
+// ===== Enemy.java =====
 package model;
 
 public abstract class Enemy extends Character {
@@ -1086,7 +1115,7 @@ public abstract class Enemy extends Character {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\EnemySpawner.java =====
+// ===== EnemySpawner.java =====
 package model;
 
 import java.util.Random;
@@ -1179,8 +1208,8 @@ public class EnemySpawner {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Entity.java =====
-package model;
+// ===== Entity.java =====
+ package model;
 
 public abstract class Entity {
 
@@ -1222,7 +1251,7 @@ public abstract class Entity {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\FastZombie.java =====
+// ===== FastZombie.java =====
 package model;
 
 public class FastZombie  extends Enemy {
@@ -1237,7 +1266,7 @@ public class FastZombie  extends Enemy {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\FinalBoss.java =====
+// ===== FinalBoss.java =====
 package model;
 
 import java.util.List;
@@ -1278,7 +1307,7 @@ public class FinalBoss extends RangedEnemy{
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\FireArm.java =====
+// ===== FireArm.java =====
 package model;
 
 public abstract class FireArm extends Weapon implements AmmoHolder {
@@ -1348,7 +1377,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\GameModel.java =====
+// ===== GameModel.java =====
 package model;
 
 import java.time.LocalDate;
@@ -1386,11 +1415,11 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 15);
+        this.spawner = new EnemySpawner(2000, 0);
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, mÃ¡x. 20 en el mapa, 16 al empezar
 
         //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
-        //spawnBoss(6027, 5056);
+        spawnBoss(6027, 5056);
     }
 
     public void update() {
@@ -1529,8 +1558,6 @@ public class GameModel {
     public void saveMatch(boolean victory) {
         MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
 
-
-
         this.matchTimeMs = record.getSurvivalTimeMs();
 
         if (victory) {
@@ -1539,7 +1566,6 @@ public class GameModel {
             long previousBestMs = noPrevious ? matchTimeMs : previousBest.get(0).getSurvivalTimeMs();
             this.newRecord = noPrevious || matchTimeMs < previousBestMs;
             this.bestTimeMs = newRecord ? matchTimeMs : previousBestMs;
-
         }
 
         matchDAO.save(record);
@@ -1563,7 +1589,7 @@ public class GameModel {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\GameState.java =====
+// ===== GameState.java =====
 package model;
 
 import java.util.ArrayList;
@@ -1657,7 +1683,7 @@ public class GameState {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Handgun.java =====
+// ===== Handgun.java =====
 package model;
 
 public class Handgun extends FireArm {
@@ -1671,14 +1697,14 @@ public class Handgun extends FireArm {
         return false;
     }
 
-@Override
-public int getAmmoPerPickup() {
-    return 8; // recibe 8 balas por cada power up de municiÃ³n
-}
+    @Override
+    public int getAmmoPerPickup() {
+    return 8;
+    } // recibe 8 balas por cada power up de municiÃ³n
 
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Heal.java =====
+// ===== Heal.java =====
 package model;
 
 public class Heal extends PowerUp {
@@ -1696,7 +1722,7 @@ public class Heal extends PowerUp {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MapLoader.java =====
+// ===== MapLoader.java =====
 package model;
 
 import java.io.InputStream;
@@ -1766,7 +1792,7 @@ public class MapLoader {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MatchDAO.java =====
+// ===== MatchDAO.java =====
 package model;
 
 import java.util.List;
@@ -1777,7 +1803,7 @@ public interface MatchDAO {
     List<MatchRecord> fastestVictories(int limit);
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MatchRecord.java =====
+// ===== MatchRecord.java =====
 package model;
 
 import java.time.LocalDate;
@@ -1829,7 +1855,7 @@ public class MatchRecord {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MatchStats.java =====
+// ===== MatchStats.java =====
 package model;
 
 public class MatchStats {
@@ -1867,7 +1893,7 @@ public class MatchStats {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MaxAmmo.java =====
+// ===== MaxAmmo.java =====
 package model;
 
 public class MaxAmmo extends PowerUp {
@@ -1882,12 +1908,12 @@ public class MaxAmmo extends PowerUp {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MaxAmmoDecorator.java =====
+// ===== MaxAmmoDecorator.java =====
 package model;
 
 /**
- * Recarga al mÃ¡ximo la municiÃ³n del arma equipada.
- * Es un efecto instantÃ¡neo: actÃºa al aplicarse (onApply) y se descarta en el prÃ³ximo tick.
+  Recarga al mÃ¡ximo la municiÃ³n del arma equipada.
+  Es un efecto instantÃ¡neo: actÃºa al aplicarse (onApply) y se descarta en el prÃ³ximo tick.
  */
 public class MaxAmmoDecorator extends StatsDecorator {
 
@@ -1906,7 +1932,7 @@ public class MaxAmmoDecorator extends StatsDecorator {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\MeleeWeapon.java =====
+// ===== MeleeWeapon.java =====
 package model;
 
 public class MeleeWeapon extends Weapon {
@@ -1968,7 +1994,7 @@ public class MeleeWeapon extends Weapon {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\NormalZombie.java =====
+// ===== NormalZombie.java =====
 package model;
 
 public class NormalZombie extends Enemy {
@@ -1983,7 +2009,7 @@ public class NormalZombie extends Enemy {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Player.java =====
+// ===== Player.java =====
 package model;
 
 import java.util.ArrayList;
@@ -1992,8 +2018,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.UnaryOperator;
-
-import view.hud.Hud;
 
 public class Player extends Character {
 
@@ -2029,8 +2053,6 @@ public class Player extends Character {
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
-
-    private final Hud hud = new Hud();
 
     public void setMoveUp(boolean moveUp) {
         this.moveUp = moveUp;
@@ -2202,44 +2224,47 @@ public class Player extends Character {
         return damageTaken;
     }
 
-    //public void notifyPickup(String powerUpType) { pickupEvents.add(powerUpType); }
-    public String pollPickup() { return pickupEvents.poll(); }
+    public void notifyPickup(String powerUpType) {
+        pickupEvents.add(powerUpType); }
+
+    public String pollPickup() {
+        return pickupEvents.poll(); }
 
    
 
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PlayerStats.java =====
+// ===== PlayerStats.java =====
 package model;
 
 /**
- * COMPONENTE del patrÃ³n Decorator.
- * Define todo lo que los power ups pueden modificar del jugador en combate.
- * El Player solo conoce esta interfaz, no sabe quÃ© power ups hay activos.
+  COMPONENTE del patrÃ³n Decorator.
+  Define todo lo que los power ups pueden modificar del jugador en combate.
+  El Player solo conoce esta interfaz, no sabe quÃ© power ups hay activos.
  */
 public interface PlayerStats {
 
-    /** DaÃ±o extra que se suma a cada ataque. */
+    // DaÃ±o extra que se suma a cada ataque.
     double getDamageBonus();
 
-    /** Puntos de escudo disponibles en total. */
+    // Puntos de escudo disponibles en total.
     int getShield();
 
-    /** Recibe un daÃ±o y devuelve cuÃ¡nto de ese daÃ±o NO fue absorbido (el que llega a la vida). */
+    // Recibe un daÃ±o y devuelve cuÃ¡nto de ese daÃ±o NO fue absorbido (el que llega a la vida).
     int absorbDamage(int amount);
 
-    /** true si el decorador ya cumpliÃ³ su funciÃ³n y se puede descartar. */
+    // true si el decorador ya cumpliÃ³ su funciÃ³n y se puede descartar.
     boolean isExpired();
 
-    /** Devuelve la cadena sin los decoradores vencidos. */
+    // Devuelve la cadena sin los decoradores vencidos.
     PlayerStats prune();
 
-    /** Se llama una sola vez, cuando el decorador se agrega al jugador. */
+    // Se llama una sola vez, cuando el decorador se agrega al jugador.
     default void onApply(Player player) {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PoisonBullet.java =====
+// ===== PoisonBullet.java =====
 package model;
 
 public class PoisonBullet extends Bullet {
@@ -2255,7 +2280,7 @@ public class PoisonBullet extends Bullet {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PoisonEffect.java =====
+// ===== PoisonEffect.java =====
 package model;
 
 public class PoisonEffect extends TimedEffect {
@@ -2288,7 +2313,7 @@ public class PoisonEffect extends TimedEffect {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PoisonZombie.java =====
+// ===== PoisonZombie.java =====
 package model;
 
 import java.util.List;
@@ -2330,12 +2355,12 @@ public class PoisonZombie extends RangedEnemy {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PowerUp.java =====
+// ===== PowerUp.java =====
 package model;
 
 /**
- * Clase padre de todos los power ups.
- * Extiende Entity, asÃ­ que reutiliza posiciÃ³n, tamaÃ±o y collidesWith().
+ Clase padre de todos los power ups.
+ Extiende Entity,  reutiliza posiciÃ³n, tamaÃ±o y collidesWith().
  */
 public abstract class PowerUp extends Entity {
 
@@ -2351,28 +2376,29 @@ public abstract class PowerUp extends Entity {
         return active;
     }
 
-    /** Template method: el juego lo llama al tocarlo. Cada hija solo define apply(). */
+    // Template method: el juego lo llama al tocarlo. Cada hija solo define apply().
     public final void collect(Player player) {
         if (!active) return;
         apply(player);
+          player.notifyPickup(getClass().getSimpleName());
         active = false;
     }
 
-    /** Efecto concreto de cada power up sobre el jugador. */
+    // Efecto concreto de cada power up sobre el jugador.
     protected abstract void apply(Player player);
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\PowerUpSpawner.java =====
+// ===== PowerUpSpawner.java =====
 package model;
 
 import java.util.List;
 import java.util.Random;
 
 /**
- * Genera power ups repartidos por TODO el mapa, solo en lugares a los que el jugador puede llegar caminando
- * (respeta la matriz de colisiones: nada sobre obstÃ¡culos ni dentro de zonas cerradas).
- * Al crearse deja una cantidad inicial y despuÃ©s repone de a uno cada cierto tiempo.
- * Mismo estilo que EnemySpawner.
+  Genera power ups repartidos por todo el mapa, solo en lugares a los que el jugador puede llegar caminando
+  (respeta la matriz de colisiones: nada sobre obstÃ¡culos ni dentro de zonas cerradas).
+  Al crearse deja una cantidad inicial y despuÃ©s repone de a uno cada cierto tiempo.
+  Mismo estilo que EnemySpawner.
  */
 public class PowerUpSpawner {
 
@@ -2403,7 +2429,7 @@ public class PowerUpSpawner {
         populate(Math.min(initialCount, maxOnMap));
     }
 
-    /** Reparte la cantidad inicial recorriendo los tipos en orden, para que haya variedad. */
+    // Reparte la cantidad inicial recorriendo los tipos en orden, para que haya variedad. 
     private void populate(int count) {
         int firstType = random.nextInt(TYPES);
         for (int i = 0; i < count; i++) {
@@ -2455,7 +2481,7 @@ public class PowerUpSpawner {
         return true;
     }
 
-    /** true si el power up toca algÃºn tile bloqueado del mapa o se sale de Ã©l. */
+    // true si el power up toca algÃºn tile bloqueado del mapa o se sale de Ã©l. 
     private boolean isOnBlockedTile(double x, double y) {
         boolean[][] map = state.getCollisionMatrix();
         if (map == null) return false;
@@ -2486,7 +2512,7 @@ public class PowerUpSpawner {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\RangedEnemy.java =====
+// ===== RangedEnemy.java =====
 package model;
 
 import java.util.List;
@@ -2501,10 +2527,10 @@ public abstract class RangedEnemy extends Enemy {
         this.projectiles = projectiles;
     }
 
-    /** Cada hija decide quÃ© proyectil crea. */
+    //Cada hija decide quÃ© proyectil crea. 
     protected abstract PoisonBullet createProjectile(double x, double y, double dirX, double dirY);
 
-    /** CÃ³digo comÃºn: apunta al jugador y dispara. */
+    // CÃ³digo comÃºn: apunta al jugador y dispara. 
     protected void shootAt(Player target) {
         double startX = getX() + getWidth() / 2.0;
         double startY = getY() + getHeight() / 2.0;
@@ -2519,15 +2545,15 @@ public abstract class RangedEnemy extends Enemy {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\ReachableArea.java =====
+// ===== ReachableArea.java =====
 package model;
 
 import java.util.ArrayDeque;
 
 /**
- * Calcula a quÃ© zonas del mapa puede llegar realmente el jugador desde donde empieza.
- * Usa la MISMA regla de colisiÃ³n con la que el jugador se mueve (Character.isCollidingWithMap),
- * asÃ­ que si acÃ¡ figura como alcanzable, el jugador puede llegar caminando.
+ Calcula a quÃ© zonas del mapa puede llegar realmente el jugador desde donde empieza.
+ Usa la MISMA regla de colisiÃ³n con la que el jugador se mueve (Character.isCollidingWithMap),
+  asÃ­ que si acÃ¡ figura como alcanzable, el jugador puede llegar caminando.
  */
 public class ReachableArea {
 
@@ -2577,12 +2603,12 @@ public class ReachableArea {
         reachableCells = count;
     }
 
-    /** false si el cÃ¡lculo no sirviÃ³ (ej: el jugador empieza encerrado); en ese caso no hay que usarlo. */
+    //false si el cÃ¡lculo no sirviÃ³ (ej: el jugador empieza encerrado); en ese caso no hay que usarlo. 
     public boolean isUsable() {
         return reachableCells >= MIN_CELLS;
     }
 
-    /** true si el jugador puede llegar caminando lo bastante cerca como para agarrar un Ã­tem centrado en (itemX, itemY). */
+    // true si el jugador puede llegar caminando lo bastante cerca como para agarrar un Ã­tem centrado en (itemX, itemY).
     public boolean canPickUpAt(double itemCenterX, double itemCenterY, Player player) {
         double playerLeft = itemCenterX - player.getWidth() / 2.0;
         double playerTop = itemCenterY - player.getHeight() / 2.0;
@@ -2605,7 +2631,7 @@ public class ReachableArea {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Rifle.java =====
+// ===== Rifle.java =====
 package model;
 
 public class Rifle extends FireArm {
@@ -2619,14 +2645,13 @@ public class Rifle extends FireArm {
         return true;
     }
 
-@Override
-public int getAmmoPerPickup() {
-    return 10; //recibe 10 balas por cada power up de municiÃ³n
+    @Override
+    public int getAmmoPerPickup() {
+    return 10;
+    } //recibe 10 balas por cada power up de municiÃ³n
 }
 
-}
-
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Shield.java =====
+// ===== Shield.java =====
 package model;
 
 public class Shield extends PowerUp {
@@ -2644,7 +2669,7 @@ public class Shield extends PowerUp {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\ShieldDecorator.java =====
+// ===== ShieldDecorator.java =====
 package model;
 
 /** Agrega puntos de escudo: absorbe daÃ±o antes de que llegue a la vida. Se descarta al agotarse. */
@@ -2680,7 +2705,7 @@ public class ShieldDecorator extends StatsDecorator {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Shotgun.java =====
+// ===== Shotgun.java =====
 package model;
  
 import java.util.Random;
@@ -2730,13 +2755,13 @@ public class Shotgun extends FireArm {
         return false;
     }
 
-@Override
-public int getAmmoPerPickup() {
-    return 3;// recibe 3 balas por cada power up de municiÃ³n
-}
+    @Override
+    public int getAmmoPerPickup() {
+    return 3;
+} // recibe 3 balas por cada power up de municiÃ³n
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\StatsDecorator.java =====
+// ===== StatsDecorator.java =====
 package model;
 
 /**
@@ -2775,7 +2800,7 @@ public abstract class StatsDecorator implements PlayerStats {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\TankZombie.java =====
+// ===== TankZombie.java =====
 package model;
 
 public class TankZombie extends Enemy {
@@ -2790,10 +2815,10 @@ public class TankZombie extends Enemy {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\TimedEffect.java =====
+// ===== TimedEffect.java =====
 package model;
 
-/** Efecto con duraciÃ³n en milisegundos. */
+// Efecto con duraciÃ³n en milisegundos.
 public abstract class TimedEffect implements Effect {
 
     private final long endTime;
@@ -2808,7 +2833,7 @@ public abstract class TimedEffect implements Effect {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\Weapon.java =====
+// ===== Weapon.java =====
 package model;
  
 public abstract class Weapon {
@@ -2866,7 +2891,7 @@ public abstract class Weapon {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\model\WeaponItem.java =====
+// ===== WeaponItem.java =====
 package model;
 
 public class WeaponItem extends Entity {
@@ -2883,7 +2908,54 @@ public class WeaponItem extends Entity {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\persistence\DatabaseConnection.java =====
+// ===== AsyncMatchDAO.java =====
+package persistence;
+
+import model.MatchDAO;
+import model.MatchRecord;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+public class AsyncMatchDAO implements MatchDAO {
+
+    private final MatchDAO realDAO;
+    private final ExecutorService worker;
+
+    public AsyncMatchDAO(MatchDAO realDAO) {
+        if (realDAO == null) {
+            throw new IllegalArgumentException("El DAO es obligatorio");
+        }
+        this.realDAO = realDAO;
+        this.worker = Executors.newSingleThreadExecutor(task -> {
+            Thread thread = new Thread(task, "match-dao-worker");
+            thread.setDaemon(true);
+            return thread;
+        });
+    }
+
+    @Override
+    public boolean save(MatchRecord match) {
+        worker.submit(() -> realDAO.save(match));
+        return true;
+    }
+
+    @Override
+    public List<MatchRecord> fastestVictories(int limit) {
+        Future<List<MatchRecord>> ticket = worker.submit(() -> realDAO.fastestVictories(limit));
+        try {
+            return ticket.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return new ArrayList<>();
+        } catch (ExecutionException e) {
+            return new ArrayList<>();
+        }
+    }
+}
+
+// ===== DatabaseConnection.java =====
 package persistence;
 
 import java.sql.Connection;
@@ -2911,7 +2983,7 @@ public class DatabaseConnection {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\persistence\MatchDAOMemory.java =====
+// ===== MatchDAOMemory.java =====
 package persistence;
 
 import model.MatchDAO;
@@ -2952,7 +3024,7 @@ public class MatchDAOMemory implements MatchDAO {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\persistence\MatchDAOSQLite.java =====
+// ===== MatchDAOSQLite.java =====
 package persistence;
 
 import model.MatchDAO;
@@ -2991,8 +3063,7 @@ public class MatchDAOSQLite implements MatchDAO {
             return false;
         }
 
-        String sql = "INSERT INTO matches (match_date, survival_time_ms, zombies_killed, damage_dealt, damage_taken, victory)"
-                + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO matches (match_date, survival_time_ms, zombies_killed, damage_dealt, damage_taken, victory) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setString(1, match.getDate().toString());
@@ -3041,7 +3112,7 @@ public class MatchDAOSQLite implements MatchDAO {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\Animation.java =====
+// ===== Animation.java =====
 package view;
 
 import java.awt.image.BufferedImage;
@@ -3074,7 +3145,7 @@ public class Animation {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\BulletEffects.java =====
+// ===== BulletEffects.java =====
 package view;
 
 import java.awt.BasicStroke;
@@ -3178,7 +3249,7 @@ public class BulletEffects {
         g2.setStroke(oldStroke);
     }
  
-    /** Resplandor redondo + luz tenue que "ilumina" la zona oscura alrededor. */
+    //Resplandor redondo + luz tenue que "ilumina" la zona oscura alrededor.
     private void drawFlashGlow(Graphics2D g2, double life, boolean shotgun) {
         Point2D center = new Point2D.Double(0, 0);
         float[] fractions = {0f, 0.35f, 1f};
@@ -3200,7 +3271,7 @@ public class BulletEffects {
         g2.fill(new Ellipse2D.Double(-radius, -radius, radius * 2, radius * 2));
     }
  
-    /** Picos de fuego en abanico hacia adelante. */
+    // Picos de fuego en abanico hacia adelante. 
     private void drawFlashSpikes(Graphics2D g2, Random rnd, double life, boolean shotgun) {
         int count = shotgun ? 9 : 6;
         double spread = shotgun ? 0.75 : 0.5;     // apertura del abanico (rad)
@@ -3225,7 +3296,7 @@ public class BulletEffects {
         g2.fill(inner);
     }
  
-    /** TriÃ¡ngulo fino desde la boca del arma hacia el Ã¡ngulo indicado. */
+    // TriÃ¡ngulo fino desde la boca del arma hacia el Ã¡ngulo indicado. 
     private void addSpike(Path2D path, double angle, double length, double halfWidth) {
         double dx = Math.cos(angle);
         double dy = Math.sin(angle);
@@ -3238,7 +3309,7 @@ public class BulletEffects {
         path.closePath();
     }
  
-    /** Chispas chicas que salen disparadas y se alejan mientras el destello se apaga. */
+    // Chispas chicas que salen disparadas y se alejan mientras el destello se apaga. 
     private void drawFlashSparks(Graphics2D g2, Random rnd, double life, boolean shotgun) {
         int count = shotgun ? 9 : 5;
         double progress = 1.0 - life; // 0 -> 1
@@ -3263,7 +3334,7 @@ public class BulletEffects {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\GamePanel.java =====
+// ===== GamePanel.java =====
 package view;
 
 import controller.GameController;
@@ -3313,7 +3384,11 @@ public class GamePanel extends JPanel {
 
     private final Hud hud = new Hud();
 
+    private final PoisonEffects poisonEffects = new PoisonEffects();
+
     private Graphics2D g2;
+
+
 
     public GamePanel(GameController controller) {
         this.controller = controller;
@@ -3659,11 +3734,15 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Dibuja balas de veneno
-    public void drawPoisonBullet(double x, double y, int w, int h) {
+   // Dibuja balas de veneno
+public void drawPoisonBullet(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String type) {
+    if (type.equals("BossSpit")) {
+        poisonEffects.drawBossSpit(g2, x, y, w, h, dirX, dirY, speed, age);
+    } else {
         g2.setColor(new Color(50, 205, 50));
         g2.fillOval((int) x, (int) y, w, h);
     }
+}
 
     // Primera capa
     public void drawFirstLayer(int mapWidth, int mapHeight) {
@@ -3868,7 +3947,7 @@ public void onPowerUpPickup(String type) { hud.onPickup(type); }
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\MainFrame.java =====
+// ===== MainFrame.java =====
 package view;
 
 import javax.swing.*;
@@ -3884,7 +3963,7 @@ public class MainFrame extends JFrame {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\MenuButton.java =====
+// ===== MenuButton.java =====
 package view;
 
 import java.awt.*;
@@ -3965,7 +4044,7 @@ public class MenuButton extends JButton{
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\MenuPanel.java =====
+// ===== MenuPanel.java =====
 package view;
 
 import javax.swing.*;
@@ -4106,7 +4185,7 @@ public class MenuPanel extends JPanel {
 }
 
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\OptionsPanel.java =====
+// ===== OptionsPanel.java =====
 package view;
 
 import javax.swing.*;
@@ -4226,7 +4305,239 @@ public class OptionsPanel extends JPanel {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\SplashPanel.java =====
+// ===== PoisonEffects.java =====
+package view;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.MultipleGradientPaint.CycleMethod;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.util.Random;
+
+
+  //Efectos visuales del veneno: el escupitajo del FinalBoss (BossSpit).
+ 
+ 
+public class PoisonEffects {
+
+    private static final int BURST_TICKS = 16;       // duracion de la salpicadura al escupir
+    private static final int TRAIL_SEGMENTS = 9;     // "gotas" que forman la estela
+    private static final int DRIPS = 6;              // gotitas sueltas que se despegan de la estela
+    private static final double MOUTH_OFFSET = 40;   // la salpicadura sale del borde del boss, no de su centro
+
+    // BOSS SPIT
+    public void drawBossSpit(Graphics2D g2, double x, double y, int w, int h, double dirX, double dirY, double speed, int age) {
+        Paint oldPaint = g2.getPaint();
+        Stroke oldStroke = g2.getStroke();
+        AffineTransform oldTransform = g2.getTransform();
+        Object oldAntialias = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        double centerX = x + w / 2.0;
+        double centerY = y + h / 2.0;
+        double radius = w / 2.0;
+        double angle = Math.atan2(dirY, dirX);
+        double travelled = age * speed; // cuanto recorrio desde que salio
+
+        drawLaunchBurst(g2, centerX, centerY, dirX, dirY, angle, travelled, age);
+        drawTrail(g2, centerX, centerY, dirX, dirY, radius, speed, travelled, age);
+        drawGlow(g2, centerX, centerY, radius, age);
+        drawBlob(g2, centerX, centerY, angle, radius, age);
+
+        g2.setTransform(oldTransform);
+        g2.setPaint(oldPaint);
+        g2.setStroke(oldStroke);
+        if (oldAntialias != null) {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
+        }
+    }
+
+    // Salpicadura verde en la boca del boss durante los primeros ticks: anillo, resplandor y gotas disparadas. */
+    private void drawLaunchBurst(Graphics2D g2, double cx, double cy, double dirX, double dirY, double angle, double travelled, int age) {
+        if (age >= BURST_TICKS) return;
+
+        double progress = age / (double) BURST_TICKS; // 0 -> 1
+        double life = 1.0 - progress;                 // 1 -> 0
+        double eased = 1.0 - life * life;             // sale rapido y frena
+
+        // El origen se deduce de donde esta ahora la bala: no hace falta guardarlo
+        double originX = cx - dirX * travelled + dirX * MOUTH_OFFSET;
+        double originY = cy - dirY * travelled + dirY * MOUTH_OFFSET;
+
+        // Resplandor
+        double glowRadius = 60 * (0.6 + 0.4 * life);
+        g2.setPaint(new RadialGradientPaint(new Point2D.Double(originX, originY), (float) glowRadius,
+                new float[]{0f, 0.4f, 1f},
+                new Color[]{
+                        new Color(200, 255, 100, (int) (210 * life)),
+                        new Color(70, 205, 45, (int) (110 * life)),
+                        new Color(30, 150, 30, 0)}));
+        g2.fill(new Ellipse2D.Double(originX - glowRadius, originY - glowRadius, glowRadius * 2, glowRadius * 2));
+
+        // Anillo que se expande
+        double ringRadius = 12 + 44 * eased;
+        g2.setStroke(new BasicStroke((float) (1.5 + 4 * life), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.setPaint(alpha(new Color(150, 240, 70), (int) (200 * life)));
+        g2.draw(new Ellipse2D.Double(originX - ringRadius, originY - ringRadius, ringRadius * 2, ringRadius * 2));
+
+        // Gotas disparadas en abanico hacia adelante
+        Random rnd = new Random(31);
+        g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        for (int i = 0; i < 9; i++) {
+            double a = angle + (rnd.nextDouble() * 2 - 1) * 0.95;
+            double maxDist = 24 + rnd.nextDouble() * 52;
+            double start = 8 + eased * maxDist;
+            double end = start + 4 + rnd.nextDouble() * 8 * life;
+            double size = (2 + rnd.nextDouble() * 3.5) * (0.4 + 0.6 * life);
+
+            double sx = originX + Math.cos(a) * start;
+            double sy = originY + Math.sin(a) * start;
+
+            g2.setPaint(alpha(new Color(110, 225, 55), (int) (190 * life)));
+            g2.draw(new Line2D.Double(sx, sy, originX + Math.cos(a) * end, originY + Math.sin(a) * end));
+            g2.setPaint(alpha(new Color(170, 250, 90), (int) (240 * life)));
+            g2.fill(new Ellipse2D.Double(sx - size, sy - size, size * 2, size * 2));
+        }
+    }
+
+    // Estela de baba que se va achicando y ondula, mas gotitas que se despegan y se abren hacia los costados. */
+    private void drawTrail(Graphics2D g2, double cx, double cy, double dirX, double dirY, double radius, double speed, double travelled, int age) {
+        double perpX = -dirY;
+        double perpY = dirX;
+        double step = speed * 0.9;
+
+        // La estela crece desde 0 los primeros ticks: parece que "sale" del boss
+        double maxLength = travelled + 6;
+
+        for (int i = TRAIL_SEGMENTS; i >= 1; i--) {
+            double dist = i * step;
+            if (dist > maxLength) continue;
+
+            double f = i / (double) TRAIL_SEGMENTS;           // 0 cerca de la bola -> 1 en la cola
+            double wobble = Math.sin(age * 0.45 + i * 0.9) * 5 * f;
+            double px = cx - dirX * dist + perpX * wobble;
+            double py = cy - dirY * dist + perpY * wobble;
+
+            double r = radius * (0.78 - 0.6 * f);
+            int a = (int) (175 * Math.pow(1 - f, 1.3));
+
+            g2.setPaint(new Color(35, 160, 40, a));
+            g2.fill(new Ellipse2D.Double(px - r, py - r, r * 2, r * 2));
+            double inner = r * 0.5;
+            g2.setPaint(new Color(140, 240, 75, (int) (a * 0.7)));
+            g2.fill(new Ellipse2D.Double(px - inner, py - inner, inner * 2, inner * 2));
+        }
+
+        // Gotitas sueltas: cada una nace pegada a la bola, se despega y se abre hacia un costado
+        for (int j = 0; j < DRIPS; j++) {
+            double lifeJ = ((age + j * 5) % 24) / 24.0;       // 0 -> 1 y vuelve a empezar
+            double dist = 12 + lifeJ * 80;
+            if (dist > maxLength) continue;
+
+            double side = (j % 2 == 0 ? 1 : -1) * (5 + lifeJ * 15);
+            double size = 1 + 3 * (1 - lifeJ);
+            double dx = cx - dirX * dist + perpX * side;
+            double dy = cy - dirY * dist + perpY * side;
+
+            g2.setPaint(new Color(120, 230, 60, (int) (210 * (1 - lifeJ))));
+            g2.fill(new Ellipse2D.Double(dx - size, dy - size, size * 2, size * 2));
+        }
+    }
+
+    // Resplandor toxico que pulsa alrededor de la bola. 
+    private void drawGlow(Graphics2D g2, double cx, double cy, double radius, int age) {
+        double pulse = 0.5 + 0.5 * Math.sin(age * 0.4);
+        double glowRadius = radius * (2.3 + 0.4 * pulse);
+
+        g2.setPaint(new RadialGradientPaint(new Point2D.Double(cx, cy), (float) glowRadius,
+                new float[]{0f, 0.4f, 1f},
+                new Color[]{
+                        new Color(130, 255, 70, (int) (110 + 40 * pulse)),
+                        new Color(60, 200, 40, 60),
+                        new Color(30, 150, 30, 0)}));
+        g2.fill(new Ellipse2D.Double(cx - glowRadius, cy - glowRadius, glowRadius * 2, glowRadius * 2));
+    }
+
+    // La bola en si: una gota alargada que se deforma, con burbujas adentro y un brillo. 
+    private void drawBlob(Graphics2D g2, double cx, double cy, double angle, double radius, int age) {
+        // A partir de aca el eje X apunta hacia donde viaja el escupitajo y (0,0) es el centro de la bola
+        g2.translate(cx, cy);
+        g2.rotate(angle);
+
+        // Contorno: 12 puntos que "respiran" y cola mas larga atras (forma de gota)
+        int n = 12;
+        double[] px = new double[n];
+        double[] py = new double[n];
+        for (int k = 0; k < n; k++) {
+            double a = Math.PI * 2 * k / n;
+            double wobble = 1 + 0.10 * Math.sin(age * 0.55 + k * 1.7) + 0.06 * Math.sin(age * 0.9 + k * 3.1);
+            double stretch = Math.cos(a) < 0 ? 1.5 : 1.05;
+            px[k] = Math.cos(a) * radius * wobble * stretch;
+            py[k] = Math.sin(a) * radius * wobble * 0.95;
+        }
+        Path2D blob = smoothClosedPath(px, py);
+
+        // Cuerpo con degradado: centro claro, borde oscuro
+        g2.setPaint(new RadialGradientPaint(new Point2D.Double(0, 0), (float) (radius * 1.5),
+                new Point2D.Double(radius * 0.25, -radius * 0.3),
+                new float[]{0f, 0.45f, 1f},
+                new Color[]{new Color(205, 255, 115), new Color(80, 215, 50), new Color(20, 110, 35)},
+                CycleMethod.NO_CYCLE));
+        g2.fill(blob);
+
+        g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.setPaint(new Color(15, 90, 25, 200));
+        g2.draw(blob);
+
+        // Burbujas que giran adentro
+        for (int k = 0; k < 4; k++) {
+            double a = age * 0.12 * (k % 2 == 0 ? 1 : -1) + k * 1.6;
+            double dist = radius * 0.45 * (0.5 + 0.5 * Math.sin(age * 0.2 + k));
+            double bx = Math.cos(a) * dist;
+            double by = Math.sin(a) * dist;
+            double br = 2 + (k % 3);
+
+            Ellipse2D bubble = new Ellipse2D.Double(bx - br, by - br, br * 2, br * 2);
+            g2.setPaint(new Color(215, 255, 165, 120));
+            g2.fill(bubble);
+            g2.setStroke(new BasicStroke(1f));
+            g2.setPaint(new Color(240, 255, 225, 190));
+            g2.draw(bubble);
+        }
+
+        // Brillo
+        g2.setPaint(new Color(235, 255, 225, 150));
+        g2.fill(new Ellipse2D.Double(radius * 0.1, -radius * 0.62, radius * 0.5, radius * 0.25));
+    }
+
+    // Curva cerrada y suave que pasa cerca de los puntos dados (usa los puntos medios como anclas). 
+    private Path2D smoothClosedPath(double[] px, double[] py) {
+        int n = px.length;
+        Path2D path = new Path2D.Double();
+        path.moveTo((px[n - 1] + px[0]) / 2, (py[n - 1] + py[0]) / 2);
+        for (int k = 0; k < n; k++) {
+            int next = (k + 1) % n;
+            path.quadTo(px[k], py[k], (px[k] + px[next]) / 2, (py[k] + py[next]) / 2);
+        }
+        path.closePath();
+        return path;
+    }
+
+    private static Color alpha(Color c, int a) {
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), Math.max(0, Math.min(255, a)));
+    }
+}
+
+// ===== SplashPanel.java =====
 package view;
 
 import java.awt.BorderLayout;
@@ -4254,7 +4565,7 @@ public abstract class SplashPanel extends JPanel {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\SplashSubject.java =====
+// ===== SplashSubject.java =====
 package view;
 
 import java.awt.BorderLayout;
@@ -4294,7 +4605,7 @@ public class SplashSubject extends SplashPanel {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\SplashUniversity.java =====
+// ===== SplashUniversity.java =====
 package view;
 
 import java.awt.Color;
@@ -4338,7 +4649,7 @@ public class SplashUniversity extends SplashPanel {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\AmmoPanel.java =====
+// ===== AmmoPanel.java =====
 package view.hud;
 
 import java.awt.BasicStroke;
@@ -4462,7 +4773,7 @@ public class AmmoPanel extends HudElement {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\DamageBoostBadge.java =====
+// ===== DamageBoostBadge.java =====
 package view.hud;
 
 import java.awt.AlphaComposite;
@@ -4532,7 +4843,7 @@ public class DamageBoostBadge extends HudElement {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\HealthBar.java =====
+// ===== HealthBar.java =====
 package view.hud;
 
 import java.awt.BasicStroke;
@@ -4619,7 +4930,7 @@ public class HealthBar extends StatBar {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\Hud.java =====
+// ===== Hud.java =====
 package view.hud;
 
 import java.awt.Graphics2D;
@@ -4627,8 +4938,8 @@ import java.awt.RenderingHints;
 import java.util.List;
 
 /**
- * Compone todos los elementos del HUD y los dibuja en orden.
- * Es la Ãºnica clase del paquete que usa GamePanel.
+  Compone todos los elementos del HUD y los dibuja en orden.
+ Es la Ãºnica clase del paquete que usa GamePanel.
  */
 public class Hud {
 
@@ -4643,7 +4954,7 @@ public class Hud {
 
     private long lastNanos = System.nanoTime();
 
-    /** Avisa a todos los elementos que se agarrÃ³ un power up (recibe el nombre de la clase del modelo). */
+    // Avisa a todos los elementos que se agarrÃ³ un power up (recibe el nombre de la clase del modelo). 
     public void onPickup(String powerUpClassName) {
         PowerUpStyle style = PowerUpStyle.fromClassName(powerUpClassName);
         if (style == null) return;
@@ -4670,10 +4981,10 @@ public class Hud {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\HudData.java =====
+// ===== HudData.java =====
 package view.hud;
 
-/** Foto inmutable de lo que el HUD necesita mostrar en este frame. */
+// Foto inmutable de lo que el HUD necesita mostrar en este frame.
 public final class HudData {
 
     private final int health;
@@ -4711,7 +5022,7 @@ public final class HudData {
     public int maxAmmo() { return maxAmmo; }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\HudElement.java =====
+// ===== HudElement.java =====
 package view.hud;
 
 import java.awt.Color;
@@ -4719,19 +5030,19 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 
 /**
- * Clase base de todo lo que se dibuja en el HUD.
- * El Hud los trata a todos igual (update + draw); cada hijo decide cÃ³mo se ve y cÃ³mo reacciona.
+  Clase base de todo lo que se dibuja en el HUD.
+  El Hud los trata a todos igual (update + draw); cada hijo decide cÃ³mo se ve y cÃ³mo reacciona.
  */
 public abstract class HudElement {
 
     protected static final int MARGIN = 24;
     protected static final Font FONT = new Font("SansSerif", Font.BOLD, 14);
 
-    /** Se llama una vez por frame con los datos actuales y el tiempo transcurrido en segundos. */
+    // Se llama una vez por frame con los datos actuales y el tiempo transcurrido en segundos. 
     public void update(HudData data, double dt) {
     }
 
-    /** Se llama cuando el jugador agarra un power up, para que el elemento reaccione. */
+    // Se llama cuando el jugador agarra un power up, para que el elemento reaccione. 
     public void onPickup(PowerUpStyle style) {
     }
 
@@ -4772,7 +5083,7 @@ public abstract class HudElement {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\PickupToasts.java =====
+// ===== PickupToasts.java =====
 package view.hud;
 
 import java.awt.BasicStroke;
@@ -4786,7 +5097,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Avisos que bajan desde arriba al agarrar un power up ("ESCUDO - Absorbe el daÃ±o recibido"). */
+// Avisos que bajan desde arriba al agarrar un power up ("ESCUDO - Absorbe el daÃ±o recibido"). 
 public class PickupToasts extends HudElement {
 
     private static final double LIFE = 2.6;   // segundos en pantalla
@@ -4879,7 +5190,7 @@ public class PickupToasts extends HudElement {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\PowerUpStyle.java =====
+// ===== PowerUpStyle.java =====
 package view.hud;
 
 import java.awt.BasicStroke;
@@ -4888,8 +5199,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 
 /**
- * Identidad visual de cada power up: color, textos del aviso e icono vectorial.
- * Cada constante dibuja su propio icono (polimorfismo), asÃ­ el HUD no necesita ningÃºn if/switch por tipo.
+  Identidad visual de cada power up: color, textos del aviso e icono vectorial.
+  Cada constante dibuja su propio icono (polimorfismo), asÃ­ el HUD no necesita ningÃºn if/switch por tipo.
  */
 public enum PowerUpStyle {
 
@@ -4998,7 +5309,7 @@ public enum PowerUpStyle {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\ScreenFlash.java =====
+// ===== ScreenFlash.java =====
 package view.hud;
 
 import java.awt.Color;
@@ -5008,7 +5319,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-/** ViÃ±eta de color en los bordes de la pantalla: rojo al recibir daÃ±o, celeste si lo absorbe el escudo, color del power up al agarrarlo. */
+// ViÃ±eta de color en los bordes de la pantalla: rojo al recibir daÃ±o, celeste si lo absorbe el escudo, color del power up al agarrarlo. 
 public class ScreenFlash extends HudElement {
 
     private static class Pulse {
@@ -5075,7 +5386,7 @@ public class ScreenFlash extends HudElement {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\ShieldBar.java =====
+// ===== ShieldBar.java =====
 package view.hud;
 
 import java.awt.AlphaComposite;
@@ -5146,7 +5457,7 @@ public class ShieldBar extends StatBar {
     }
 }
 
-===== C:\Users\tryjo\OneDrive\Escritorio\Proyecto final POO 2026\Proyecto-Final-POO-2026-Grupo_2\src\view\hud\StatBar.java =====
+// ===== StatBar.java =====
 package view.hud;
 
 import java.awt.BasicStroke;
@@ -5157,9 +5468,9 @@ import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Barra animada genÃ©rica (la usan la vida y el escudo).
- * Se encarga de lo comÃºn: valor suavizado, estela blanca del daÃ±o recibido, flash y temblor.
- * Los hijos solo definen colores, icono y quÃ© hacer al perder/ganar.
+  Barra animada genÃ©rica (la usan la vida y el escudo).
+  Se encarga de lo comÃºn: valor suavizado, estela blanca del daÃ±o recibido, flash y temblor.
+  Los hijos solo definen colores, icono y quÃ© hacer al perder/ganar.
  */
 abstract class StatBar extends HudElement {
 

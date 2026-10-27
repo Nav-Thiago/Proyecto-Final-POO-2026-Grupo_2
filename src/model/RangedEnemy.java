@@ -12,10 +12,10 @@ public abstract class RangedEnemy extends Enemy {
         this.projectiles = projectiles;
     }
 
-    /** Cada hija decide qué proyectil crea. */
+    //Cada hija decide qué proyectil crea. 
     protected abstract PoisonBullet createProjectile(double x, double y, double dirX, double dirY);
 
-    /** Código común: apunta al jugador y dispara. */
+    // Código común: apunta al jugador y dispara. 
     protected void shootAt(Player target) {
         double startX = getX() + getWidth() / 2.0;
         double startY = getY() + getHeight() / 2.0;

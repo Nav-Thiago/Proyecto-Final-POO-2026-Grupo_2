@@ -50,7 +50,11 @@ public class GamePanel extends JPanel {
 
     private final Hud hud = new Hud();
 
+    private final PoisonEffects poisonEffects = new PoisonEffects();
+
     private Graphics2D g2;
+
+
 
     public GamePanel(GameController controller, GameAssets assets) {
         this.controller = controller;
@@ -221,12 +225,15 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Dibuja balas de veneno
-    // Dibuja balas de veneno (solo el círculo verde)
-    public void drawPoisonBullet(double x, double y, int w, int h) {
+   // Dibuja balas de veneno
+public void drawPoisonBullet(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String type) {
+    if (type.equals("BossSpit")) {
+        poisonEffects.drawBossSpit(g2, x, y, w, h, dirX, dirY, speed, age);
+    } else {
         g2.setColor(new Color(50, 205, 50));
         g2.fillOval((int) x, (int) y, w, h);
     }
+}
 
     // Primera capa
     public void drawFirstLayer(int mapWidth, int mapHeight) {

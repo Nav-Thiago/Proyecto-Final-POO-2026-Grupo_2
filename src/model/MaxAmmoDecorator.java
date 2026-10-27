@@ -1,8 +1,8 @@
 package model;
 
 /**
- * Recarga al máximo la munición del arma equipada.
- * Es un efecto instantáneo: actúa al aplicarse (onApply) y se descarta en el próximo tick.
+  Recarga al máximo la munición del arma equipada.
+  Es un efecto instantáneo: actúa al aplicarse (onApply) y se descarta en el próximo tick.
  */
 public class MaxAmmoDecorator extends StatsDecorator {
 

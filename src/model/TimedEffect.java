@@ -1,6 +1,6 @@
 package model;
 
-/** Efecto con duración en milisegundos. */
+// Efecto con duración en milisegundos.
 public abstract class TimedEffect implements Effect {
 
     private final long endTime;

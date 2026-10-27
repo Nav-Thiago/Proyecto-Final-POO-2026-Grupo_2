@@ -1,8 +1,8 @@
 package model;
 
 /**
- * Clase padre de todos los power ups.
- * Extiende Entity, así que reutiliza posición, tamaño y collidesWith().
+ Clase padre de todos los power ups.
+ Extiende Entity,  reutiliza posición, tamaño y collidesWith().
  */
 public abstract class PowerUp extends Entity {
 
@@ -18,7 +18,7 @@ public abstract class PowerUp extends Entity {
         return active;
     }
 
-    /** Template method: el juego lo llama al tocarlo. Cada hija solo define apply(). */
+    // Template method: el juego lo llama al tocarlo. Cada hija solo define apply().
     public final void collect(Player player) {
         if (!active) return;
         apply(player);
@@ -26,6 +26,6 @@ public abstract class PowerUp extends Entity {
         active = false;
     }
 
-    /** Efecto concreto de cada power up sobre el jugador. */
+    // Efecto concreto de cada power up sobre el jugador.
     protected abstract void apply(Player player);
 }

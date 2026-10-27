@@ -5,8 +5,8 @@ import java.awt.RenderingHints;
 import java.util.List;
 
 /**
- * Compone todos los elementos del HUD y los dibuja en orden.
- * Es la única clase del paquete que usa GamePanel.
+  Compone todos los elementos del HUD y los dibuja en orden.
+ Es la única clase del paquete que usa GamePanel.
  */
 public class Hud {
 
@@ -21,7 +21,7 @@ public class Hud {
 
     private long lastNanos = System.nanoTime();
 
-    /** Avisa a todos los elementos que se agarró un power up (recibe el nombre de la clase del modelo). */
+    // Avisa a todos los elementos que se agarró un power up (recibe el nombre de la clase del modelo). 
     public void onPickup(String powerUpClassName) {
         PowerUpStyle style = PowerUpStyle.fromClassName(powerUpClassName);
         if (style == null) return;

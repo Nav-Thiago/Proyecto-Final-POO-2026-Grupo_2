@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Genera power ups repartidos por todo el mapa, solo en lugares a los que el jugador puede llegar caminando
- * (respeta la matriz de colisiones: nada sobre obstáculos ni dentro de zonas cerradas).
- * Al crearse deja una cantidad inicial y después repone de a uno cada cierto tiempo.
- * Mismo estilo que EnemySpawner.
+  Genera power ups repartidos por todo el mapa, solo en lugares a los que el jugador puede llegar caminando
+  (respeta la matriz de colisiones: nada sobre obstáculos ni dentro de zonas cerradas).
+  Al crearse deja una cantidad inicial y después repone de a uno cada cierto tiempo.
+ Mismo estilo que EnemySpawner.
  */
 public class PowerUpSpawner {
 
@@ -38,7 +38,7 @@ public class PowerUpSpawner {
         populate(Math.min(initialCount, maxOnMap));
     }
 
-    /** Reparte la cantidad inicial recorriendo los tipos en orden, para que haya variedad. */
+    // Reparte la cantidad inicial recorriendo los tipos en orden, para que haya variedad. 
     private void populate(int count) {
         int firstType = random.nextInt(TYPES);
         for (int i = 0; i < count; i++) {
@@ -90,7 +90,7 @@ public class PowerUpSpawner {
         return true;
     }
 
-    /** true si el power up toca algún tile bloqueado del mapa o se sale de él. */
+    // true si el power up toca algún tile bloqueado del mapa o se sale de él. 
     private boolean isOnBlockedTile(double x, double y) {
         boolean[][] map = state.getCollisionMatrix();
         if (map == null) return false;

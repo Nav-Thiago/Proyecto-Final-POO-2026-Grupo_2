@@ -101,7 +101,7 @@ public class BulletEffects {
         g2.setStroke(oldStroke);
     }
  
-    /** Resplandor redondo + luz tenue que "ilumina" la zona oscura alrededor. */
+    //Resplandor redondo + luz tenue que "ilumina" la zona oscura alrededor.
     private void drawFlashGlow(Graphics2D g2, double life, boolean shotgun) {
         Point2D center = new Point2D.Double(0, 0);
         float[] fractions = {0f, 0.35f, 1f};
@@ -123,7 +123,7 @@ public class BulletEffects {
         g2.fill(new Ellipse2D.Double(-radius, -radius, radius * 2, radius * 2));
     }
  
-    /** Picos de fuego en abanico hacia adelante. */
+    // Picos de fuego en abanico hacia adelante. 
     private void drawFlashSpikes(Graphics2D g2, Random rnd, double life, boolean shotgun) {
         int count = shotgun ? 9 : 6;
         double spread = shotgun ? 0.75 : 0.5;     // apertura del abanico (rad)
@@ -148,7 +148,7 @@ public class BulletEffects {
         g2.fill(inner);
     }
  
-    /** Triángulo fino desde la boca del arma hacia el ángulo indicado. */
+    // Triángulo fino desde la boca del arma hacia el ángulo indicado. 
     private void addSpike(Path2D path, double angle, double length, double halfWidth) {
         double dx = Math.cos(angle);
         double dy = Math.sin(angle);
@@ -161,7 +161,7 @@ public class BulletEffects {
         path.closePath();
     }
  
-    /** Chispas chicas que salen disparadas y se alejan mientras el destello se apaga. */
+    // Chispas chicas que salen disparadas y se alejan mientras el destello se apaga. 
     private void drawFlashSparks(Graphics2D g2, Random rnd, double life, boolean shotgun) {
         int count = shotgun ? 9 : 5;
         double progress = 1.0 - life; // 0 -> 1

@@ -6,8 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 
 /**
- * Identidad visual de cada power up: color, textos del aviso e icono vectorial.
- * Cada constante dibuja su propio icono (polimorfismo), así el HUD no necesita ningún if/switch por tipo.
+  Identidad visual de cada power up: color, textos del aviso e icono vectorial.
+  Cada constante dibuja su propio icono (polimorfismo), así el HUD no necesita ningún if/switch por tipo.
  */
 public enum PowerUpStyle {
 
