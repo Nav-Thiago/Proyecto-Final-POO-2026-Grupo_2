@@ -35,11 +35,7 @@ public class GameModel {
         this.stats = state.getMatchStats();
 
         // Inicializamos los spawners
-<<<<<<< HEAD
         this.spawner = new EnemySpawner(2000, 1);
-=======
-        this.spawner = new EnemySpawner(2000, 0);
->>>>>>> 777f839 (agrego animacion de veneno al final boss)
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
 
         //METODO PARA SPAWNEAR EL BOSS EN EL ESTACIONAMIENTO
