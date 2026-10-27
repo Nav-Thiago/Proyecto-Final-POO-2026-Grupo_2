@@ -53,4 +53,8 @@ public abstract class Weapon {
     public int getMaxMunition() {
         return 0;
     }
+
+    public double getSwingProgress() {
+        return -1;
+    }
 }

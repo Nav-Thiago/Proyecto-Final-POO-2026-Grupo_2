@@ -72,28 +72,17 @@ public class CollisionSystem {
     }
 
     private void checkZombiePlayerCollision(GameState state) {
-        Player player = state.getPlayer();
-        if (!player.isAlive()) return;
+    Player player = state.getPlayer();
+    if (!player.isAlive()) return;
 
-        for (Enemy zombie : state.getEnemies()) {
-            if (!zombie.isAlive()) continue;
+    for (Enemy zombie : state.getEnemies()) {
+        if (!zombie.isAlive()) continue;
 
-            if (zombie.collidesWith(player)) {
-                // 1. Si es el primer instante en que choca, inicia el temporizador del choque
-                if (!zombie.isCollidingWithPlayer()) {
-                    zombie.setCollidingWithPlayer(true);
-                    zombie.setCollisionStartTime(System.currentTimeMillis());
-                }
-
-                // 2. Debe tener su intervalo de ataque listo Y haber mantenido el choque por 400ms
-                if (zombie.canAttack() && zombie.hasCompletedAttackDelay()) {
-                    player.takeDamage(zombie.attack());
-                    zombie.resetAttackCooldown();
-                }
-            } else {
-                // 3. Si el jugador se aleja antes de los 400ms, se reinicia el choque
-                zombie.setCollidingWithPlayer(false);
-            }
+        if (zombie.collidesWith(player)) {
+            zombie.tryAttack(player);
+        } else {
+            zombie.cancelWindup();
         }
     }
+}
 }

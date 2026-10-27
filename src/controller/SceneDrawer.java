@@ -61,7 +61,9 @@ public class SceneDrawer {
         panel.updateZombieAnimations();
         for (Enemy zombie : state.getEnemies()) {
             if (zombie.isAlive()) {
-                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(), zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(), zombie.isAttacking(), zombie.isSpitting());
+                panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(),
+                zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(),
+                zombie.getAttackProgress(), zombie.getSpitProgress());
             }
         }
     }
@@ -77,7 +79,10 @@ public class SceneDrawer {
     private void drawPlayer(GamePanel panel, GameState state) {
         Player player = state.getPlayer();
         if (player.isAlive()) {
-            panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getAngle(), player.isMoving(), player.getActiveWeapon().getClass().getSimpleName());
+            Weapon weapon = player.getActiveWeapon();
+            panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(),
+                player.getAngle(), player.isMoving(), weapon.getClass().getSimpleName(),
+                weapon.getSwingProgress());
         }
     }
 

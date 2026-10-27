@@ -1,20 +1,14 @@
 package view;
 
 import controller.GameController;
-import model.Enemy;
-import model.FinalBoss;
 import view.hud.HudData;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.HashMap;
 
 import view.hud.Hud;
 
@@ -24,6 +18,7 @@ public class GamePanel extends JPanel {
 
     private Animation playerFeetAnimation;
     private final Map<String, Animation> playerAnimations;
+    private final Map<String, Animation> playerAttackAnimations;
 
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
@@ -62,6 +57,7 @@ public class GamePanel extends JPanel {
         this.firstLayer = assets.getFirstLayer();
         this.playerFeetAnimation = assets.getPlayerFeetAnimation();
         this.playerAnimations = assets.getPlayerAnimations();
+        this.playerAttackAnimations = assets.getPlayerAttackAnimations();
         this.zombieAnimations = assets.getZombieAnimations();
         this.zombieIdleSprites = assets.getZombieIdleSprites();
         this.zombieAttackAnimations = assets.getZombieAttackAnimations();
@@ -87,7 +83,9 @@ public class GamePanel extends JPanel {
     }
 
     // Dibuja al jugador
-    public void drawPlayer(double x, double y, int w, int h, double angle, boolean moving, String weaponType) {
+    // swingProgress: avance (0.0 a 1.0) del golpe cuerpo a cuerpo; -1 si no está golpeando
+    public void drawPlayer(double x, double y, int w, int h, double angle, boolean moving, String weaponType,
+            double swingProgress) {
         AffineTransform transformOriginal = g2.getTransform();
 
         double centerX = x + (w / 2.0);
@@ -96,7 +94,11 @@ public class GamePanel extends JPanel {
         g2.translate(centerX, centerY);
         g2.rotate(angle);
 
-        if (moving && playerFeetAnimation != null && playerFeetAnimation.getCurrentFrame() != null) {
+        boolean swinging = swingProgress >= 0;
+
+        // Los pies no se dibujan durante el golpe: el sprite de ataque ya trae el cuerpo
+        // en otra posición y los pies se verían flotando.
+        if (moving && !swinging && playerFeetAnimation != null && playerFeetAnimation.getCurrentFrame() != null) {
             BufferedImage feetFrame = playerFeetAnimation.getCurrentFrame();
             AffineTransform transformFeet = g2.getTransform();
             g2.scale(0.6, 0.6);
@@ -105,12 +107,35 @@ public class GamePanel extends JPanel {
         }
 
         Animation currentAnim = playerAnimations.get(weaponType);
+        Animation attackAnim = playerAttackAnimations.get(weaponType);
 
-        if (currentAnim != null) {
+        if (swinging && attackAnim != null && attackAnim.getFrameAt(swingProgress) != null) {
+            BufferedImage attackFrame = attackAnim.getFrameAt(swingProgress);
+
+            // Misma escala por eje que usa el sprite de caminar (se dibuja a w x h),
+            // así el cuerpo mantiene el mismo tamaño en pantalla durante el golpe.
+            double sx = 1.0;
+            double sy = 1.0;
+            if (currentAnim != null && currentAnim.getCurrentFrame() != null) {
+                BufferedImage ref = currentAnim.getCurrentFrame();
+                sx = w / (double) ref.getWidth();
+                sy = h / (double) ref.getHeight();
+            }
+            sx *= attackAnim.getScale();
+            sy *= attackAnim.getScale();
+
+            int drawW = (int) (attackFrame.getWidth() * sx);
+            int drawH = (int) (attackFrame.getHeight() * sy);
+
+            g2.drawImage(attackFrame,
+                    (int) (-drawW / 2.0 + attackAnim.getOffsetX()),
+                    (int) (-drawH / 2.0 + attackAnim.getOffsetY()),
+                    drawW, drawH, null);
+
+        } else if (currentAnim != null) {
             currentAnim.update();
             if (currentAnim.getCurrentFrame() != null) {
-                BufferedImage bodyFrame = currentAnim.getCurrentFrame();
-                g2.drawImage(bodyFrame, -w / 2, -h / 2, w, h, null);
+                g2.drawImage(currentAnim.getCurrentFrame(), -w / 2, -h / 2, w, h, null);
             }
         } else {
             g2.setColor(Color.RED);
@@ -120,10 +145,11 @@ public class GamePanel extends JPanel {
         g2.setTransform(transformOriginal);
     }
 
-    // Dibuja al zombie
-    // NOTA: Se agregó el parámetro 'boolean isAttacking'
-    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type, boolean isAttacking,
-            boolean isSpitting) {
+        // Dibuja al zombie
+    // attackProgress: avance (0.0 a 1.0) de la animación de ataque; -1 si no está atacando
+    // spitProgress: avance (0.0 a 1.0) de la animación de escupir; -1 si no está escupiendo
+    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type,
+            double attackProgress, double spitProgress) {
         double spriteAngle = angle + SPRITE_ROTATION.getOrDefault(type, 0.0);
 
         AffineTransform transformOriginal = g2.getTransform();
@@ -141,13 +167,17 @@ public class GamePanel extends JPanel {
         BufferedImage frameToDraw = null;
         double scale = 1.0;
 
-        // Lógica de prioridad: Escupir -> Ataque -> Caminar -> Reposo -> Círculo rojo
-        // de error
-        if (isSpitting && spitAnim != null && spitAnim.getCurrentFrame() != null) {
-            frameToDraw = spitAnim.getCurrentFrame();
-            scale = ATTACK_SCALES.getOrDefault(type, 1.0);
-        } else if (isAttacking && attackAnim != null && attackAnim.getCurrentFrame() != null) {
-            frameToDraw = attackAnim.getCurrentFrame();
+        // Lógica de prioridad: Escupir -> Ataque -> Caminar -> Reposo -> Círculo rojo de error
+        if (spitProgress >= 0 && spitAnim != null && spitAnim.getFrameAt(spitProgress) != null) {
+            frameToDraw = spitAnim.getFrameAt(spitProgress);
+
+            // Escala relativa al sprite de caminar: el cuerpo conserva el mismo tamaño en pantalla
+            BufferedImage ref = (walkAnim != null) ? walkAnim.getCurrentFrame() : null;
+            if (ref != null) {
+                scale = frameToDraw.getHeight() / (double) ref.getHeight();
+            }
+        } else if (attackProgress >= 0 && attackAnim != null && attackAnim.getFrameAt(attackProgress) != null) {
+            frameToDraw = attackAnim.getFrameAt(attackProgress);
             scale = ATTACK_SCALES.getOrDefault(type, 1.0);
         } else if (walkAnim != null && walkAnim.getCurrentFrame() != null) {
             frameToDraw = walkAnim.getCurrentFrame();
@@ -175,14 +205,10 @@ public class GamePanel extends JPanel {
         g2.drawString("HP: " + health, (int) x, (int) y);
     }
 
+    // Avanzan solo las animaciones que van en bucle (caminar).
+    // Las de ataque y escupir no: se eligen por progreso desde el modelo.
     public void updateZombieAnimations() {
         for (Animation anim : zombieAnimations.values()) {
-            anim.update();
-        }
-        for (Animation anim : zombieAttackAnimations.values()) {
-            anim.update();
-        }
-        for (Animation anim : zombieSpitAnimations.values()) {
             anim.update();
         }
     }
@@ -225,15 +251,17 @@ public class GamePanel extends JPanel {
         }
     }
 
-   // Dibuja balas de veneno
-public void drawPoisonBullet(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String type) {
-    if (type.equals("BossSpit")) {
-        poisonEffects.drawBossSpit(g2, x, y, w, h, dirX, dirY, speed, age);
-    } else {
-        g2.setColor(new Color(50, 205, 50));
-        g2.fillOval((int) x, (int) y, w, h);
+    // Dibuja balas de veneno
+    public void drawPoisonBullet(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String type) {
+        if (type.equals("BossSpit")) {
+            poisonEffects.drawBossSpit(g2, x, y, w, h, dirX, dirY, speed, age);
+        } else {
+        // Bala normal: solo el círculo verde
+            g2.setColor(new Color(50, 205, 50));
+            g2.fillOval((int) x, (int) y, w, h);
+        }
     }
-}
+
 
     // Primera capa
     public void drawFirstLayer(int mapWidth, int mapHeight) {

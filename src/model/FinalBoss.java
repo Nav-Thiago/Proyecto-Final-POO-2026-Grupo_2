@@ -2,12 +2,14 @@ package model;
 
 import java.util.List;
 
-public class FinalBoss extends RangedEnemy{
+public class FinalBoss extends RangedEnemy {
 
     private static final long SPIT_COOLDOWN = 5000;
+    private static final long SPIT_ANIM_MS = 1000;   // duración de la animación de escupir
     private static final int SPIT_DAMAGE = 50;
 
     private long lastSpitTime;
+    private long spitAnimStart = -1;   // -1 = no está escupiendo
 
     public FinalBoss(double x, double y, List<PoisonBullet> poisonList) {
         super(x, y, 110, 110, 3.5, 500, 500, poisonList);
@@ -33,13 +35,19 @@ public class FinalBoss extends RangedEnemy{
         long now = System.currentTimeMillis();
         if (now - lastSpitTime >= SPIT_COOLDOWN) {
             shootAt(player);
-            resetAttackCooldown(); 
+            resetAttackCooldown();
             lastSpitTime = now;
+            spitAnimStart = now; // arranca la animación de escupir
         }
     }
 
     @Override
-    public boolean isSpitting() {
-        return (System.currentTimeMillis() - lastSpitTime < 500);
+    public double getSpitProgress() {
+        if (spitAnimStart < 0) return -1;
+
+        long elapsed = System.currentTimeMillis() - spitAnimStart;
+        if (elapsed >= SPIT_ANIM_MS) return -1;
+
+        return elapsed / (double) SPIT_ANIM_MS;
     }
 }

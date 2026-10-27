@@ -4,6 +4,7 @@ public class MeleeWeapon extends Weapon {
 
     private final double range = 100.0; // Píxeles de alcance del cuchillo
     private final double arcAngle = Math.toRadians(90); // 90 grados de arco de ataque
+    private static final long SWING_MS = 400;
 
     public MeleeWeapon(int damage, long cooldown) {
         super(damage);
@@ -51,6 +52,13 @@ public class MeleeWeapon extends Weapon {
             return hitSomething;
         }
         return false;
+    }
+
+    @Override
+    public double getSwingProgress() {
+        long elapsed = System.currentTimeMillis() - lastShoot;
+        if (elapsed < 0 || elapsed >= SWING_MS) return -1;
+            return elapsed / (double) SWING_MS;
     }
 
     @Override

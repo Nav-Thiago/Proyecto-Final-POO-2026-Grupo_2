@@ -15,6 +15,7 @@ public class GameAssets {
     private BufferedImage firstLayer;
 
     private final Map<String, Animation> playerAnimations = new HashMap<>();
+    private final Map<String, Animation> playerAttackAnimations = new HashMap<>();
     private final Map<String, Animation> zombieAnimations = new HashMap<>();
     private final Map<String, BufferedImage> zombieIdleSprites = new HashMap<>();
     private final Map<String, Animation> zombieAttackAnimations = new HashMap<>();
@@ -84,6 +85,20 @@ public class GameAssets {
 
         } catch (Exception e) {
             System.err.println("Error cargando animaciones del player (move_arma)");
+        }
+
+        // ATAQUE CUERPO A CUERPO
+        // El offset y la escala son propios del sprite: se ajustan acá, sin tocar el modelo.
+        try {
+            int attackFrames = 15;
+            BufferedImage[] knifeAttack = new BufferedImage[attackFrames];
+            for (int i = 0; i < attackFrames; i++) {
+                knifeAttack[i] = loadImage("/Resources/imagenes/entitys/player/survivor_meleeattack_knife/survivor-meleeattack_knife_" + (i + 1) + ".png");
+            }
+            playerAttackAnimations.put("MeleeWeapon",
+                    new Animation(30, knifeAttack).withOffset(-8, 0).withScale(1.0));
+        } catch (Exception e) {
+            System.err.println("Error cargando animación de ataque con cuchillo: " + e.getMessage());
         }
 
         onStage.accept("Cargando power-ups y armas...");
@@ -209,41 +224,32 @@ public class GameAssets {
         }
 
         onStage.accept("Cargando al jefe final...");
-        try {
-            InputStream inIdle = getClass().getResourceAsStream("/Resources/imagenes/entitys/zombie_forest/boss_zombie/boss_idle.png");
-            if (inIdle != null) zombieIdleSprites.put("FinalBoss", ImageIO.read(inIdle));
+        String bossBase = "/Resources/imagenes/entitys/zombie_forest/boss_zombie/";
 
-            int walkFramesCount = 36;
-            BufferedImage[] walkFrames = new BufferedImage[walkFramesCount];
-            for(int i = 0; i < walkFramesCount; i++){
-                String route = "/Resources/imagenes/entitys/zombie_forest/boss_zombie/boss_walk_" + (i+1) + ".png";
-                InputStream in = getClass().getResourceAsStream(route);
-                if (in != null) walkFrames[i] = ImageIO.read(in);
-            }
-            zombieAnimations.put("FinalBoss", new Animation(100, walkFrames));
+        zombieIdleSprites.put("FinalBoss", loadImage(bossBase + "boss_idle.png"));
 
-            int bossSpitFramesCount = 36;
-            BufferedImage[] bossSpitFrames = new BufferedImage[bossSpitFramesCount];
-            for(int i = 0; i < bossSpitFramesCount; i++){
-                String route = "/Resources/imagenes/entitys/zombie_forest/boss_zombie/boss_spit/boss_spit_" + (i+1) + ".png";
-                InputStream in = getClass().getResourceAsStream(route);
-                if (in != null) bossSpitFrames[i] = ImageIO.read(in);
-            }
-            zombieSpitAnimations.put("FinalBoss", new Animation(150, bossSpitFrames));
-
-            int attackFramesCount = 36;
-            BufferedImage[] attackFrames = new BufferedImage[attackFramesCount];
-            for(int i = 0; i < attackFramesCount; i++){
-                String route = "/Resources/imagenes/entitys/zombie_forest/boss_zombie/boss_attack_" + (i+1) + ".png";
-                InputStream in = getClass().getResourceAsStream(route);
-                if (in != null) attackFrames[i] = ImageIO.read(in);
-            }
-            zombieAttackAnimations.put("FinalBoss", new Animation(150, attackFrames));
-
-        } catch (Exception e) {
-            System.err.println("Error cargando animaciones del FinalBoss: " + e.getMessage());
+        int walkFramesCount = 36;
+        BufferedImage[] walkFrames = new BufferedImage[walkFramesCount];
+        for (int i = 0; i < walkFramesCount; i++) {
+            walkFrames[i] = loadImage(bossBase + "boss_walk_" + (i + 1) + ".png");
         }
+        zombieAnimations.put("FinalBoss", new Animation(100, walkFrames));
+
+        int bossSpitFramesCount = 36;
+        BufferedImage[] bossSpitFrames = new BufferedImage[bossSpitFramesCount];
+        for (int i = 0; i < bossSpitFramesCount; i++) {
+            bossSpitFrames[i] = loadImage(bossBase + "boss_spit_" + (i + 1) + ".png");
+        }
+        zombieSpitAnimations.put("FinalBoss", new Animation(150, bossSpitFrames));
+
+        int attackFramesCount = 36;
+        BufferedImage[] attackFrames = new BufferedImage[attackFramesCount];
+        for (int i = 0; i < attackFramesCount; i++) {
+            attackFrames[i] = loadImage(bossBase + "boss_attack_" + (i + 1) + ".png");
+        }
+        zombieAttackAnimations.put("FinalBoss", new Animation(150, attackFrames));
     }
+
 
     public BufferedImage getBackgroundForest() {
         return backgroundForest;
@@ -259,6 +265,10 @@ public class GameAssets {
 
     public Map<String, Animation> getPlayerAnimations() {
         return playerAnimations;
+    }
+
+    public Map<String, Animation> getPlayerAttackAnimations() {
+        return playerAttackAnimations;
     }
 
     public Map<String, Animation> getZombieAnimations() {
