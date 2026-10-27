@@ -16,11 +16,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.HashMap;
 
-import java.awt.geom.Area;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-
 import view.hud.Hud;
 
 public class GamePanel extends JPanel {
@@ -29,7 +24,7 @@ public class GamePanel extends JPanel {
 
     private Animation playerFeetAnimation;
     private final Map<String, Animation> playerAnimations;
-    
+
     private BufferedImage backgroundForest;
     private BufferedImage firstLayer;
 
@@ -37,17 +32,21 @@ public class GamePanel extends JPanel {
     private final Map<String, Animation> zombieAnimations;
     private final Map<String, BufferedImage> zombieIdleSprites;
     private final Map<String, Animation> zombieAttackAnimations;
-    private final Map<String, Animation> zombieSpitAnimations ;
+    private final Map<String, Animation> zombieSpitAnimations;
     private final Map<String, BufferedImage> powerUpSprites;
     private final Map<String, BufferedImage> weaponSprites;
 
-    private static final Map<String, Double> SPRITE_ROTATION = Map.of("FastZombie", Math.PI / 2, "PoisonZombie", Math.PI / 2, "TankZombie", -Math.PI / 2, "FinalBoss", -Math.PI / 2);
+    private static final Map<String, Double> SPRITE_ROTATION = Map.of("FastZombie", Math.PI / 2, "PoisonZombie",
+            Math.PI / 2, "TankZombie", -Math.PI / 2, "FinalBoss", -Math.PI / 2);
     private static final Map<String, Double> ATTACK_SCALES = Map.of("FinalBoss", 2.0);
 
-    private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN, "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
-    private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25", "Ammo", "AMMO", "MaxAmmo", "MAX");
+    private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN,
+            "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);
+    private static final Map<String, String> POWERUP_LABELS = Map.of("Heal", "HP", "Shield", "SH", "DamageBoost", "+25",
+            "Ammo", "AMMO", "MaxAmmo", "MAX");
 
     private final BulletEffects bulletEffects = new BulletEffects();
+    private final VisionConeRenderer visionConeRenderer = new VisionConeRenderer();
 
     private final Hud hud = new Hud();
 
@@ -119,7 +118,8 @@ public class GamePanel extends JPanel {
 
     // Dibuja al zombie
     // NOTA: Se agregó el parámetro 'boolean isAttacking'
-    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type, boolean isAttacking, boolean isSpitting) {
+    public void drawZombie(double x, double y, int w, int h, double angle, int health, String type, boolean isAttacking,
+            boolean isSpitting) {
         double spriteAngle = angle + SPRITE_ROTATION.getOrDefault(type, 0.0);
 
         AffineTransform transformOriginal = g2.getTransform();
@@ -137,7 +137,8 @@ public class GamePanel extends JPanel {
         BufferedImage frameToDraw = null;
         double scale = 1.0;
 
-        // Lógica de prioridad: Escupir -> Ataque -> Caminar -> Reposo -> Círculo rojo de error
+        // Lógica de prioridad: Escupir -> Ataque -> Caminar -> Reposo -> Círculo rojo
+        // de error
         if (isSpitting && spitAnim != null && spitAnim.getCurrentFrame() != null) {
             frameToDraw = spitAnim.getCurrentFrame();
             scale = ATTACK_SCALES.getOrDefault(type, 1.0);
@@ -156,8 +157,8 @@ public class GamePanel extends JPanel {
             double ratio = imgW / imgH;
 
             int drawH = (int) (h * scale);
-            int drawW = (int) (drawH * ratio); 
-            
+            int drawW = (int) (drawH * ratio);
+
             g2.drawImage(frameToDraw, -drawW / 2, -drawH / 2, drawW, drawH, null);
         } else {
             g2.setColor(Color.RED);
@@ -178,7 +179,7 @@ public class GamePanel extends JPanel {
             anim.update();
         }
         for (Animation anim : zombieSpitAnimations.values()) {
-        anim.update();
+            anim.update();
         }
     }
 
@@ -241,44 +242,21 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Oscuridad
-    public void drawDarkness(double playerX, double playerY, int playerW, int playerH, double playerAngle, int mapWidth, int mapHeight) {
-        double centerX = playerX + (playerW / 2.0);
-        double centerY = playerY + (playerH / 2.0);
-
-        Area darkness = new Area(new Rectangle2D.Double(0, 0, mapWidth, mapHeight));
-
-        double lightRadius = 700.0; // Define distancia
-        double fovAngle = 85.0; // Define ángulo
-
-        double angleDegrees = -Math.toDegrees(playerAngle);
-
-        Arc2D.Double lightCone = new Arc2D.Double(
-                centerX - lightRadius, centerY - lightRadius,
-                lightRadius * 2, lightRadius * 2,
-                angleDegrees - (fovAngle / 2.0), fovAngle,
-                Arc2D.PIE
-        );
-
-        double personalRadius = 90.0; // Círculo personal donde se va a ver
-        Ellipse2D.Double personalCircle = new Ellipse2D.Double(
-                centerX - personalRadius, centerY - personalRadius,
-                personalRadius * 2, personalRadius * 2
-        );
-
-        darkness.subtract(new Area(lightCone)); // Substrae el cono de iluminación
-        darkness.subtract(new Area(personalCircle)); // Substrae el círculo personal
-
-        g2.setColor(new Color(0, 0, 0, 220)); // 245 = opacidad
-        g2.fill(darkness);
-
-        g2.setStroke(new BasicStroke(1.0f)); // Restaurar el grosor normal
+    // Oscuridad (delegada a la clase "VisionConeRenderer" con bordes suaves)
+    public void drawDarkness(double playerX, double playerY, int playerW, int playerH, double playerAngle, int mapWidth,
+            int mapHeight) {
+        visionConeRenderer.renderDarkness(g2, playerX, playerY, playerW, playerH, playerAngle, getWidth(), getHeight(),
+                camX, camY);
     }
 
     // HUD
-    
-       public void drawHud(HudData data) { hud.draw(g2, data, getWidth(), getHeight()); }
-public void onPowerUpPickup(String type) { hud.onPickup(type); }
+    public void drawHud(HudData data) {
+        hud.draw(g2, data, getWidth(), getHeight());
+    }
+
+    public void onPowerUpPickup(String type) {
+        hud.onPickup(type);
+    }
 
     // Pantalla de intro del jefe final
     public void drawBossIntro(int step, double progress) {
@@ -377,27 +355,28 @@ public void onPowerUpPickup(String type) { hud.onPickup(type); }
 
     // Mensajes de estado
     public void drawGameOver(long matchTimeMs) {
-        showFinalMessage(g2,"JUEGO TERMINADO", Color.RED);
+        showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
         drawTime(g2, matchTimeMs);
     }
 
     public void drawGameWon(long matchTimeMs, long bestTimeMS, boolean newRecord) {
-        showFinalMessage(g2,"¡GANASTE!", Color.GREEN);
+        showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
         drawTime(g2, matchTimeMs);
         drawRecord(g2, bestTimeMS, newRecord);
     }
 
     public void drawPause() {
-        showFinalMessage(g2,"PAUSA (ESC) para continuar)", Color.WHITE);
+        showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
     }
 
     // Efectos para los power-ups
-    private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor, Consumer<Graphics2D> content) {
+    private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor,
+            Consumer<Graphics2D> content) {
         double t = System.currentTimeMillis() / 1000.0;
-        double phase = x * 0.05;                               // desfase por objeto
-        double bob = Math.sin(t * 3.0 + phase) * 4;                   // sube y baja 4 px
-        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06;        // pulso de +-6%
-        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40);  // brillo 30..110
+        double phase = x * 0.05; // desfase por objeto
+        double bob = Math.sin(t * 3.0 + phase) * 4; // sube y baja 4 px
+        double scale = 1.0 + Math.sin(t * 4.0 + phase) * 0.06; // pulso de +-6%
+        int glowAlpha = (int) (70 + Math.sin(t * 4.0 + phase) * 40); // brillo 30..110
 
         AffineTransform old = g2.getTransform();
         g2.translate(x + w / 2.0, y + h / 2.0 + bob);
@@ -406,22 +385,29 @@ public void onPowerUpPickup(String type) { hud.onPickup(type); }
         g2.fillOval(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
 
         g2.scale(scale, scale);
-        content.accept(g2);       // cada uno dibuja lo suyo, centrado en (0, 0)
+        content.accept(g2); // cada uno dibuja lo suyo, centrado en (0, 0)
 
         g2.setTransform(old);
     }
 
     // Efectos de la bala
-    public void drawBulletTracer(double x, double y, int w, int h, double dirX, double dirY, double speed, int age, String kind) {
+    public void drawBulletTracer(double x, double y, int w, int h, double dirX, double dirY, double speed, int age,
+            String kind) {
         bulletEffects.drawTracer(g2, x, y, w, h, dirX, dirY, speed, age, kind);
     }
 
-    public void drawMuzzleFlash(double x, double y, int w, int h, double angle, String weaponType, long lastShoot, double muzzleForward, double muzzleSide) {
+    public void drawMuzzleFlash(double x, double y, int w, int h, double angle, String weaponType, long lastShoot,
+            double muzzleForward, double muzzleSide) {
         bulletEffects.drawMuzzleFlash(g2, x, y, w, h, angle, weaponType, lastShoot, muzzleForward, muzzleSide);
     }
 
     // Camara de seguimiento
+    private int camX;
+    private int camY;
+
     public void applyCamera(int camX, int camY) {
+        this.camX = camX;
+        this.camY = camY;
         g2.translate(-camX, -camY);
     }
 

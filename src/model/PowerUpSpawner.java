@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Genera power ups repartidos por TODO el mapa, solo en lugares a los que el jugador puede llegar caminando
+ * Genera power ups repartidos por todo el mapa, solo en lugares a los que el jugador puede llegar caminando
  * (respeta la matriz de colisiones: nada sobre obstáculos ni dentro de zonas cerradas).
  * Al crearse deja una cantidad inicial y después repone de a uno cada cierto tiempo.
  * Mismo estilo que EnemySpawner.
