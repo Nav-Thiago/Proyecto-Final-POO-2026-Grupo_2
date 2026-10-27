@@ -18,7 +18,7 @@ public class MenuController implements MenuActions{
 
     private final MatchDAO matchDAO;
 
-    private Timer gameLoop;
+    private GameLoop gameLoop;
 
     public MenuController(MatchDAO matchDAO) {
         this.matchDAO = matchDAO;
@@ -134,19 +134,11 @@ public class MenuController implements MenuActions{
             }
         });
 
-        GameLoopThread loopThread = new GameLoopThread(gamePanel, model);
-        loopThread.start(); // Le pide al sistema operativo que cree un nuevo hilo de procesamiento real y que dentro de ese hilo ejecute el método run()
-
-        /*
         if (gameLoop != null) {
             gameLoop.stop();   // por si quedó el ciclo de una partida anterior
         }
-        gameLoop = new Timer(16, e -> {
-            model.update();
-            gamePanel.repaint();
-        });
+        gameLoop = new GameLoop(model, gamePanel);
         gameLoop.start();
-        */
     }
 
     public void changeResolution(int width, int height) {
