@@ -113,7 +113,7 @@ public class MenuController implements MenuActions{
 
         GameModel model = new GameModel(state, matchDAO);
         this.controller = new GameController(model);
-        GamePanel gamePanel = new GamePanel(this.controller);
+        GamePanel gamePanel = new GamePanel(this.controller, new GameAssets(stage -> {}));
         this.controller.setGamePanel(gamePanel);
 
         //gamePanel.addKeyListener(controller);
