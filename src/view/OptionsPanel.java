@@ -22,7 +22,7 @@ public class OptionsPanel extends JPanel {
         gbc.gridy = 0;
         gbc.insets = new Insets(20, 20, 20, 20);
 
-        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_principal.png");
+        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_opciones2.png");
         if (imgUrl != null) {
             this.backgroundImage = new ImageIcon(imgUrl).getImage();
         }

@@ -39,7 +39,7 @@ public class MenuPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 0));
 
-        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_principal4.png");
+        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_principal6.png");
         if (imgUrl != null) {
             this.backgroundImage = new ImageIcon(imgUrl).getImage();
         } else {
