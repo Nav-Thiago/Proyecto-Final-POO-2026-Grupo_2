@@ -27,7 +27,7 @@ public class GameLoader extends SwingWorker<GameAssets, String> {
 
     @Override
     protected void process(List<String> stages) {
-        loadingPanel.setMessage(stages.get(stages.size() - 1));
+        loadingPanel.setMessage(stages.getLast());
     }
 
     @Override
