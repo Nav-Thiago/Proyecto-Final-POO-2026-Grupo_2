@@ -5,8 +5,7 @@ import view.*;
 
 import java.awt.CardLayout;
 
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
 public class MenuController implements MenuActions {
 
@@ -16,6 +15,7 @@ public class MenuController implements MenuActions {
 
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
+    private final LoadingPanel loadingPanel = new LoadingPanel();
 
     private final MatchDAO matchDAO;
 
@@ -29,7 +29,6 @@ public class MenuController implements MenuActions {
         SplashSubject subjectSplash = new SplashSubject();
         MenuPanel menu = new MenuPanel();
         OptionsPanel option = new OptionsPanel(this);
-        LoadingPanel loadingPanel = new LoadingPanel();
 
         menu.getPlayButton().addActionListener(e -> startGame());
         menu.getOptionButton().addActionListener(e -> optionMenu());
@@ -93,9 +92,7 @@ public class MenuController implements MenuActions {
         showOptionsMenu();
     }
 
-    @Override
-    public void startGame() {
-        AudioManager.stopMusic();
+    public void buildGame(GameAssets assets) {
         Player player = new Player(128, 3040);
         player.equipWeapon(new Handgun(20, 400, 20, 20));
 
@@ -106,8 +103,7 @@ public class MenuController implements MenuActions {
         int heightPixels = mapRows * 32;
 
         GameState state = new GameState(player, widthPixels, heightPixels);
-        boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj",
-                mapCols, mapRows);
+        boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj", mapCols, mapRows);
         state.setCollisionMatrix(matrix);
         state.getGroundWeapons().add(new WeaponItem(1753, 1415, new Shotgun(30, 800, 7, 7)));
         state.getGroundWeapons().add(new WeaponItem(5774, 2226, new Shotgun(30, 800, 7, 7)));
@@ -116,8 +112,7 @@ public class MenuController implements MenuActions {
 
         GameModel model = new GameModel(state, matchDAO);
         this.controller = new GameController(model);
-        GamePanel gamePanel = new GamePanel(this.controller, new GameAssets(stage -> {
-        }));
+        GamePanel gamePanel = new GamePanel(this.controller, assets);
         this.controller.setGamePanel(gamePanel);
 
         // gamePanel.addKeyListener(controller);
@@ -143,6 +138,21 @@ public class MenuController implements MenuActions {
         }
         gameLoop = new GameLoop(model, gamePanel);
         gameLoop.start();
+    }
+
+    @Override
+    public void startGame() {
+        AudioManager.stopMusic();
+        loadingPanel.setMessage("Cargando...");
+        cardLayout.show(mainContainer, "LOADING");
+
+        new GameLoader(loadingPanel, assets -> buildGame(assets), () -> onLoadFailed())
+                .execute();
+    }
+
+    private void onLoadFailed() {
+        JOptionPane.showMessageDialog(mainFrame,"No se pudieron cargar los recursos del juego", "Error", JOptionPane.ERROR_MESSAGE);
+        showMainMenu();
     }
 
     public void changeResolution(int width, int height) {
