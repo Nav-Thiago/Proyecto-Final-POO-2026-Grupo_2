@@ -90,7 +90,7 @@ public class GameAssets {
         // ATAQUE CUERPO A CUERPO
         // El offset y la escala son propios del sprite: se ajustan acá, sin tocar el modelo.
         try {
-            int attackFrames = 15;
+            int attackFrames = 14;
             BufferedImage[] knifeAttack = new BufferedImage[attackFrames];
             for (int i = 0; i < attackFrames; i++) {
                 knifeAttack[i] = loadImage("/Resources/imagenes/entitys/player/survivor_meleeattack_knife/survivor-meleeattack_knife_" + (i + 1) + ".png");

@@ -10,15 +10,14 @@ import javax.swing.Timer;
 
 public class MenuController implements MenuActions {
 
-    private MainFrame mainFrame;
+    private final MainFrame mainFrame;
     private GameController controller;
+    private GameLoop gameLoop;
 
-    private CardLayout cardLayout;
-    private JPanel mainContainer;
+    private final CardLayout cardLayout;
+    private final JPanel mainContainer;
 
     private final MatchDAO matchDAO;
-
-    private GameLoop gameLoop;
 
     public MenuController(MatchDAO matchDAO) {
         this.matchDAO = matchDAO;
@@ -30,6 +29,7 @@ public class MenuController implements MenuActions {
         SplashSubject subjectSplash = new SplashSubject();
         MenuPanel menu = new MenuPanel();
         OptionsPanel option = new OptionsPanel(this);
+        LoadingPanel loadingPanel = new LoadingPanel();
 
         menu.getPlayButton().addActionListener(e -> startGame());
         menu.getOptionButton().addActionListener(e -> optionMenu());
@@ -39,6 +39,7 @@ public class MenuController implements MenuActions {
         mainContainer.add(subjectSplash, "SPLASH_SUB");
         mainContainer.add(menu, "MENU");
         mainContainer.add(option, "OPTIONS");
+        mainContainer.add(loadingPanel, "LOADING");
 
         mainFrame.add(mainContainer);
 

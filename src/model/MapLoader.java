@@ -32,8 +32,6 @@ public class MapLoader {
             String dataString = json.substring(startBracket + 1, endBracket);
             String[] values = dataString.split(",");
 
-            System.out.println("MapLoader: Total de tiles leídos en la capa = " + values.length);
-
             int solidCount = 0;
             int col = 0;
             int row = 0;
@@ -57,7 +55,6 @@ public class MapLoader {
                 }
             }
 
-            System.out.println("MapLoader: Carga completada. Obstáculos sólidos detectados: " + solidCount);
         } catch (Exception e) {
             System.err.println("Error leyendo el mapa: " + e.getMessage());
             e.printStackTrace();
