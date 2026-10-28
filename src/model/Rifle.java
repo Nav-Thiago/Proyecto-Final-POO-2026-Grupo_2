@@ -15,4 +15,9 @@ public class Rifle extends FireArm {
     public int getAmmoPerPickup() {
     return 10;
     } //recibe 10 balas por cada power up de munición
+
+    @Override 
+    public SoundEvent getAttackSound() {
+        return SoundEvent.RIFLE_SHOT;
+    }
 }

@@ -17,7 +17,7 @@ public class MeleeWeapon extends Weapon {
 
         if (currentTime - this.lastShoot >= this.cooldown) {
             this.lastShoot = currentTime;
-
+            state.emitSound(getAttackSound());
             double totalDamage = this.getDamage() + player.getDamageBonus();
             boolean hitSomething = false;
 
@@ -64,5 +64,10 @@ public class MeleeWeapon extends Weapon {
     @Override
     public boolean isAutomatic() {
         return false;
+    }
+
+    @Override
+    public SoundEvent getAttackSound() {
+        return SoundEvent.KNIFE_SWING;
     }
 }

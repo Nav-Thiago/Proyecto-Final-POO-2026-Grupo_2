@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+
 public class GameState {
 
     private final Player player;
@@ -20,6 +24,8 @@ public class GameState {
     private boolean[][] collisionMatrix;
 
     private final MatchStats matchStats = new MatchStats();
+
+    private final Queue<SoundEvent> soundEvents = new ConcurrentLinkedQueue<>(); 
 
     public GameState(Player player, int mapWidth, int mapHeight) {
         this.player = player;
@@ -88,5 +94,16 @@ public class GameState {
         playerBullets.removeIf(bullet -> !bullet.isActive());
         poisonBullets.removeIf(bullet -> !bullet.isActive());
         powerUps.removeIf(powerUp -> !powerUp.isActive());
+    }
+
+    // añadir sonidos a la cola de eventos
+    public void emitSound(SoundEvent event) {
+        if (event != null) {
+            soundEvents.add(event);
+        }
+    }
+    // quitar sonidos de la cola de eventos
+    public SoundEvent pollSound() {
+        return soundEvents.poll();
     }
 }

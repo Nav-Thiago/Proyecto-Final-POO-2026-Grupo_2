@@ -32,6 +32,8 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
 
             state.addPlayerBullet(bullet);
 
+            state.emitSound(getAttackSound());
+
             return true;
         }
         return false;

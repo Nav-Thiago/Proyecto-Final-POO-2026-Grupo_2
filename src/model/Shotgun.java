@@ -37,6 +37,7 @@ public class Shotgun extends FireArm {
                 Bullet pellet = new Bullet(muzzleX, muzzleY, 6, 6, dirX, dirY, totalDamage, 30, BulletKind.PELLET);
                 state.addPlayerBullet(pellet);
             }
+            state.emitSound(getAttackSound());
             return true;
         }
         return false;
@@ -51,4 +52,9 @@ public class Shotgun extends FireArm {
     public int getAmmoPerPickup() {
     return 3;
 } // recibe 3 balas por cada power up de munición
+
+    @Override
+    public SoundEvent getAttackSound() {
+        return SoundEvent.SHOTGUN_SHOT;
+    }
 }

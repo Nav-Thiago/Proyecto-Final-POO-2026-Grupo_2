@@ -57,4 +57,6 @@ public abstract class Weapon {
     public double getSwingProgress() {
         return -1;
     }
+
+    public abstract SoundEvent getAttackSound();
 }

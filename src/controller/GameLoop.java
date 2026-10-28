@@ -1,6 +1,7 @@
 package controller;
 
 import model.GameModel;
+import model.SoundEvent;
 import view.GamePanel;
 
 import javax.swing.*;
@@ -13,6 +14,10 @@ public class GameLoop {
     public GameLoop(GameModel model, GamePanel gamePanel) {
         this.timer = new Timer(TICK_MS, e -> {
             model.update();
+            SoundEvent sound;
+            while ((sound = model.getState().pollSound()) != null) {
+                AudioManager.playSfx(sound);
+            }
             gamePanel.repaint();
         });
     }

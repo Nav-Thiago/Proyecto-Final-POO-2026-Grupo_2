@@ -16,4 +16,8 @@ public class Handgun extends FireArm {
     return 8;
     } // recibe 8 balas por cada power up de munición
 
+    @Override
+    public SoundEvent getAttackSound() {
+        return SoundEvent.HANDGUN_SHOT;
+    }
 }
