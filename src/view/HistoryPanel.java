@@ -8,6 +8,7 @@ import java.util.List;
 
 public class HistoryPanel extends JPanel {
 
+    private Image backgroundImage;
     private static final String[] COLUMNS = {"#", "Fecha", "Tiempo", "Zombies", "Daño causado", "Daño recibido"};
 
     private final DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0) {
@@ -25,6 +26,11 @@ public class HistoryPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(15, 15, 15));
         setBorder(BorderFactory.createEmptyBorder(40, 120, 40, 120));
+
+        java.net.URL imgUrl = getClass().getResource("/Resources/imagenes/fondo_menu_historial.png");
+        if (imgUrl != null) {
+            this.backgroundImage = new ImageIcon(imgUrl).getImage();
+        }
 
         JLabel title = new JLabel("HISTORIAL", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 48));
@@ -96,5 +102,20 @@ public class HistoryPanel extends JPanel {
 
     public MenuButton getBackButton() {
         return backButton;
+    }
+
+    @Override 
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+            g.setColor(new Color(10, 12, 18, 140));
+            g.fillRect(0, 0, getWidth(), getHeight());
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
     }
 }
