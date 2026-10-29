@@ -22,8 +22,10 @@ public class MenuController implements MenuActions {
 
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
+
     private final LoadingPanel loadingPanel = new LoadingPanel();
     private final HistoryPanel history = new HistoryPanel();
+    private final GameOverPanel gameOver = new GameOverPanel();
 
     private final MatchDAO matchDAO;
 
@@ -43,6 +45,7 @@ public class MenuController implements MenuActions {
         menu.getExitButton().addActionListener(e -> System.exit(0));
         menu.getHistoryButton().addActionListener(e -> showHistory());
         history.getBackButton().addActionListener(e -> showMainMenu());
+        gameOver.getBackButton().addActionListener(e -> backToMenu());
 
         mainContainer.add(uniSplash, "SPLASH_UNI");
         mainContainer.add(subjectSplash, "SPLASH_SUB");
@@ -50,6 +53,7 @@ public class MenuController implements MenuActions {
         mainContainer.add(option, "OPTIONS");
         mainContainer.add(loadingPanel, "LOADING");
         mainContainer.add(history, "HISTORY");
+        mainContainer.add(gameOver, "GAME_OVER");
 
         mainFrame.add(mainContainer);
 
@@ -57,65 +61,6 @@ public class MenuController implements MenuActions {
 
         // Loop de cards (Universidad -> Materia -> Menu)
         showUniversitySplash();
-    }
-
-    private void showUniversitySplash() {
-        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
-        AudioManager.setVolume(50);
-        cardLayout.show(mainContainer, "SPLASH_UNI");
-
-        Timer timer = new Timer(2000, e -> {
-            showSubjectSplash();
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
-
-    private void showSubjectSplash() {
-        cardLayout.show(mainContainer, "SPLASH_SUB");
-
-        Timer timer = new Timer(2000, e -> {
-            showMainMenu();
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
-
-    private void showMainMenu() {
-        cardLayout.show(mainContainer, "MENU");
-        // AudioManager.playMusic("Resources/audio/soundtrack1.wav");
-        // AudioManager.setVolume(50);
-    }
-
-    // Implemento el método de la interfaz "MenuActions" para poder utilizarlo en
-    // "MenuPanel"
-    @Override
-    public void backToMenu() {
-        showMainMenu();
-    }
-
-    private void showOptionsMenu() {
-        cardLayout.show(mainContainer, "OPTIONS");
-    }
-
-    private void showHistory() {
-        List<MatchRecord> records = matchDAO.fastestVictories(10);
-
-        List<Object[]> rows = new ArrayList<>();
-        for (int i = 0; i < records.size(); i++) {
-            MatchRecord record = records.get(i);
-            rows.add(new Object[] {i + 1, record.getDate().toString(), record.getSurvivalTimeMs(), record.getZombiesKilled(),
-                    record.getDamageDealt(), record.getDamageTaken()
-            });
-        }
-
-        history.showRows(rows);
-        cardLayout.show(mainContainer, "HISTORY");
-    }
-
-    @Override
-    public void optionMenu() {
-        showOptionsMenu();
     }
 
     public void buildGame(GameAssets assets) {
@@ -163,7 +108,7 @@ public class MenuController implements MenuActions {
         mainContainer.revalidate();
         cardLayout.show(mainContainer, "GAME");
 
-        gameLoop = new GameLoop(activeModel, activeGamePanel);
+        gameLoop = new GameLoop(activeModel, activeGamePanel, () -> showGameOver(activeModel));
         gameLoop.start();
 
         activeGamePanel.requestFocusInWindow();
@@ -212,9 +157,71 @@ public class MenuController implements MenuActions {
         pausePanel.requestFocusInWindow();
     }
 
+    private void showHistory() {
+        List<MatchRecord> records = matchDAO.fastestVictories(10);
+
+        List<Object[]> rows = new ArrayList<>();
+        for (int i = 0; i < records.size(); i++) {
+            MatchRecord record = records.get(i);
+            rows.add(new Object[] {i + 1, record.getDate().toString(), record.getSurvivalTimeMs(), record.getZombiesKilled(),
+                    record.getDamageDealt(), record.getDamageTaken()
+            });
+        }
+
+        history.showRows(rows);
+        cardLayout.show(mainContainer, "HISTORY");
+    }
+
+    public void showGameOver(GameModel model) {
+        boolean victory = model.getStatus() == GameModel.GameStatus.GAME_WON;
+        gameOver.showResult(victory, model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
+        cardLayout.show(mainContainer, "GAME_OVER");
+    }
+
+    private void showMainMenu() {
+        cardLayout.show(mainContainer, "MENU");
+    }
+
+    private void showOptionsMenu() {
+        cardLayout.show(mainContainer, "OPTIONS");
+    }
+
+    @Override
+    public void backToMenu() {
+        AudioManager.playMusic("Resources/audio/soundtrack1.wav");
+        AudioManager.setVolume(50);
+        showMainMenu();
+    }
+
+    @Override
+    public void optionMenu() {
+        showOptionsMenu();
+    }
+
+    private void showUniversitySplash() {
+        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
+        AudioManager.setVolume(50);
+        cardLayout.show(mainContainer, "SPLASH_UNI");
+
+        Timer timer = new Timer(2000, e -> {
+            showSubjectSplash();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void showSubjectSplash() {
+        cardLayout.show(mainContainer, "SPLASH_SUB");
+
+        Timer timer = new Timer(2000, e -> {
+            showMainMenu();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
     private void resumeGame() {
-        if (activeModel == null
-                || activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
+        if (activeModel == null || activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
             return;
         }
 

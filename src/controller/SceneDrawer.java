@@ -135,11 +135,7 @@ public class SceneDrawer {
     private void drawStatusMessage(GamePanel panel) {
         GameModel.GameStatus status = this.model.getStatus();
 
-        if (status == GameModel.GameStatus.GAME_OVER) {
-            panel.drawGameOver(model.getMatchTimeMs());
-        } else if (status == GameModel.GameStatus.GAME_WON) {
-            panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
-        } else if (status == GameModel.GameStatus.BOSS_INTRO) {
+        if (status == GameModel.GameStatus.BOSS_INTRO) {
             panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
         }
     }

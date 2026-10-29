@@ -37,7 +37,7 @@ public class GameModel {
         this.lastUpdateTime = state.getClock().nowMillis();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 1, state.getClock()); 
+        this.spawner = new EnemySpawner(2000, 20, state.getClock());
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
     }
 

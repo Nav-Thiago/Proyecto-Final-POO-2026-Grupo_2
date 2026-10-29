@@ -342,68 +342,6 @@ public class GamePanel extends JPanel {
         g2.drawString(text, x, y);
     }
 
-    // Mensaje en pantalla
-    private void showFinalMessage(Graphics2D g2, String texto, Color color) {
-        g2.setColor(new Color(0, 0, 0, 180)); // fondo semitransparente
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        g2.setColor(color);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 40));
-        FontMetrics fm = g2.getFontMetrics();
-        int textX = (getWidth() - fm.stringWidth(texto)) / 2;
-        int textY = getHeight() / 2;
-        g2.drawString(texto, textX, textY);
-    }
-
-    private String formatTime(long ms) {
-        long totalSeconds = ms / 1000;
-        long minutes = totalSeconds / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    private void drawCenterText(Graphics2D g2, String text, int y) {
-        FontMetrics fm = g2.getFontMetrics();
-        g2.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, y);
-    }
-
-    private void drawTime(Graphics2D g2, long matchTimeMs) {
-        g2.setFont(new Font("Monospaced", Font.BOLD, 24));
-        int y = getHeight() / 2 + 50;
-
-        g2.setColor(Color.WHITE);
-        drawCenterText(g2, "Tu tiempo: " + formatTime(matchTimeMs), y);
-    }
-
-    private void drawRecord(Graphics2D g2, long bestTimeMs, boolean newRecord) {
-        g2.setFont(new Font("Monospaced", Font.BOLD, 24));
-        int y = getHeight() / 2 + 85;
-
-        g2.setColor(Color.WHITE);
-        drawCenterText(g2, "Mejor tiempo: " + formatTime(bestTimeMs), y);
-
-        if (newRecord) {
-            g2.setColor(Color.YELLOW);
-            drawCenterText(g2, "¡NUEVO RÉCORD!", y + 45);
-        }
-    }
-
-    // Mensajes de estado
-    public void drawGameOver(long matchTimeMs) {
-        showFinalMessage(g2, "JUEGO TERMINADO", Color.RED);
-        drawTime(g2, matchTimeMs);
-    }
-
-    public void drawGameWon(long matchTimeMs, long bestTimeMS, boolean newRecord) {
-        showFinalMessage(g2, "¡GANASTE!", Color.GREEN);
-        drawTime(g2, matchTimeMs);
-        drawRecord(g2, bestTimeMS, newRecord);
-    }
-
-    public void drawPause() {
-        showFinalMessage(g2, "PAUSA (ESC) para continuar)", Color.WHITE);
-    }
-
     // Efectos para los power-ups
     private void drawFloating(Graphics2D g2, double x, double y, int w, int h, Color glowColor,
             Consumer<Graphics2D> content) {
