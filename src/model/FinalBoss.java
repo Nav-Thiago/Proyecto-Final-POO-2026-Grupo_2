@@ -11,9 +11,9 @@ public class FinalBoss extends RangedEnemy {
     private long lastSpitTime;
     private long spitAnimStart = -1;   // -1 = no está escupiendo
 
-    public FinalBoss(double x, double y, List<PoisonBullet> poisonList) {
+    public FinalBoss(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
         super(x, y, 110, 110, 3.5, 500, 500, poisonList);
-        this.lastSpitTime = System.currentTimeMillis();
+        this.lastSpitTime = clock.nowMillis();
     }
 
     @Override
@@ -32,20 +32,20 @@ public class FinalBoss extends RangedEnemy {
 
         super.update(player, state); // persigue al jugador
 
-        long now = System.currentTimeMillis();
+        long now = state.getClock().nowMillis();
         if (now - lastSpitTime >= SPIT_COOLDOWN) {
             shootAt(player);
-            resetAttackCooldown();
+            resetAttackCooldown(now);
             lastSpitTime = now;
             spitAnimStart = now; // arranca la animación de escupir
         }
     }
 
     @Override
-    public double getSpitProgress() {
+    public double getSpitProgress(long now) {
         if (spitAnimStart < 0) return -1;
 
-        long elapsed = System.currentTimeMillis() - spitAnimStart;
+        long elapsed = now - spitAnimStart;
         if (elapsed >= SPIT_ANIM_MS) return -1;
 
         return elapsed / (double) SPIT_ANIM_MS;

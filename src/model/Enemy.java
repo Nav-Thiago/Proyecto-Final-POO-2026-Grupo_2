@@ -101,20 +101,20 @@ public abstract class Enemy extends Character {
     }
 
 
-    public boolean canAttack() {
-        return System.currentTimeMillis() - lastAttackTime >= ATTACK_COOLDOWN;
+    public boolean canAttack(long now) {
+        return now - lastAttackTime >= ATTACK_COOLDOWN;
     }
 
-    public void resetAttackCooldown() {
-        this.lastAttackTime = System.currentTimeMillis();
+    public void resetAttackCooldown(long now) {
+        this.lastAttackTime = now;
     }
 
     public void tryAttack(Player player) {
-        long now = System.currentTimeMillis();
+        long now = player.getClock().nowMillis();
 
         // Arranca un ataque nuevo si no hay uno en curso y el cooldown está listo
         if (attackStart < 0) {
-            if (!canAttack()) return;
+            if (!canAttack(now)) return;
             attackStart = now;
             damageDealt = false;
         }
@@ -122,7 +122,7 @@ public abstract class Enemy extends Character {
         // El daño cae al final del windup, cuando la animación llega al golpe
         if (!damageDealt && now - attackStart >= ATTACK_WINDUP) {
             player.takeDamage(attack());
-            resetAttackCooldown();
+            resetAttackCooldown(now);
             damageDealt = true;
         }
 
@@ -132,25 +132,25 @@ public abstract class Enemy extends Character {
         }
     }
 
-    public void cancelWindup() {
+    public void cancelWindup(long now) {
         if (attackStart < 0) return;
 
-        long elapsed = System.currentTimeMillis() - attackStart;
+        long elapsed = now - attackStart;
         if (!damageDealt || elapsed >= ATTACK_ANIM_MS) {
             attackStart = -1;
         }
     }
 
-    public double getAttackProgress() {
+    public double getAttackProgress(long now) {
         if (attackStart < 0) return -1;
 
-        long elapsed = System.currentTimeMillis() - attackStart;
+        long elapsed = now - attackStart;
         if (elapsed >= ATTACK_ANIM_MS) return -1;
 
         return elapsed / (double) ATTACK_ANIM_MS;
     }
 
-    public double getSpitProgress() {
+    public double getSpitProgress(long now) {
         return -1;
     }
 

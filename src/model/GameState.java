@@ -71,6 +71,9 @@ public class GameState {
     public MatchStats getMatchStats() {
         return matchStats;
     }
+    public GameClock getClock() {
+        return player.getClock();
+    }
 
     public void setCollisionMatrix(boolean[][] matrix) {
         this.collisionMatrix = matrix;

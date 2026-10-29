@@ -6,6 +6,7 @@ import view.*;
 import java.awt.CardLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.BorderLayout;
 
 import javax.swing.*;
 
@@ -14,6 +15,10 @@ public class MenuController implements MenuActions {
     private final MainFrame mainFrame;
     private GameController controller;
     private GameLoop gameLoop;
+
+    private GameModel activeModel;
+    private GamePanel activeGamePanel;
+    private PausePanel pausePanel;
 
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
@@ -114,7 +119,8 @@ public class MenuController implements MenuActions {
     }
 
     public void buildGame(GameAssets assets) {
-        Player player = new Player(128, 3040);
+        GameClock clock = new GameClock();
+        Player player = new Player(128, 3040, clock);
         player.equipWeapon(new Handgun(20, 400, 20, 20));
 
         // Dimensiones del mapa
@@ -131,34 +137,36 @@ public class MenuController implements MenuActions {
         state.getGroundWeapons().add(new WeaponItem(2807, 323, new Rifle(30, 200, 30, 30)));
         state.getGroundWeapons().add(new WeaponItem(4825, 5342, new Rifle(30, 200, 30, 30)));
 
-        GameModel model = new GameModel(state, matchDAO);
-        this.controller = new GameController(model);
-        GamePanel gamePanel = new GamePanel(this.controller, assets);
-        this.controller.setGamePanel(gamePanel);
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
 
-        // gamePanel.addKeyListener(controller);
-        // gamePanel.addMouseMotionListener(controller);
-        // gamePanel.addMouseListener(controller);
+        if (activeGamePanel != null) {
+            mainContainer.remove(activeGamePanel);
+        }
 
-        mainContainer.add(gamePanel, "GAME");
+        activeModel = new GameModel(state, matchDAO);
+
+        controller = new GameController(activeModel, this::toggleGamePause);
+
+        activeGamePanel = new GamePanel(controller, assets);
+        controller.setGamePanel(activeGamePanel);
+
+        pausePanel = new PausePanel(this::resumeGame, this::abandonGame);
+
+        pausePanel.setVisible(false);
+
+        activeGamePanel.setLayout(new BorderLayout());
+        activeGamePanel.add(pausePanel, BorderLayout.CENTER);
+
+        mainContainer.add(activeGamePanel, "GAME");
         mainContainer.revalidate();
         cardLayout.show(mainContainer, "GAME");
 
-        gamePanel.setFocusable(true);
-        gamePanel.requestFocusInWindow();
-
-        gamePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentShown(java.awt.event.ComponentEvent e) {
-                gamePanel.requestFocusInWindow();
-            }
-        });
-
-        if (gameLoop != null) {
-            gameLoop.stop(); // por si quedó el ciclo de una partida anterior
-        }
-        gameLoop = new GameLoop(model, gamePanel);
+        gameLoop = new GameLoop(activeModel, activeGamePanel);
         gameLoop.start();
+
+        activeGamePanel.requestFocusInWindow();
     }
 
     @Override
@@ -182,4 +190,72 @@ public class MenuController implements MenuActions {
         mainContainer.revalidate();
         mainContainer.repaint();
     }
+
+    private void toggleGamePause() {
+        if (activeModel == null) {
+            return;
+        }
+        if (activeModel.getStatus() == GameModel.GameStatus.PAUSED) {
+            resumeGame();
+            return;
+        }
+        activeModel.pause();
+        if (activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
+            return;
+        }
+
+        gameLoop.stop();
+        pausePanel.setVisible(true);
+
+        activeGamePanel.revalidate();
+        activeGamePanel.repaint();
+        pausePanel.requestFocusInWindow();
+    }
+
+    private void resumeGame() {
+        if (activeModel == null
+                || activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
+            return;
+        }
+
+        pausePanel.setVisible(false);
+        activeModel.resume();
+
+        activeGamePanel.revalidate();
+        activeGamePanel.repaint();
+        activeGamePanel.requestFocusInWindow();
+
+        gameLoop.start();
+    }
+
+    private void abandonGame() {
+        if (activeModel == null || activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
+            return;
+        }
+
+        Object[] choices = { "Abandonar", "Cancelar" };
+
+        int choice = JOptionPane.showOptionDialog(mainFrame, "¿Abandonar la partida? Se perderá el progreso actual.", "Abandonar partida", JOptionPane.YES_NO_OPTION, 
+        JOptionPane.QUESTION_MESSAGE, null, choices, choices[1]);
+
+        if (choice != 0) {
+            return;
+        }
+
+        gameLoop.stop();
+        mainContainer.remove(activeGamePanel);
+
+        activeModel = null;
+        activeGamePanel = null;
+        pausePanel = null;
+        gameLoop = null;
+        controller = null;
+
+        mainContainer.revalidate();
+        mainContainer.repaint();
+
+        showMainMenu();
+        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
+    }
+
 }

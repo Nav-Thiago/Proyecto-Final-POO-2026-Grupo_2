@@ -35,9 +35,12 @@ public class Player extends Character {
 
     private final Queue<String> pickupEvents = new ConcurrentLinkedQueue<>();
 
-    public Player(double x, double y) {
+    private final GameClock clock;
+
+    public Player(double x, double y, GameClock clock) {
         super(x, y, 64, 64, 12 , 100, 100);
 
+        this.clock = clock;
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
     }
@@ -76,6 +79,10 @@ public class Player extends Character {
 
     public Weapon getActiveWeapon() {
         return activeWeapon;
+    }
+
+    public GameClock getClock() {
+        return clock;
     }
 
     public void update(GameState state) {
@@ -152,6 +159,15 @@ public class Player extends Character {
         }
     }
 
+    // Limpia las teclas para utilizarlo en el menú de pausa y que el personaje no siga caminando
+    public void clearInputs() {
+        moveUp = false;
+        moveDown = false;
+        moveLeft = false;
+        moveRight = false;
+        isAttacking = false;
+    }
+
     /** Envuelve las stats actuales con un nuevo decorador, ej: player.decorateStats(s -> new ShieldDecorator(s, 50)). */
     public void decorateStats(UnaryOperator<PlayerStats> decorator) {
         stats = decorator.apply(stats);
@@ -172,7 +188,7 @@ public class Player extends Character {
 
     @Override
     public void takeDamage(int amount) {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = clock.nowMillis();
         
         // Evaluamos el cooldown de choque antes de procesar el daño
         if (currentTime - lastDamageTime >= invulnerabilityCooldown) {

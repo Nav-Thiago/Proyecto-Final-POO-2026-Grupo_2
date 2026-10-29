@@ -12,6 +12,7 @@ public class GameModel {
 
     public enum GameStatus {PLAYING, PAUSED, BOSS_INTRO, GAME_OVER, GAME_WON}
     private GameStatus status = GameStatus.PLAYING;
+    private GameStatus statusBeforePause = GameStatus.PLAYING;
     private boolean bossSpawned = false;
 
     // Intro del jefe: 2 mensajes de INTRO_STEP_MS cada uno
@@ -20,7 +21,7 @@ public class GameModel {
     private long bossIntroStart;
 
     private final MatchStats stats;
-    private long lastUpdateTime = System.currentTimeMillis();
+    private long lastUpdateTime;
 
     private final MatchDAO matchDAO;
 
@@ -33,14 +34,15 @@ public class GameModel {
         this.matchDAO = matchDAO;
         this.collisionSystem = new CollisionSystem();
         this.stats = state.getMatchStats();
+        this.lastUpdateTime = state.getClock().nowMillis();
 
         // Inicializamos los spawners
-        this.spawner = new EnemySpawner(2000, 1);
+        this.spawner = new EnemySpawner(2000, 1, state.getClock()); 
         this.powerUpSpawner = new PowerUpSpawner(state, 4000, 20, 16); // cada 4 s, máx. 20 en el mapa, 16 al empezar
     }
 
     public void update() {
-        long now = System.currentTimeMillis();
+        long now = state.getClock().nowMillis();
         long delta = now - lastUpdateTime;
         lastUpdateTime = now;
 
@@ -113,11 +115,11 @@ public class GameModel {
 
     private void startBossIntro() {
         status = GameStatus.BOSS_INTRO;
-        bossIntroStart = System.currentTimeMillis();
+        bossIntroStart = state.getClock().nowMillis();
     }
 
     private void updateBossIntro() {
-        long elapsed = System.currentTimeMillis() - bossIntroStart;
+        long elapsed = state.getClock().nowMillis() - bossIntroStart;
         if (elapsed >= INTRO_STEP_MS * INTRO_STEPS) {
             spawnBoss(6027, 5056);
             status = GameStatus.PLAYING;
@@ -125,27 +127,47 @@ public class GameModel {
     }
 
     private void spawnBoss(double x, double y) {
-        state.addEnemy(new FinalBoss(x, y, state.getPoisonBullets()));
+        state.addEnemy(new FinalBoss(x, y, state.getPoisonBullets(), state.getClock()));
         bossSpawned = true;
     }
 
     /** Qué mensaje toca mostrar: 0 = felicitación, 1 = "Preparate para el Jefe". */
     public int getBossIntroStep() {
-        long elapsed = System.currentTimeMillis() - bossIntroStart;
+        long elapsed = state.getClock().nowMillis() - bossIntroStart;
         return (int) Math.min(INTRO_STEPS - 1, elapsed / INTRO_STEP_MS);
     }
 
     /** Avance (0.0 a 1.0) dentro del mensaje actual, para el efecto de aparecer y desvanecer. */
     public double getBossIntroProgress() {
-        long elapsed = System.currentTimeMillis() - bossIntroStart;
+        long elapsed = state.getClock().nowMillis() - bossIntroStart;
         return Math.min(1.0, (elapsed % INTRO_STEP_MS) / (double) INTRO_STEP_MS);
     }
 
+    public void pause() {
+        if (status != GameStatus.PLAYING && status != GameStatus.BOSS_INTRO) {
+            return;
+        }
+        statusBeforePause = status;
+        state.getClock().pause();
+        state.getPlayer().clearInputs(); // Limpia las teclas para que no siga caminando al pausar
+        status = GameStatus.PAUSED;
+    }
+
+    public void resume() {
+        if (status != GameStatus.PAUSED) {
+            return;
+        }
+        state.getPlayer().clearInputs(); // Limpia las teclas para que no siga caminando al reanudar
+        state.getClock().resume();
+        lastUpdateTime = state.getClock().nowMillis();
+        status = statusBeforePause;
+    }
+
     public void togglePause() {
-        if (status == GameStatus.PLAYING) {
-            status = GameStatus.PAUSED;
-        } else if (status == GameStatus.PAUSED) {
-            status = GameStatus.PLAYING;
+        if (status == GameStatus.PAUSED) {
+            resume();
+        } else {
+            pause();
         }
     }
 

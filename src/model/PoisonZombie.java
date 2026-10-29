@@ -6,9 +6,9 @@ public class PoisonZombie extends RangedEnemy {
 
     private long lastShootTime;
 
-    public PoisonZombie(double x, double y, List<PoisonBullet> poisonList) {
+    public PoisonZombie(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
         super(x, y, 40, 64, 2.0, 80, 80, poisonList);
-        this.lastShootTime = System.currentTimeMillis();
+        this.lastShootTime = clock.nowMillis();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PoisonZombie extends RangedEnemy {
         if (distance > 300) {
             super.update(player, state);
         } else {
-            long currentTime = System.currentTimeMillis();
+            long currentTime = state.getClock().nowMillis();
             if (currentTime - lastShootTime >= 1500) {
                 shootAt(player);
                 lastShootTime = currentTime;

@@ -5,14 +5,14 @@ public class PoisonEffect extends TimedEffect {
     private final int tickInterval = 1000;
     private final int damagePerTick = 5;
 
-    public PoisonEffect(long duration){
-        super(duration);
-        this.lastTickTime = System.currentTimeMillis();
+    public PoisonEffect(long duration, GameClock clock){
+        super(duration, clock);
+        this.lastTickTime = clock.nowMillis();
     }
 
     @Override 
     public void update (Player player){
-        long currentTime = System.currentTimeMillis();
+        long currentTime = clock.nowMillis();
 
         if (currentTime - lastTickTime >= tickInterval) {
             player.takeDamage(damagePerTick);

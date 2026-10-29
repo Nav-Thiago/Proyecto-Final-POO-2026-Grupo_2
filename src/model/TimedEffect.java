@@ -4,13 +4,15 @@ package model;
 public abstract class TimedEffect implements Effect {
 
     private final long endTime;
+    protected final GameClock clock;
 
-    protected TimedEffect(long duration) {
-        this.endTime = System.currentTimeMillis() + duration;
+    protected TimedEffect(long duration, GameClock clock) {
+        this.endTime = clock.nowMillis() + duration;
+        this.clock = clock;
     }
 
     @Override
     public boolean isExpired() {
-        return System.currentTimeMillis() > endTime;
+        return clock.nowMillis() > endTime;
     }
 }

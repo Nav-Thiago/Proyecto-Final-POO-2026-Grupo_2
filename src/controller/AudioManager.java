@@ -48,14 +48,17 @@ public class AudioManager {
     }
 
     public static void setVolume(int percentage) {
-        if (volumeControl != null) {
-            if (percentage <= 0) {
-                volumeControl.setValue(volumeControl.getMinimum());
-            } else {
-                float dB = (float) (Math.log10((double) percentage / 100.0) * 20.0);
-                volumeControl.setValue(dB);
-            }
+        currentVolume = Math.max(0, Math.min(100, percentage));
+        if (volumeControl == null) {
+            return;
         }
+        if (currentVolume == 0) {
+            volumeControl.setValue(volumeControl.getMinimum());
+            return;
+        }
+        float dB = (float) (Math.log10(currentVolume / 100.0) * 20.0);
+        float limitedDb = Math.max(volumeControl.getMinimum(), Math.min(volumeControl.getMaximum(), dB));
+        volumeControl.setValue(limitedDb);
     }
 
     public static void setSfxVolume(int percentage) {
@@ -64,6 +67,10 @@ public class AudioManager {
 
     public static int getSfxVolume() {
         return sfxVolume;
+    }
+
+    public static int getVolume() {
+        return currentVolume;
     }
 
     public static void playSfx(SoundEvent event) {

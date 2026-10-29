@@ -14,7 +14,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
 
     @Override
     public boolean attack(Player player, GameState state){
-        long currentTime = System.currentTimeMillis();
+        long currentTime = state.getClock().nowMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
 

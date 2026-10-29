@@ -14,9 +14,11 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     private final GameModel model;
     private GamePanel gamePanel;
     private final SceneDrawer sceneDrawer;
+    private final Runnable onPause;
 
-    public GameController(GameModel model) {
+    public GameController(GameModel model, Runnable onPause) {
         this.model = model;
+        this.onPause = onPause;
         this.sceneDrawer = new SceneDrawer(model);
     }
 
@@ -30,6 +32,9 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     // TECLADO
     @Override
     public void keyPressed(KeyEvent e) {
+        if (model.getStatus() != GameModel.GameStatus.PLAYING) {
+            return;
+        }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(true);
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(true);
@@ -37,7 +42,6 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(true);
             case KeyEvent.VK_Q -> this.model.getState().getPlayer().swapWeapon();
             case KeyEvent.VK_E -> this.model.playerInteract();
-            case KeyEvent.VK_ESCAPE -> this.model.togglePause();
             default -> {
             }
         }
@@ -45,6 +49,10 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            onPause.run();
+            return;
+        }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(false);
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(false);
@@ -70,11 +78,16 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (model.getStatus() != GameModel.GameStatus.PLAYING) {
+            return;
+        }
+
         gamePanel.requestFocusInWindow();
 
         if (e.getButton() == MouseEvent.BUTTON1) {
-            this.model.getState().getPlayer().attack(model.getState());
-            this.model.getState().getPlayer().setAttacking(true);
+            Player player = model.getState().getPlayer();
+            player.attack(model.getState());
+            player.setAttacking(true);
         }
     }
 
@@ -86,6 +99,10 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     }
 
     private void aimWithCamera(int screenMouseX, int screenMouseY) {
+        // Se agrega para que el jugador no pueda apuntar con el mouse cuando el juego está en pausa o en la intro del jefe
+        if (model.getStatus() != GameModel.GameStatus.PLAYING) {
+            return;
+        }
         model.Player player = this.model.getState().getPlayer();
 
         int screenWidth = gamePanel.getWidth();

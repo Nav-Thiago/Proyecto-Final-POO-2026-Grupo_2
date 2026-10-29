@@ -5,11 +5,13 @@ public class DamageBoostDecorator extends StatsDecorator {
 
     private final double bonus;
     private final long endTime;
+    private final GameClock clock;
 
-    public DamageBoostDecorator(PlayerStats wrapped, double bonus, long durationMs) {
+    public DamageBoostDecorator(PlayerStats wrapped, double bonus, long durationMs, GameClock clock) {
         super(wrapped);
         this.bonus = bonus;
-        this.endTime = System.currentTimeMillis() + durationMs;
+        this.clock = clock;
+        this.endTime = clock.nowMillis() + durationMs;
     }
 
     @Override
@@ -19,6 +21,6 @@ public class DamageBoostDecorator extends StatsDecorator {
 
     @Override
     public boolean isExpired() {
-        return System.currentTimeMillis() > endTime;
+        return clock.nowMillis() > endTime;
     }
 }

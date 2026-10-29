@@ -81,7 +81,7 @@ public class CollisionSystem {
         if (zombie.collidesWith(player)) {
             zombie.tryAttack(player);
         } else {
-            zombie.cancelWindup();
+            zombie.cancelWindup(state.getClock().nowMillis());
         }
     }
 }

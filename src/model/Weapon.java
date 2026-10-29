@@ -10,7 +10,7 @@ public abstract class Weapon {
     protected long cooldown;
     protected long lastShoot = 0;
     private int damage;
- 
+    
     public Weapon(int damage) {
         this.damage = damage;
     }
@@ -54,7 +54,7 @@ public abstract class Weapon {
         return 0;
     }
 
-    public double getSwingProgress() {
+    public double getSwingProgress(long currentTime) {
         return -1;
     }
 

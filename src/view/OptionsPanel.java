@@ -58,7 +58,7 @@ public class OptionsPanel extends JPanel {
     
             gbc.gridy = 2;
             gbc.insets = new Insets(5, 20, 10, 20);
-            JSlider volumeSlider = new JSlider(0, 100, 50);
+            JSlider volumeSlider = new JSlider(0, 100, AudioManager.getVolume());
             volumeSlider.setOpaque(false);
             volumeSlider.setForeground(Color.WHITE);
             volumeSlider.setMajorTickSpacing(25);

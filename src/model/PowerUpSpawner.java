@@ -34,7 +34,7 @@ public class PowerUpSpawner {
         this.powerUps = state.getPowerUps();
         this.spawnInterval = spawnInterval;
         this.maxOnMap = maxOnMap;
-        this.lastSpawnTime = System.currentTimeMillis();
+        this.lastSpawnTime = state.getClock().nowMillis();
         populate(Math.min(initialCount, maxOnMap));
     }
 
@@ -47,7 +47,7 @@ public class PowerUpSpawner {
     }
 
     public void update() {
-        long now = System.currentTimeMillis();
+        long now = state.getClock().nowMillis();
         if (now - lastSpawnTime < spawnInterval || powerUps.size() >= maxOnMap) return;
         lastSpawnTime = now;
         trySpawn(random.nextInt(TYPES));

@@ -63,7 +63,7 @@ public class SceneDrawer {
             if (zombie.isAlive()) {
                 panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(),
                 zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(),
-                zombie.getAttackProgress(), zombie.getSpitProgress());
+                zombie.getAttackProgress(state.getClock().nowMillis()), zombie.getSpitProgress(state.getClock().nowMillis()));
             }
         }
     }
@@ -82,7 +82,7 @@ public class SceneDrawer {
             Weapon weapon = player.getActiveWeapon();
             panel.drawPlayer(player.getX(), player.getY(), player.getWidth(), player.getHeight(),
                 player.getAngle(), player.isMoving(), weapon.getClass().getSimpleName(),
-                weapon.getSwingProgress());
+                weapon.getSwingProgress(state.getClock().nowMillis()));
         }
     }
 
@@ -139,8 +139,6 @@ public class SceneDrawer {
             panel.drawGameOver(model.getMatchTimeMs());
         } else if (status == GameModel.GameStatus.GAME_WON) {
             panel.drawGameWon(model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
-        } else if (status == GameModel.GameStatus.PAUSED) {
-            panel.drawPause();
         } else if (status == GameModel.GameStatus.BOSS_INTRO) {
             panel.drawBossIntro(this.model.getBossIntroStep(), this.model.getBossIntroProgress());
         }

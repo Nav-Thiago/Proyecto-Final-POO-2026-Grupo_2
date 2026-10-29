@@ -13,7 +13,7 @@ public class MeleeWeapon extends Weapon {
 
     @Override
     public boolean attack(Player player, GameState state) {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = state.getClock().nowMillis();
 
         if (currentTime - this.lastShoot >= this.cooldown) {
             this.lastShoot = currentTime;
@@ -55,8 +55,8 @@ public class MeleeWeapon extends Weapon {
     }
 
     @Override
-    public double getSwingProgress() {
-        long elapsed = System.currentTimeMillis() - lastShoot;
+    public double getSwingProgress(long currentTime) {
+        long elapsed = currentTime - lastShoot;
         if (elapsed < 0 || elapsed >= SWING_MS) return -1;
             return elapsed / (double) SWING_MS;
     }
