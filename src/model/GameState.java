@@ -105,6 +105,7 @@ public class GameState {
             soundEvents.add(event);
         }
     }
+
     // quitar sonidos de la cola de eventos
     public SoundEvent pollSound() {
         return soundEvents.poll();

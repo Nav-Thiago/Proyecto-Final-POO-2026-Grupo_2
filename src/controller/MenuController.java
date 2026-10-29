@@ -188,7 +188,7 @@ public class MenuController implements MenuActions {
 
     @Override
     public void backToMenu() {
-        AudioManager.playMusic("Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
         AudioManager.setVolume(50);
         showMainMenu();
     }
