@@ -7,12 +7,13 @@ public class MenuPanel extends JPanel {
     
     private Image backgroundImage;
 
-    private MenuButton playButton;
-    private MenuButton optionButton;
-    private MenuButton exitButton;
+    private final MenuButton playButton;
+    private final MenuButton optionButton;
+    private final MenuButton exitButton;
+    private final MenuButton historyButton;
 
-    private java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
-    private javax.swing.Timer particleTimer;
+    private final java.util.List<Ceniza> particulas = new java.util.ArrayList<>();
+    private final javax.swing.Timer particleTimer;
 
     private class Ceniza {
         int x, y, size, speed;
@@ -71,10 +72,12 @@ public class MenuPanel extends JPanel {
 
         playButton = new MenuButton("Jugar");
         optionButton = new MenuButton("Opciones");
+        historyButton = new MenuButton("Historial");
         exitButton = new MenuButton("Salir");
 
         playButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         optionButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        historyButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         exitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 
@@ -83,6 +86,8 @@ public class MenuPanel extends JPanel {
         add(titleLabel);
         add(Box.createRigidArea(new Dimension(0, 80)));
         add(playButton);
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(historyButton);
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(optionButton);
         add(Box.createRigidArea(new Dimension(0, 20)));
@@ -106,16 +111,16 @@ public class MenuPanel extends JPanel {
             repaint(); // Obliga a redibujar el panel con las nuevas posiciones
         });
         particleTimer.start();
-
-        
     }
 
     public MenuButton getPlayButton() { return playButton; }
     public MenuButton getOptionButton() { return optionButton; }
     public MenuButton getExitButton() { return exitButton; }
+    public MenuButton getHistoryButton() {
+        return historyButton;
+    }
 
-
-    @Override 
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 

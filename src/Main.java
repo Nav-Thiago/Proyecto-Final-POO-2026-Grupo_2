@@ -1,6 +1,5 @@
 import controller.MenuController;
 import model.MatchDAO;
-import persistence.AsyncMatchDAO;
 import persistence.DatabaseConnection;
 import persistence.MatchDAOSQLite;
 
@@ -13,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             Connection connection = DatabaseConnection.getInstance().getConnection();
-            MatchDAO matchDAO = new AsyncMatchDAO(new MatchDAOSQLite(connection));
+            MatchDAO matchDAO = new MatchDAOSQLite(connection);
             SwingUtilities.invokeLater(() ->new MenuController(matchDAO));
         } catch (SQLException e) {
             System.err.println("ERROR: No se pudo conectar a la base de datos");

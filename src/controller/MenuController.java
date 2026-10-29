@@ -4,6 +4,8 @@ import model.*;
 import view.*;
 
 import java.awt.CardLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -16,6 +18,7 @@ public class MenuController implements MenuActions {
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
     private final LoadingPanel loadingPanel = new LoadingPanel();
+    private final HistoryPanel history = new HistoryPanel();
 
     private final MatchDAO matchDAO;
 
@@ -33,12 +36,15 @@ public class MenuController implements MenuActions {
         menu.getPlayButton().addActionListener(e -> startGame());
         menu.getOptionButton().addActionListener(e -> optionMenu());
         menu.getExitButton().addActionListener(e -> System.exit(0));
+        menu.getHistoryButton().addActionListener(e -> showHistory());
+        history.getBackButton().addActionListener(e -> showMainMenu());
 
         mainContainer.add(uniSplash, "SPLASH_UNI");
         mainContainer.add(subjectSplash, "SPLASH_SUB");
         mainContainer.add(menu, "MENU");
         mainContainer.add(option, "OPTIONS");
         mainContainer.add(loadingPanel, "LOADING");
+        mainContainer.add(history, "HISTORY");
 
         mainFrame.add(mainContainer);
 
@@ -85,6 +91,21 @@ public class MenuController implements MenuActions {
 
     private void showOptionsMenu() {
         cardLayout.show(mainContainer, "OPTIONS");
+    }
+
+    private void showHistory() {
+        List<MatchRecord> records = matchDAO.fastestVictories(10);
+
+        List<Object[]> rows = new ArrayList<>();
+        for (int i = 0; i < records.size(); i++) {
+            MatchRecord record = records.get(i);
+            rows.add(new Object[] {i + 1, record.getDate().toString(), record.getSurvivalTimeMs(), record.getZombiesKilled(),
+                    record.getDamageDealt(), record.getDamageTaken()
+            });
+        }
+
+        history.showRows(rows);
+        cardLayout.show(mainContainer, "HISTORY");
     }
 
     @Override

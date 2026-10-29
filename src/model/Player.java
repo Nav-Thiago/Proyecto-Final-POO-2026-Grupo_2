@@ -36,7 +36,7 @@ public class Player extends Character {
     private final Queue<String> pickupEvents = new ConcurrentLinkedQueue<>();
 
     public Player(double x, double y) {
-        super(x, y, 64, 64, 8 , 100, 100);
+        super(x, y, 64, 64, 12 , 100, 100);
 
         this.knife = new MeleeWeapon(50, 1000);
         this.activeWeapon = this.knife;
