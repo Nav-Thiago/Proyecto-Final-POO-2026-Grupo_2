@@ -64,24 +64,6 @@ public class MenuController implements MenuActions {
     }
 
     public void buildGame(GameAssets assets) {
-        GameClock clock = new GameClock();
-        Player player = new Player(128, 3040, clock);
-        player.equipWeapon(new Handgun(20, 400, 20, 20));
-
-        // Dimensiones del mapa
-        int mapCols = 200;
-        int mapRows = 200;
-        int widthPixels = mapCols * 32;
-        int heightPixels = mapRows * 32;
-
-        GameState state = new GameState(player, widthPixels, heightPixels);
-        boolean[][] matrix = MapLoader.loadCollisionMatrix("/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj", mapCols, mapRows);
-        state.setCollisionMatrix(matrix);
-        state.getGroundWeapons().add(new WeaponItem(1753, 1415, new Shotgun(30, 800, 7, 7)));
-        state.getGroundWeapons().add(new WeaponItem(5774, 2226, new Shotgun(30, 800, 7, 7)));
-        state.getGroundWeapons().add(new WeaponItem(2807, 323, new Rifle(30, 200, 30, 30)));
-        state.getGroundWeapons().add(new WeaponItem(4825, 5342, new Rifle(30, 200, 30, 30)));
-
         if (gameLoop != null) {
             gameLoop.stop();
         }
@@ -90,7 +72,7 @@ public class MenuController implements MenuActions {
             mainContainer.remove(activeGamePanel);
         }
 
-        activeModel = new GameModel(state, matchDAO);
+        activeModel = GameFactory.createGame(matchDAO);
 
         controller = new GameController(activeModel, this::toggleGamePause);
 
@@ -188,7 +170,7 @@ public class MenuController implements MenuActions {
 
     @Override
     public void backToMenu() {
-        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
         showMainMenu();
     }
@@ -199,7 +181,7 @@ public class MenuController implements MenuActions {
     }
 
     private void showUniversitySplash() {
-        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
         cardLayout.show(mainContainer, "SPLASH_UNI");
 
@@ -262,7 +244,7 @@ public class MenuController implements MenuActions {
         mainContainer.repaint();
 
         showMainMenu();
-        AudioManager.playMusic("/Resources/audio/soundtrack1.wav");
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
     }
 
 }
