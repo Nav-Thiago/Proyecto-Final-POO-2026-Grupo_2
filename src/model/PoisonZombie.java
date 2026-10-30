@@ -4,6 +4,9 @@ import java.util.List;
 
 public class PoisonZombie extends RangedEnemy {
 
+    private static final double SHOOT_RANGE = 300;
+    private static final long SHOOT_COOLDOWN = 1500;
+
     private long lastShootTime;
 
     public PoisonZombie(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
@@ -18,23 +21,24 @@ public class PoisonZombie extends RangedEnemy {
 
     @Override
     protected PoisonBullet createProjectile(double x, double y, double dirX, double dirY) {
-        return new PoisonBullet(x, y, 3, 3, dirX, dirY,10.0);
+        return new PoisonBullet(x, y, 3, 3, dirX, dirY, 10.0);
     }
 
     @Override
     public void update(Player player, GameState state) {
-        double dx = player.getX() - this.getX();
-        double dy = player.getY() - this.getY();
-        double distance = Math.sqrt(dx * dx + dy * dy);
+        if (!isAlive()) return;
 
-        if (distance > 300) {
-            super.update(player, state);
+        double distance = faceTarget(player); // siempre mira al jugador, también cuando dispara
+
+        if (distance > SHOOT_RANGE) {
+            super.update(player, state); // Se acerca (reutiliza persecución y evasión de Enemy)
         } else {
             long currentTime = state.getClock().nowMillis();
-            if (currentTime - lastShootTime >= 1500) {
+            if (currentTime - lastShootTime >= SHOOT_COOLDOWN) {
                 shootAt(player);
                 lastShootTime = currentTime;
             }
+            avoidOverlap(state);
         }
     }
 }
