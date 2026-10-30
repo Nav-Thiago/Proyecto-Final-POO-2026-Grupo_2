@@ -10,19 +10,4 @@ public class TankZombie extends Enemy {
     public int attack() {
         return 15;
     }
-
-    @Override
-    protected int getAttackCooldown() {
-        return 800;
-    }
-
-    @Override
-    protected int getAttackWindup() {
-        return 600;
-    }
-
-    @Override
-    protected int getAttackAnimMs() {
-        return 900;
-    }
 }

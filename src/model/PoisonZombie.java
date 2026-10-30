@@ -31,7 +31,7 @@ public class PoisonZombie extends RangedEnemy {
         double distance = faceTarget(player); // siempre mira al jugador, también cuando dispara
 
         if (distance > SHOOT_RANGE) {
-            super.update(player, state); // Se acerca (reutiliza persecución y evasión de Enemy)
+            super.update(player, state); // se acerca (reutiliza persecución y evasión de Enemy)
         } else {
             long currentTime = state.getClock().nowMillis();
             if (currentTime - lastShootTime >= SHOOT_COOLDOWN) {

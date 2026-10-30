@@ -2,6 +2,10 @@ package model;
 
 public abstract class Enemy extends Character {
 
+    private static final int ATTACK_COOLDOWN = 600;  // pausa entre golpes (600 + 400 de windup = ~1000 ms por ciclo)
+    private static final int ATTACK_WINDUP = 400;    // instante del golpe dentro de la animación
+    private static final int ATTACK_ANIM_MS = 700;   // duración total de la animación (windup + recuperación)
+
     private static final double[] AVOID_ANGLES_DEG = {0, 25, -25, 50, -50, 75, -75, 100, -100};
 
     protected double angle;
@@ -14,63 +18,50 @@ public abstract class Enemy extends Character {
         this.angle = 0.0;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
     public double getAngle() {
         return angle;
-    }
-
-
-    protected int getAttackCooldown() {
-        return 600;
-    }
-
-    protected int getAttackWindup() {
-        return 400;
-    }
-
-    protected int getAttackAnimMs() {
-        return 700;
-    }
-
-    protected double getSightRange() {
-        return 1000;
-    }
-
-    protected double getStopDistance() {
-        return 30;
     }
 
     public void update(Player target, GameState state) {
         // Verifica si el zombie está muerto antes de moverse
         if (!isAlive()) return;
 
-        double dx = dxTo(target);
-        double dy = dyTo(target);
-        double distance = faceTarget(target);
+        double playerCenterX = target.getX() + (target.getWidth() / 2.0);
+        double playerCenterY = target.getY() + (target.getHeight() / 2.0);
+        double zombieCenterX = this.x + (this.width / 2.0);
+        double zombieCenterY = this.y + (this.height / 2.0);
 
-        if (distance > getSightRange()) {
+        double dx = playerCenterX - zombieCenterX;
+        double dy = playerCenterY - zombieCenterY;
+
+        double distance = Math.hypot(dx, dy);
+        this.angle = Math.atan2(dy, dx);
+
+        if (distance > 1000) {
             return;
         }
 
-        if (distance > getStopDistance()) {
+        if (distance > 30) {
             moveTowardsWithAvoidance(dx, dy, state);
         }
 
         avoidOverlap(state);
     }
 
+    /** Gira al enemigo hacia el jugador y devuelve la distancia entre centros. (Lo usa PoisonZombie al disparar.) */
     protected double faceTarget(Player target) {
-        double dx = dxTo(target);
-        double dy = dyTo(target);
+        double dx = (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
+        double dy = (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);
         this.angle = Math.atan2(dy, dx);
         return Math.hypot(dx, dy);
-    }
-
-    private double dxTo(Player target) {
-        return (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
-    }
-
-    private double dyTo(Player target) {
-        return (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);
     }
 
     private void moveTowardsWithAvoidance(double dx, double dy, GameState state) {
@@ -117,8 +108,9 @@ public abstract class Enemy extends Character {
         }
     }
 
+
     public boolean canAttack(long now) {
-        return now - lastAttackTime >= getAttackCooldown();
+        return now - lastAttackTime >= ATTACK_COOLDOWN;
     }
 
     public void resetAttackCooldown(long now) {
@@ -136,14 +128,14 @@ public abstract class Enemy extends Character {
         }
 
         // El daño cae al final del windup, cuando la animación llega al golpe
-        if (!damageDealt && now - attackStart >= getAttackWindup()) {
+        if (!damageDealt && now - attackStart >= ATTACK_WINDUP) {
             player.takeDamage(attack());
             resetAttackCooldown(now);
             damageDealt = true;
         }
 
         // Terminó la animación completa
-        if (now - attackStart >= getAttackAnimMs()) {
+        if (now - attackStart >= ATTACK_ANIM_MS) {
             attackStart = -1;
         }
     }
@@ -152,7 +144,7 @@ public abstract class Enemy extends Character {
         if (attackStart < 0) return;
 
         long elapsed = now - attackStart;
-        if (!damageDealt || elapsed >= getAttackAnimMs()) {
+        if (!damageDealt || elapsed >= ATTACK_ANIM_MS) {
             attackStart = -1;
         }
     }
@@ -161,9 +153,9 @@ public abstract class Enemy extends Character {
         if (attackStart < 0) return -1;
 
         long elapsed = now - attackStart;
-        if (elapsed >= getAttackAnimMs()) return -1;
+        if (elapsed >= ATTACK_ANIM_MS) return -1;
 
-        return elapsed / (double) getAttackAnimMs();
+        return elapsed / (double) ATTACK_ANIM_MS;
     }
 
     public double getSpitProgress(long now) {

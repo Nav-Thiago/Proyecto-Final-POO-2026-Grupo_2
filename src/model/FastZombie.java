@@ -10,19 +10,4 @@ public class FastZombie extends Enemy {
     public int attack() {
         return 25;
     }
-
-    @Override
-    protected int getAttackCooldown() {
-        return 400;
-    }
-
-    @Override
-    protected int getAttackWindup() {
-        return 250;
-    }
-
-    @Override
-    protected int getAttackAnimMs() {
-        return 500;
-    }
 }
