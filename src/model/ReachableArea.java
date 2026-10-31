@@ -2,16 +2,15 @@ package model;
 
 import java.util.ArrayDeque;
 
-/**
- Calcula a qué zonas del mapa puede llegar realmente el jugador desde donde empieza.
- Usa la MISMA regla de colisión con la que el jugador se mueve (Character.isCollidingWithMap),
-  así que si acá figura como alcanzable, el jugador puede llegar caminando.
+ /*
+ Calcula a qué zonas del mapa puede llegar realmente el jugador desde donde empieza
+ Usa la MISMA regla de colisión con la que el jugador se mueve
  */
 public class ReachableArea {
 
-    private static final int STEP = 16;          // resolución de la grilla (px) // Thiago: cambio a 16 por motivos de rendimiento
+    private static final int STEP = 16; // resolución de la grilla (px) // Thiago: cambio a 16 por motivos de rendimiento
     private static final int PICKUP_REACH = 32; // cuánto puede estar el centro del jugador del centro del ítem
-    private static final int MIN_CELLS = 100;   // si da menos, el cálculo no es confiable
+    private static final int MIN_CELLS = 100; // si da menos, el cálculo no es confiable
 
     private final boolean[][] reachable; // [col][fila] -> posición (esq. sup. izq.) del jugador
     private final int cols;
@@ -55,12 +54,12 @@ public class ReachableArea {
         reachableCells = count;
     }
 
-    //false si el cálculo no sirvió (ej: el jugador empieza encerrado); en ese caso no hay que usarlo. 
+    // false si el cálculo no sirvió
     public boolean isUsable() {
         return reachableCells >= MIN_CELLS;
     }
 
-    // true si el jugador puede llegar caminando lo bastante cerca como para agarrar un ítem centrado en (itemX, itemY).
+    // true si el jugador puede llegar caminando lo bastante cerca como para agarrar un ítem centrado en .
     public boolean canPickUpAt(double itemCenterX, double itemCenterY, Player player) {
         double playerLeft = itemCenterX - player.getWidth() / 2.0;
         double playerTop = itemCenterY - player.getHeight() / 2.0;

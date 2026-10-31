@@ -8,7 +8,7 @@ public class Bullet extends Entity {
     private final BulletKind kind;
     private boolean active; // booleano para saber si la bala debe 'desaparecer'
     private int lifeSpanTicks;
-    private int age;        // ticks que lleva viva (la vista lo usa para que la estela "salga" del arma)
+    private int age; // ticks que lleva viva (la vista lo usa para que la estela "salga" del arma)
 
     public Bullet(double x, double y, int width, int height, double dirX, double dirY, double damage, int lifeSpanTicks) {
         this(x, y, width, height, dirX, dirY, damage, lifeSpanTicks, BulletKind.STANDARD);

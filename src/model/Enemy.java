@@ -56,7 +56,7 @@ public abstract class Enemy extends Character {
         avoidOverlap(state);
     }
 
-    /** Gira al enemigo hacia el jugador y devuelve la distancia entre centros. (Lo usa PoisonZombie al disparar.) */
+    // Gira al enemigo hacia el jugador y devuelve la distancia entre centros. (Lo usa PoisonZombie al disparar)
     protected double faceTarget(Player target) {
         double dx = (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
         double dy = (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);

@@ -1,9 +1,5 @@
 package model;
 
-/**
- Clase padre de todos los power ups.
- Extiende Entity, reutiliza posición, tamaño y collidesWith().
- */
 public abstract class PowerUp extends Entity {
 
     public static final int SIZE = 32;

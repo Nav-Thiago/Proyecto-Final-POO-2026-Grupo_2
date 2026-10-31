@@ -4,16 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 
 import controller.AudioManager;
-import controller.MenuController;
 
 public class OptionsPanel extends JPanel {
 
     private Image backgroundImage;
-    private MenuController controller;
+    private JComboBox<String> resolutionBox;
+    private MenuButton backButton;
 
-    public OptionsPanel(MenuController controller) {
-        this.controller = controller;
-
+    public OptionsPanel() {
         setLayout(new GridBagLayout());
         setBackground(new Color(15, 15, 15));
 
@@ -103,26 +101,14 @@ public class OptionsPanel extends JPanel {
             gbc.gridy = 6;
             gbc.insets = new Insets(5, 20, 15, 20);
             String[] resolutions = {"800 x 600", "1280 x 720", "1920 x 1080"};
-            JComboBox<String> resBox = new JComboBox<>(resolutions);
-            resBox.setSelectedIndex(1);
-            resBox.setFont(new Font("Arial", Font.BOLD, 18));
-
-            resBox.addActionListener(e -> {
-                String seleccion = (String) resBox.getSelectedItem();
-                if (seleccion != null) {
-                    switch (seleccion) {
-    			case "800 x 600" -> controller.changeResolution(800, 600);
-    			case "1280 x 720" -> controller.changeResolution(1280, 720);
-    			case "1920 x 1080" -> controller.changeResolution(1920, 1080);
-                    }
-                }
-            });
-            add(resBox, gbc);
+            resolutionBox = new JComboBox<>(resolutions);
+            resolutionBox.setSelectedIndex(1);
+            resolutionBox.setFont(new Font("Arial", Font.BOLD, 18));
+            add(resolutionBox, gbc);
 
             gbc.gridy = 7;
             gbc.insets = new Insets(20, 20, 20, 20);
-            MenuButton backButton = new MenuButton("Volver");
-            backButton.addActionListener(e -> this.controller.backToMenu());
+            backButton = new MenuButton("Volver");
             add(backButton, gbc);
         }
 
@@ -139,5 +125,13 @@ public class OptionsPanel extends JPanel {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, getWidth(), getHeight());
         }
+    }
+
+    public JComboBox<String> getResolutionBox() {
+        return resolutionBox;
+    }
+
+    public MenuButton getBackButton() {
+        return backButton;
     }
 }

@@ -1,6 +1,6 @@
 package model;
 
-/** Agrega puntos de escudo: absorbe daño antes de que llegue a la vida. Se descarta al agotarse. */
+// Agrega puntos de escudo, absorbe daño antes de que llegue a la vida
 public class ShieldDecorator extends StatsDecorator {
 
     public static final int MAX_SHIELD = 100; // tope del escudo total del jugador

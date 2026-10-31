@@ -7,7 +7,7 @@ public class PoisonBullet extends Bullet {
         super(x, y, width, height, dirX, dirY, damage, 40);
     }
 
-    /** Qué le hace esta bala al jugador cuando lo toca. */
+    // Qué le hace esta bala al jugador cuando lo toca
     public void applyTo(Player player) {
         player.addEffect(new PoisonEffect(4000, player.getClock()));
     }

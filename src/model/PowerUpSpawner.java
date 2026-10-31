@@ -3,24 +3,23 @@ package model;
 import java.util.List;
 import java.util.Random;
 
-/**
+/*
   Genera power ups repartidos por todo el mapa, solo en lugares a los que el jugador puede llegar caminando
-  (respeta la matriz de colisiones: nada sobre obstáculos ni dentro de zonas cerradas).
-  Al crearse deja una cantidad inicial y después repone de a uno cada cierto tiempo.
- Mismo estilo que EnemySpawner.
+  (respeta la matriz de colisiones: nada sobre obstáculos ni dentro de zonas cerradas)
+  Al crearse deja una cantidad inicial y después repone de a uno cada cierto tiempo
  */
 public class PowerUpSpawner {
 
-    private static final int TYPES = 5;                         // Heal, Shield, DamageBoost, Ammo, MaxAmmo
-    private static final int MAX_ATTEMPTS = 200;                // intentos para encontrar un lugar válido
-    private static final double MIN_DIST_TO_PLAYER = 250;       // no aparece encima del jugador
-    private static final double MIN_DIST_BETWEEN = 150;         // separación mínima entre power ups
+    private static final int TYPES = 5; // Heal, Shield, DamageBoost, Ammo, MaxAmmo
+    private static final int MAX_ATTEMPTS = 200; // intentos para encontrar un lugar válido
+    private static final double MIN_DIST_TO_PLAYER = 250; // no aparece encima del jugador
+    private static final double MIN_DIST_BETWEEN = 150; // separación mínima entre power ups
 
     private final GameState state;
     private final ReachableArea reachableArea; // zonas a las que el jugador puede llegar
     private final List<PowerUp> powerUps;
     private final long spawnInterval; // ms entre cada reposición
-    private final int maxOnMap;       // tope de power ups simultáneos
+    private final int maxOnMap; // tope de power ups simultáneos
     private long lastSpawnTime;
     private final Random random = new Random();
 

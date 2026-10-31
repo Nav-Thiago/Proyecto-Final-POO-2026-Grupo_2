@@ -65,14 +65,6 @@ public abstract class Character extends Entity {
         return !isCollidingWithMap(x + moveX, y + moveY, state);
     }
 
-    public double getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
     public void takeDamage(int amount) {
         if (amount < this.health) {
             health -= amount;

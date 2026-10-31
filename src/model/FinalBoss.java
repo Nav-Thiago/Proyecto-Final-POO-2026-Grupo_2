@@ -5,11 +5,11 @@ import java.util.List;
 public class FinalBoss extends RangedEnemy {
 
     private static final long SPIT_COOLDOWN = 5000;
-    private static final long SPIT_ANIM_MS = 1000;   // duración de la animación de escupir
+    private static final long SPIT_ANIM_MS = 1000; // duración de la animación de escupir
     private static final int SPIT_DAMAGE = 50;
 
     private long lastSpitTime;
-    private long spitAnimStart = -1;   // -1 = no está escupiendo
+    private long spitAnimStart = -1; // -1 = no está escupiendo
 
     public FinalBoss(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
         super(x, y, 110, 110, 3.5, 500, 500, poisonList);

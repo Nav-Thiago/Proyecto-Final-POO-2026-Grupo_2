@@ -1,6 +1,6 @@
 package model;
 
-/** COMPONENTE CONCRETO: el jugador sin ningún power up activo. */
+// Componente concreto, el jugador sin ningún power up activo.
 public class BaseStats implements PlayerStats {
 
     @Override
@@ -15,7 +15,7 @@ public class BaseStats implements PlayerStats {
 
     @Override
     public int absorbDamage(int amount) {
-        return amount; // no absorbe nada: todo el daño pasa a la vida
+        return amount; // no absorbe nada, todo el daño pasa a la vida
     }
 
     @Override

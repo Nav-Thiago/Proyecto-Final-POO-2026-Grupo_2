@@ -1,12 +1,17 @@
 package model;
 
-public class PoisonEffect extends TimedEffect {
+public class PoisonEffect implements Effect {
+
+    private static final int TICK_INTERVAL = 1000;
+    private static final int DAMAGE_PER_TICK = 5;
+
+    private final GameClock clock;
+    private final long endTime;
     private long lastTickTime;
-    private final int tickInterval = 1000;
-    private final int damagePerTick = 5;
 
     public PoisonEffect(long duration, GameClock clock){
-        super(duration, clock);
+        this.clock = clock;
+        this.endTime = clock.nowMillis() + duration;
         this.lastTickTime = clock.nowMillis();
     }
 
@@ -14,18 +19,14 @@ public class PoisonEffect extends TimedEffect {
     public void update (Player player){
         long currentTime = clock.nowMillis();
 
-        if (currentTime - lastTickTime >= tickInterval) {
-            player.takeDamage(damagePerTick);
+        if (currentTime - lastTickTime >= TICK_INTERVAL) {
+            player.takeDamage(DAMAGE_PER_TICK);
             lastTickTime = currentTime;
         }
     }
-    @Override
-    public void apply(Player player) {
-    // Opcional: Puedo hacer que el jugador se ponga verde cuando lo envenenan por 4 segundos
-    }
 
     @Override
-    public void remove(Player player) {
-    // Opcional: Luego del efecto de veneno, devolverlo a su color normal
+    public boolean isExpired() {
+        return clock.nowMillis() > endTime;
     }
 }

@@ -10,7 +10,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.*;
 
-public class MenuController implements MenuActions {
+public class MenuController {
 
     private final MainFrame mainFrame;
     private GameController controller;
@@ -38,14 +38,16 @@ public class MenuController implements MenuActions {
         SplashUniversity uniSplash = new SplashUniversity();
         SplashSubject subjectSplash = new SplashSubject();
         MenuPanel menu = new MenuPanel();
-        OptionsPanel option = new OptionsPanel(this);
+        OptionsPanel option = new OptionsPanel();
 
         menu.getPlayButton().addActionListener(e -> startGame());
-        menu.getOptionButton().addActionListener(e -> optionMenu());
+        menu.getOptionButton().addActionListener(e -> showOptionsMenu());
         menu.getExitButton().addActionListener(e -> System.exit(0));
         menu.getHistoryButton().addActionListener(e -> showHistory());
         history.getBackButton().addActionListener(e -> showMainMenu());
         gameOver.getBackButton().addActionListener(e -> backToMenu());
+        option.getResolutionBox().addActionListener(e -> onResolutionSelected((String) option.getResolutionBox().getSelectedItem()));
+        option.getBackButton().addActionListener(e -> showMainMenu());
 
         mainContainer.add(uniSplash, "SPLASH_UNI");
         mainContainer.add(subjectSplash, "SPLASH_SUB");
@@ -96,8 +98,7 @@ public class MenuController implements MenuActions {
         activeGamePanel.requestFocusInWindow();
     }
 
-    @Override
-    public void startGame() {
+    private void startGame() {
         AudioManager.stopMusic();
         loadingPanel.setMessage("Cargando...");
         cardLayout.show(mainContainer, "LOADING");
@@ -106,37 +107,12 @@ public class MenuController implements MenuActions {
                 .execute();
     }
 
-    private void onLoadFailed() {
-        JOptionPane.showMessageDialog(mainFrame,"No se pudieron cargar los recursos del juego", "Error", JOptionPane.ERROR_MESSAGE);
-        showMainMenu();
+    private void showMainMenu() {
+        cardLayout.show(mainContainer, "MENU");
     }
 
-    public void changeResolution(int width, int height) {
-        mainFrame.setSize(width, height);
-        mainFrame.setLocationRelativeTo(null);
-        mainContainer.revalidate();
-        mainContainer.repaint();
-    }
-
-    private void toggleGamePause() {
-        if (activeModel == null) {
-            return;
-        }
-        if (activeModel.getStatus() == GameModel.GameStatus.PAUSED) {
-            resumeGame();
-            return;
-        }
-        activeModel.pause();
-        if (activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
-            return;
-        }
-
-        gameLoop.stop();
-        pausePanel.setVisible(true);
-
-        activeGamePanel.revalidate();
-        activeGamePanel.repaint();
-        pausePanel.requestFocusInWindow();
+    private void showOptionsMenu() {
+        cardLayout.show(mainContainer, "OPTIONS");
     }
 
     private void showHistory() {
@@ -160,26 +136,6 @@ public class MenuController implements MenuActions {
         cardLayout.show(mainContainer, "GAME_OVER");
     }
 
-    private void showMainMenu() {
-        cardLayout.show(mainContainer, "MENU");
-    }
-
-    private void showOptionsMenu() {
-        cardLayout.show(mainContainer, "OPTIONS");
-    }
-
-    @Override
-    public void backToMenu() {
-        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
-        AudioManager.setVolume(50);
-        showMainMenu();
-    }
-
-    @Override
-    public void optionMenu() {
-        showOptionsMenu();
-    }
-
     private void showUniversitySplash() {
         AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
@@ -200,6 +156,52 @@ public class MenuController implements MenuActions {
         });
         timer.setRepeats(false);
         timer.start();
+    }
+
+    public void backToMenu() {
+        AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
+        AudioManager.setVolume(50);
+        showMainMenu();
+    }
+
+    private void onLoadFailed() {
+        JOptionPane.showMessageDialog(mainFrame,"No se pudieron cargar los recursos del juego", "Error", JOptionPane.ERROR_MESSAGE);
+        showMainMenu();
+    }
+
+    private void changeResolution(int width, int height) {
+        mainFrame.setSize(width, height);
+        mainFrame.setLocationRelativeTo(null);
+        mainContainer.revalidate();
+        mainContainer.repaint();
+    }
+
+    private void onResolutionSelected(String selected) {
+        if (selected == null) return;
+
+        String[] size = selected.split(" x ");
+        changeResolution(Integer.parseInt(size[0]), Integer.parseInt(size[1]));
+    }
+
+    private void toggleGamePause() {
+        if (activeModel == null) {
+            return;
+        }
+        if (activeModel.getStatus() == GameModel.GameStatus.PAUSED) {
+            resumeGame();
+            return;
+        }
+        activeModel.pause();
+        if (activeModel.getStatus() != GameModel.GameStatus.PAUSED) {
+            return;
+        }
+
+        gameLoop.stop();
+        pausePanel.setVisible(true);
+
+        activeGamePanel.revalidate();
+        activeGamePanel.repaint();
+        pausePanel.requestFocusInWindow();
     }
 
     private void resumeGame() {

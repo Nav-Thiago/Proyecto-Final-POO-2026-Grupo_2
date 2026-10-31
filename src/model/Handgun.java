@@ -12,9 +12,7 @@ public class Handgun extends FireArm {
     }
 
     @Override
-    public int getAmmoPerPickup() {
-    return 8;
-    } // recibe 8 balas por cada power up de munición
+    public int getAmmoPerPickup() { return 8; } // recibe 8 balas por cada power up de munición
 
     @Override
     public SoundEvent getAttackSound() {

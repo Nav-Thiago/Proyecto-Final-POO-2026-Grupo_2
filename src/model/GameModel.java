@@ -163,14 +163,6 @@ public class GameModel {
         status = statusBeforePause;
     }
 
-    public void togglePause() {
-        if (status == GameStatus.PAUSED) {
-            resume();
-        } else {
-            pause();
-        }
-    }
-
     public void playerInteract() {
         if (status != GameStatus.PLAYING) return;
 

@@ -26,7 +26,7 @@ public class Player extends Character {
     private FireArm primaryWeapon; // Arma de fuego equipada
     private Weapon activeWeapon; // Puntero al arma que tiene en la mano actualmente
 
-    // --- VARIABLES DE INMUNIDAD (I-FRAMES) ---
+    // Variables de inmunidad
     private long lastDamageTime = 0;
     private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
      
@@ -86,8 +86,8 @@ public class Player extends Character {
     }
 
     public void update(GameState state) {
-        updateEffects(); // [POWERUP] vence los efectos temporales
-        stats = stats.prune(); // [POWERUP] descarta los decoradores vencidos
+        updateEffects(); // vence los efectos temporales
+        stats = stats.prune(); // descarta los decoradores vencidos
 
         if (this.isAttacking && this.activeWeapon != null && this.activeWeapon.isAutomatic()) {
             this.attack(state);
@@ -143,7 +143,6 @@ public class Player extends Character {
     }
 
     public void addEffect(Effect effect) {
-        effect.apply(this);
         effects.add(effect);
     }
 
@@ -153,7 +152,6 @@ public class Player extends Character {
             Effect e = it.next();
             e.update(this);
             if (e.isExpired()) {
-                e.remove(this);
                 it.remove();
             }
         }
@@ -168,10 +166,9 @@ public class Player extends Character {
         isAttacking = false;
     }
 
-    /** Envuelve las stats actuales con un nuevo decorador, ej: player.decorateStats(s -> new ShieldDecorator(s, 50)). */
+    // Envuelve las stats actuales con un nuevo decorador
     public void decorateStats(UnaryOperator<PlayerStats> decorator) {
         stats = decorator.apply(stats);
-        stats.onApply(this);
     }
 
     public double getDamageBonus() {
