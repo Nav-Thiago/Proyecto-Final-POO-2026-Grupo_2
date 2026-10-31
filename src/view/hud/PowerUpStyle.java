@@ -7,7 +7,7 @@ import java.awt.geom.Path2D;
 
 /**
   Identidad visual de cada power up: color, textos del aviso e icono vectorial.
-  Cada constante dibuja su propio icono (polimorfismo), así el HUD no necesita ningún if/switch por tipo.
+  Cada constante dibuja su propio icono (polimorfismo), así el HUD no necesita ningún if/switch por tipo
  */
 public enum PowerUpStyle {
 
@@ -92,10 +92,10 @@ public enum PowerUpStyle {
         return subtitle;
     }
 
-    /** Dibuja el icono centrado en (0,0) con el color y el stroke que tenga el Graphics2D. */
+    // Dibuja el icono centrado en (0,0) con el color y el stroke que tenga el Graphics2D. 
     public abstract void drawIcon(Graphics2D g, int radius);
 
-    /** Traduce el nombre de la clase del modelo (Heal, Shield...) a su estilo; null si no se conoce. */
+    // Traduce el nombre de la clase del modelo (Heal, Shield...) a su estilo; null si no se conoce.
     public static PowerUpStyle fromClassName(String name) {
         for (PowerUpStyle s : values()) {
             if (s.className.equals(name)) return s;
