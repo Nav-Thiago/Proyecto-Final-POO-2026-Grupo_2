@@ -1,7 +1,5 @@
 package model;
 
-import java.util.List;
-
 public class PoisonZombie extends RangedEnemy {
 
     private static final double SHOOT_RANGE = 300;
@@ -9,8 +7,8 @@ public class PoisonZombie extends RangedEnemy {
 
     private long lastShootTime;
 
-    public PoisonZombie(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
-        super(x, y, 40, 64, 2.0, 80, 80, poisonList);
+    public PoisonZombie(double x, double y, GameClock clock) {
+        super(x, y, 40, 64, 2.0, 80, 80);
         this.lastShootTime = clock.nowMillis();
     }
 
@@ -21,7 +19,7 @@ public class PoisonZombie extends RangedEnemy {
 
     @Override
     protected PoisonBullet createProjectile(double x, double y, double dirX, double dirY) {
-        return new PoisonBullet(x, y, 3, 3, dirX, dirY, 10.0);
+        return new PoisonBullet(x, y, 6, 6, dirX, dirY, 10.0);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class PoisonZombie extends RangedEnemy {
         } else {
             long currentTime = state.getClock().nowMillis();
             if (currentTime - lastShootTime >= SHOOT_COOLDOWN) {
-                shootAt(player);
+                shootAt(player, state);
                 lastShootTime = currentTime;
             }
             avoidOverlap(state);

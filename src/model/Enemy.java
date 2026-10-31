@@ -18,14 +18,6 @@ public abstract class Enemy extends Character {
         this.angle = 0.0;
     }
 
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
     public double getAngle() {
         return angle;
     }
@@ -34,16 +26,10 @@ public abstract class Enemy extends Character {
         // Verifica si el zombie está muerto antes de moverse
         if (!isAlive()) return;
 
-        double playerCenterX = target.getX() + (target.getWidth() / 2.0);
-        double playerCenterY = target.getY() + (target.getHeight() / 2.0);
-        double zombieCenterX = this.x + (this.width / 2.0);
-        double zombieCenterY = this.y + (this.height / 2.0);
+        double distance = faceTarget(target);
 
-        double dx = playerCenterX - zombieCenterX;
-        double dy = playerCenterY - zombieCenterY;
-
-        double distance = Math.hypot(dx, dy);
-        this.angle = Math.atan2(dy, dx);
+        double dx = Math.cos(angle) * distance;
+        double dy = Math.sin(angle) * distance;
 
         if (distance > 1000) {
             return;
@@ -54,14 +40,6 @@ public abstract class Enemy extends Character {
         }
 
         avoidOverlap(state);
-    }
-
-    // Gira al enemigo hacia el jugador y devuelve la distancia entre centros. (Lo usa PoisonZombie al disparar)
-    protected double faceTarget(Player target) {
-        double dx = (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
-        double dy = (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);
-        this.angle = Math.atan2(dy, dx);
-        return Math.hypot(dx, dy);
     }
 
     private void moveTowardsWithAvoidance(double dx, double dy, GameState state) {
@@ -108,6 +86,13 @@ public abstract class Enemy extends Character {
         }
     }
 
+    // Gira al enemigo hacia el jugador y devuelve la distancia entre centros (Lo usa PoisonZombie al disparar)
+    protected double faceTarget(Player target) {
+        double dx = (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
+        double dy = (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);
+        this.angle = Math.atan2(dy, dx);
+        return Math.hypot(dx, dy);
+    }
 
     public boolean canAttack(long now) {
         return now - lastAttackTime >= ATTACK_COOLDOWN;

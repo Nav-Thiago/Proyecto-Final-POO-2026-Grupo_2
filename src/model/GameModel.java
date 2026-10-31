@@ -127,17 +127,17 @@ public class GameModel {
     }
 
     private void spawnBoss(double x, double y) {
-        state.addEnemy(new FinalBoss(x, y, state.getPoisonBullets(), state.getClock()));
+        state.addEnemy(new FinalBoss(x, y, state.getClock()));
         bossSpawned = true;
     }
 
-    /** Qué mensaje toca mostrar: 0 = felicitación, 1 = "Preparate para el Jefe". */
+    // Qué mensaje toca mostrar: 0 = felicitación, 1 = "Preparate para el Jefe"
     public int getBossIntroStep() {
         long elapsed = state.getClock().nowMillis() - bossIntroStart;
         return (int) Math.min(INTRO_STEPS - 1, elapsed / INTRO_STEP_MS);
     }
 
-    /** Avance (0.0 a 1.0) dentro del mensaje actual, para el efecto de aparecer y desvanecer. */
+    // Avance (0.0 a 1.0) dentro del mensaje actual, para el efecto de aparecer y desvanecer
     public double getBossIntroProgress() {
         long elapsed = state.getClock().nowMillis() - bossIntroStart;
         return Math.min(1.0, (elapsed % INTRO_STEP_MS) / (double) INTRO_STEP_MS);
@@ -186,7 +186,7 @@ public class GameModel {
         }
     }
 
-    public void saveMatch(boolean victory) {
+    private void saveMatch(boolean victory) {
         MatchRecord record = new MatchRecord(LocalDate.now(), stats.getPlayedTimes(), stats.getZombiesKilled(), stats.getDamageDealt(), state.getPlayer().getDamageTaken(), victory);
 
         this.matchTimeMs = record.getSurvivalTimeMs();

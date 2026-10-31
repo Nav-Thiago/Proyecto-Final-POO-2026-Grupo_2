@@ -32,7 +32,6 @@ public class MapLoader {
             String dataString = json.substring(startBracket + 1, endBracket);
             String[] values = dataString.split(",");
 
-            int solidCount = 0;
             int col = 0;
             int row = 0;
 
@@ -44,7 +43,6 @@ public class MapLoader {
 
                     if (col < cols && row < rows) {
                         matrix[col][row] = isSolid;
-                        if (isSolid) solidCount++;
                     }
 
                     col++;

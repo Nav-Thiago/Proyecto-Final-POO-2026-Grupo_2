@@ -11,14 +11,14 @@ public class FinalBoss extends RangedEnemy {
     private long lastSpitTime;
     private long spitAnimStart = -1; // -1 = no está escupiendo
 
-    public FinalBoss(double x, double y, List<PoisonBullet> poisonList, GameClock clock) {
-        super(x, y, 110, 110, 3.5, 500, 500, poisonList);
+    public FinalBoss(double x, double y, GameClock clock) {
+        super(x, y, 110, 110, 3.5, 500, 500);
         this.lastSpitTime = clock.nowMillis();
     }
 
     @Override
     public int attack() {
-        return 30; // mismo daño que TankZombie
+        return 30;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class FinalBoss extends RangedEnemy {
 
         long now = state.getClock().nowMillis();
         if (now - lastSpitTime >= SPIT_COOLDOWN) {
-            shootAt(player);
+            shootAt(player, state);
             resetAttackCooldown(now);
             lastSpitTime = now;
             spitAnimStart = now; // arranca la animación de escupir

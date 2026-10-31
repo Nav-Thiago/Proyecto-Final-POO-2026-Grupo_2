@@ -69,7 +69,7 @@ public class PowerUpSpawner {
     }
 
     private boolean isValidSpot(double x, double y) {
-        if (isOnBlockedTile(x, y)) return false;
+        if (state.isOnBlockedTile(x, y, PowerUp.SIZE, PowerUp.SIZE)) return false;
 
         double centerX = x + PowerUp.SIZE / 2.0;
         double centerY = y + PowerUp.SIZE / 2.0;
@@ -87,26 +87,6 @@ public class PowerUpSpawner {
             if (Math.hypot(centerX - otherX, centerY - otherY) < MIN_DIST_BETWEEN) return false;
         }
         return true;
-    }
-
-    // true si el power up toca algún tile bloqueado del mapa o se sale de él. 
-    private boolean isOnBlockedTile(double x, double y) {
-        boolean[][] map = state.getCollisionMatrix();
-        if (map == null) return false;
-
-        int tile = GameState.TILE_SIZE;
-        int fromX = (int) x / tile;
-        int toX = (int) (x + PowerUp.SIZE - 1) / tile;
-        int fromY = (int) y / tile;
-        int toY = (int) (y + PowerUp.SIZE - 1) / tile;
-
-        for (int tx = fromX; tx <= toX; tx++) {
-            for (int ty = fromY; ty <= toY; ty++) {
-                if (tx < 0 || tx >= map.length || ty < 0 || ty >= map[0].length) return true;
-                if (map[tx][ty]) return true;
-            }
-        }
-        return false;
     }
 
     private PowerUp create(int type, double x, double y) {

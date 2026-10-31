@@ -65,7 +65,7 @@ public class MenuController {
         showUniversitySplash();
     }
 
-    public void buildGame(GameAssets assets) {
+    private void buildGame(GameAssets assets) {
         if (gameLoop != null) {
             gameLoop.stop();
         }
@@ -130,7 +130,7 @@ public class MenuController {
         cardLayout.show(mainContainer, "HISTORY");
     }
 
-    public void showGameOver(GameModel model) {
+    private void showGameOver(GameModel model) {
         boolean victory = model.getStatus() == GameModel.GameStatus.GAME_WON;
         gameOver.showResult(victory, model.getMatchTimeMs(), model.getBestTimeMs(), model.isNewRecord());
         cardLayout.show(mainContainer, "GAME_OVER");
@@ -158,7 +158,7 @@ public class MenuController {
         timer.start();
     }
 
-    public void backToMenu() {
+    private void backToMenu() {
         AudioManager.playMusic("/Resources/audio/soundtrack2.wav");
         AudioManager.setVolume(50);
         showMainMenu();

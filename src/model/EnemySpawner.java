@@ -41,11 +41,13 @@ public class EnemySpawner {
             while (!validPosition && attempts < maxAttempts) {
                 spawnX = random.nextInt(mapWidth - maxZombieWidth);
                 spawnY = random.nextInt(mapHeight - maxZombieHeight);
-                if (!isOnBlockedTile(spawnX, spawnY, maxZombieWidth, maxZombieHeight, collisionMatrix)) {
+                if (!state.isOnBlockedTile(spawnX, spawnY, maxZombieWidth, maxZombieHeight)) {
                     validPosition = true;
                 }
                 attempts++;
             }
+
+            if (!validPosition) return;
 
             Enemy newZombie;
 
@@ -54,7 +56,7 @@ public class EnemySpawner {
             } else if (tipoZombie == 1) {
                 newZombie = new FastZombie(spawnX, spawnY);
             } else if (tipoZombie == 2) {
-                newZombie = new PoisonZombie(spawnX, spawnY, state.getPoisonBullets(), state.getClock());
+                newZombie = new PoisonZombie(spawnX, spawnY, state.getClock());
             } else {
                 newZombie = new NormalZombie(spawnX, spawnY);
             }
@@ -65,29 +67,7 @@ public class EnemySpawner {
         }
     }
 
-    // Método extraído de la lógica del PowerUpSpawner
-    private boolean isOnBlockedTile(double x, double y, int width, int height, boolean[][] map) {
-        int tile = GameState.TILE_SIZE;
-        int fromX = (int) x / tile;
-        int toX = (int) (x + width - 1) / tile;
-        int fromY = (int) y / tile;
-        int toY = (int) (y + height - 1) / tile;
-
-        for (int tx = fromX; tx <= toX; tx++) {
-            for (int ty = fromY; ty <= toY; ty++) {
-                if (tx < 0 || tx >= map.length || ty < 0 || ty >= map[0].length) return true;
-                if (map[tx][ty]) return true; // Hay colisión
-            }
-        }
-        return false; // Área completamente libre
-    }
-
     public boolean isWaveComplete(){
         return zombieSpawned >= waveLimit;
-    }
-
-    public void reset() {
-        this.zombieSpawned = 0; 
-        this.lastSpawnTime = clock.nowMillis();
     }
 }

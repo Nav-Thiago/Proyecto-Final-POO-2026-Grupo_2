@@ -36,11 +36,6 @@ public class GameState {
         this.mapHeight = mapHeight;
     }
 
-    public void setMapDimensions(int width, int height) {
-        this.mapWidth = width;
-        this.mapHeight = height;
-    }
-
     // getters
     public Player getPlayer() {
         return player;
@@ -95,6 +90,28 @@ public class GameState {
         playerBullets.removeIf(bullet -> !bullet.isActive());
         poisonBullets.removeIf(bullet -> !bullet.isActive());
         powerUps.removeIf(powerUp -> !powerUp.isActive());
+    }
+
+    public boolean isOnBlockedTile(double x, double y, int width, int height) {
+        boolean[][] map = getCollisionMatrix();
+
+        if (map == null) {
+            return false;
+        }
+
+        int tile = GameState.TILE_SIZE;
+        int fromX = (int) x / tile;
+        int toX = (int) (x + width - 1) / tile;
+        int fromY = (int) y / tile;
+        int toY = (int) (y + height - 1) / tile;
+
+        for (int tx = fromX; tx <= toX; tx++) {
+            for (int ty = fromY; ty <= toY; ty++) {
+                if (tx < 0 || tx >= map.length || ty < 0 || ty >= map[0].length) return true;
+                if (map[tx][ty]) return true; // Hay colisión
+            }
+        }
+        return false; // Área completamente libre
     }
 
     // añadir sonidos a la cola de eventos

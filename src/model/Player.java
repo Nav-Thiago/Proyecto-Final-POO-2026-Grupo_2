@@ -207,10 +207,6 @@ public class Player extends Character {
         this.ammoHolder = ammoHolder;
     }
 
-    public void addAmmo(int amount) {
-        if (ammoHolder != null) ammoHolder.addAmmo(amount);
-    }
-
     public void addPickupAmmo() {
     if (ammoHolder != null) ammoHolder.addAmmo(ammoHolder.getAmmoPerPickup());
     }
