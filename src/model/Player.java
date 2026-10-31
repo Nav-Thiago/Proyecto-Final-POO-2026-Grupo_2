@@ -229,11 +229,10 @@ public class Player extends Character {
     }
 
     public void notifyPickup(String powerUpType) {
-        pickupEvents.add(powerUpType); }
+        pickupEvents.add(powerUpType);
+    }
 
     public String pollPickup() {
-        return pickupEvents.poll(); }
-
-   
-
+        return pickupEvents.poll();
+    }
 }

@@ -3,13 +3,9 @@ package controller;
 import model.*;
 import view.GamePanel;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
-public class GameController extends KeyAdapter implements MouseMotionListener, MouseListener {
+public class GameController extends MouseAdapter implements MouseMotionListener, MouseListener {
 
     private final GameModel model;
     private GamePanel gamePanel;
@@ -24,14 +20,23 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
 
     public void setGamePanel (GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        this.gamePanel.addKeyListener(this);
         this.gamePanel.addMouseListener(this);
         this.gamePanel.addMouseMotionListener(this);
+        this.gamePanel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                onKeyPressed(e);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                onKeyReleased(e);
+            }
+        });
     }
 
     // TECLADO
-    @Override
-    public void keyPressed(KeyEvent e) {
+    public void onKeyPressed(KeyEvent e) {
         if (model.getStatus() != GameModel.GameStatus.PLAYING) {
             return;
         }
@@ -42,13 +47,11 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(true);
             case KeyEvent.VK_Q -> this.model.getState().getPlayer().swapWeapon();
             case KeyEvent.VK_E -> this.model.playerInteract();
-            default -> {
-            }
+            default -> {}
         }
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
+    public void onKeyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             onPause.run();
             return;
@@ -65,14 +68,12 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     // MOUSE
     @Override
     public void mouseMoved(MouseEvent e) {
-        //this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
         aimWithCamera(e.getX(), e.getY());
     }
 
     @Override
     // Manteniendo algún botón pulsado
     public void mouseDragged(MouseEvent e) {
-        //this.model.getState().getPlayer().aimAt(e.getX(), e.getY());
         aimWithCamera(e.getX(), e.getY());
     }
 
@@ -123,15 +124,4 @@ public class GameController extends KeyAdapter implements MouseMotionListener, M
     public void drawScene(GamePanel panel) {
         sceneDrawer.drawScene(panel);
     }
-
-
-    // Agrego debido a que tira error por el implements, se puede solucionar cambiando a: 
-    // public class GameController extends MouseAdapter implements KeyListener {
-    // Investigar.
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-    @Override
-    public void mouseExited(MouseEvent e) {}
 }

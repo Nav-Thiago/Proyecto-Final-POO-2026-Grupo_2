@@ -58,7 +58,7 @@ public class MeleeWeapon extends Weapon {
     public double getSwingProgress(long currentTime) {
         long elapsed = currentTime - lastShoot;
         if (elapsed < 0 || elapsed >= SWING_MS) return -1;
-            return elapsed / (double) SWING_MS;
+        return elapsed / (double) SWING_MS;
     }
 
     @Override
