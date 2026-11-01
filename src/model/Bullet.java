@@ -26,7 +26,7 @@ public class Bullet extends Entity {
         this.age = 0;
     }
 
-    public void update(int mapWidth, int mapHeight) {
+    public void update() {
         this.x += dirX * speed; 
         this.y += dirY * speed;
 
@@ -35,11 +35,6 @@ public class Bullet extends Entity {
 
         if (this.lifeSpanTicks <= 0) {
             this.active = false;
-        }
-
-        // Desactivar la bala si sale de los límites de la ventana
-        if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
-            active = false;
         }
     }
 

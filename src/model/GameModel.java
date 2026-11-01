@@ -65,12 +65,9 @@ public class GameModel {
 
         player.update(state);
 
-        int mapWidth = state.getMapWidth();
-        int mapHeight = state.getMapHeight();
-
         // Mover balas
-        for (Bullet b : state.getPlayerBullets()) b.update(mapWidth, mapHeight);
-        for (Bullet p: state.getPoisonBullets()) p.update(mapWidth, mapHeight);
+        for (Bullet b : state.getPlayerBullets()) b.update();
+        for (Bullet p: state.getPoisonBullets()) p.update();
 
         // Spawners
         spawner.update(state);
