@@ -25,6 +25,10 @@ public class AudioManager {
                 return;
             }
 
+            if (bgmClip != null) {
+                bgmClip.close();
+            }
+
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioUrl);
 
             bgmClip = AudioSystem.getClip();

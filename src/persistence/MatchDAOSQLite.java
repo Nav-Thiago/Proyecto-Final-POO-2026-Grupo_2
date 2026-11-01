@@ -47,6 +47,7 @@ public class MatchDAOSQLite implements MatchDAO {
             statement.setInt(6, match.isVictory() ? 1 : 0);
             return statement.executeUpdate() == 1;
         } catch (SQLException e) {
+            System.err.println("No se pudo guardar la partida: " + e.getMessage());
             return false;
         }
     }
@@ -79,6 +80,7 @@ public class MatchDAOSQLite implements MatchDAO {
             }
 
         } catch (SQLException e) {
+            System.err.println("No se pudo leer el historial: " + e.getMessage());
             return result;
         }
         return result;

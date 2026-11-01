@@ -22,6 +22,7 @@ public class MenuController {
 
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
+    private GameAssets cachedAassets;
 
     private final LoadingPanel loadingPanel = new LoadingPanel();
     private final HistoryPanel history = new HistoryPanel();
@@ -66,6 +67,8 @@ public class MenuController {
     }
 
     private void buildGame(GameAssets assets) {
+        cachedAassets = assets;
+
         if (gameLoop != null) {
             gameLoop.stop();
         }
@@ -100,6 +103,12 @@ public class MenuController {
 
     private void startGame() {
         AudioManager.stopMusic();
+
+        if (cachedAassets != null) {
+            buildGame(cachedAassets);
+            return;
+        }
+
         loadingPanel.setMessage("Cargando...");
         cardLayout.show(mainContainer, "LOADING");
 
