@@ -62,7 +62,7 @@ public class SceneDrawer {
         for (Enemy zombie : state.getEnemies()) {
             if (zombie.isAlive()) {
                 panel.drawZombie(zombie.getX(), zombie.getY(), zombie.getWidth(), zombie.getHeight(),
-                zombie.getAngle(), zombie.getHealth(), zombie.getClass().getSimpleName(),
+                zombie.getAngle(), zombie.getHealth(), zombie.getType().name(),
                 zombie.getAttackProgress(state.getClock().nowMillis()), zombie.getSpitProgress(state.getClock().nowMillis()));
             }
         }

@@ -16,12 +16,12 @@ public class GamePanel extends JPanel {
 
     private final GameController controller;
 
-    private Animation playerFeetAnimation;
+    private final Animation playerFeetAnimation;
     private final Map<String, Animation> playerAnimations;
     private final Map<String, Animation> playerAttackAnimations;
 
-    private BufferedImage backgroundForest;
-    private BufferedImage firstLayer;
+    private final BufferedImage backgroundForest;
+    private final BufferedImage firstLayer;
 
     // Mapas para asociar la clase del modelo con su recurso visual
     private final Map<String, Animation> zombieAnimations;
@@ -31,9 +31,9 @@ public class GamePanel extends JPanel {
     private final Map<String, BufferedImage> powerUpSprites;
     private final Map<String, BufferedImage> weaponSprites;
 
-    private static final Map<String, Double> SPRITE_ROTATION = Map.of("FastZombie", Math.PI / 2, "PoisonZombie",
-            Math.PI / 2, "TankZombie", -Math.PI / 2, "FinalBoss", -Math.PI / 2);
-    private static final Map<String, Double> ATTACK_SCALES = Map.of("FinalBoss", 2.0);
+    private static final Map<String, Double> SPRITE_ROTATION = Map.of("FAST", Math.PI / 2, "POISON",
+            Math.PI / 2, "TANK", -Math.PI / 2, "BOSS", -Math.PI / 2);
+    private static final Map<String, Double> ATTACK_SCALES = Map.of("BOSS", 2.0);
 
     private static final Map<String, Color> POWERUP_COLORS = Map.of("Heal", Color.GREEN, "Shield", Color.CYAN,
             "DamageBoost", Color.RED, "Ammo", Color.YELLOW, "MaxAmmo", Color.ORANGE);

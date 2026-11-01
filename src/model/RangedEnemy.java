@@ -2,8 +2,8 @@ package model;
 
 public abstract class RangedEnemy extends Enemy {
 
-    public RangedEnemy(double x, double y, int width, int height, double speed, int health, int maxHealth) {
-        super(x, y, width, height, speed, health, maxHealth);
+    public RangedEnemy(double x, double y, EnemyType type, int width, int height, double speed, int health, int maxHealth, int attackDamage) {
+        super(x, y, type, width, height, speed, health, maxHealth, attackDamage);
     }
 
     //Cada hija decide qué proyectil crea. 

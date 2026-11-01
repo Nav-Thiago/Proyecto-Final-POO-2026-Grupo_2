@@ -7,6 +7,7 @@ public class CollisionSystem {
         checkBulletMapCollision(state);
         checkPoisonPlayerCollision(state);
         checkZombiePlayerCollision(state);
+        checkPlayerPowerUpCollision(state);
     }
 
     private void checkBulletZombieCollision (GameState state) {
@@ -72,17 +73,28 @@ public class CollisionSystem {
     }
 
     private void checkZombiePlayerCollision(GameState state) {
-    Player player = state.getPlayer();
-    if (!player.isAlive()) return;
+        Player player = state.getPlayer();
+        if (!player.isAlive()) return;
 
-    for (Enemy zombie : state.getEnemies()) {
-        if (!zombie.isAlive()) continue;
+        for (Enemy zombie : state.getEnemies()) {
+            if (!zombie.isAlive()) continue;
 
-        if (zombie.collidesWith(player)) {
-            zombie.tryAttack(player);
-        } else {
-            zombie.cancelWindup(state.getClock().nowMillis());
+            if (zombie.collidesWith(player)) {
+                zombie.tryAttack(player);
+            } else {
+                zombie.cancelWindup(state.getClock().nowMillis());
+            }
         }
     }
-}
+
+    private void checkPlayerPowerUpCollision(GameState state) {
+        Player player = state.getPlayer();
+        if (!player.isAlive()) return;
+
+        for (PowerUp p : state.getPowerUps()) {
+            if (p.isActive() && player.collidesWith(p)) {
+                p.collect(player);
+            }
+        }
+    }
 }

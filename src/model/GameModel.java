@@ -50,6 +50,7 @@ public class GameModel {
             updateBossIntro();
             return;
         }
+
         if (status != GameStatus.PLAYING) return;
 
         stats.addPlayedTime(delta);
@@ -79,13 +80,6 @@ public class GameModel {
         for (Enemy zombie : state.getEnemies()) {
             if (zombie.isAlive()) {
                 zombie.update(player, state);
-            }
-        }
-
-        // Recolección de power-ups
-        for (PowerUp p : state.getPowerUps()) {
-            if (p.isActive() && player.collidesWith(p)) {
-                p.collect(player);
             }
         }
 

@@ -18,7 +18,7 @@ public abstract class PowerUp extends Entity {
     public final void collect(Player player) {
         if (!active) return;
         apply(player);
-          player.notifyPickup(getClass().getSimpleName());
+        player.notifyPickup(getClass().getSimpleName());
         active = false;
     }
 

@@ -1,6 +1,6 @@
 package model;
 
-public abstract class Enemy extends Character {
+public class Enemy extends Character {
 
     private static final int ATTACK_COOLDOWN = 600;  // pausa entre golpes (600 + 400 de windup = ~1000 ms por ciclo)
     private static final int ATTACK_WINDUP = 400;    // instante del golpe dentro de la animación
@@ -9,13 +9,17 @@ public abstract class Enemy extends Character {
     private static final double[] AVOID_ANGLES_DEG = {0, 25, -25, 50, -50, 75, -75, 100, -100};
 
     protected double angle;
+    private final EnemyType type;
+    private final int attackDamage;
     private long lastAttackTime = 0;
     private long attackStart = -1;   // -1 = no está atacando
     private boolean damageDealt;
 
-    public Enemy(double x, double y, int width, int height, double speed, int health, int maxHealth) {
+    public Enemy(double x, double y, EnemyType type, int width, int height, double speed, int health, int maxHealth, int attackDamage) {
         super(x, y, width, height, speed, health, maxHealth);
         this.angle = 0.0;
+        this.type = type;
+        this.attackDamage = attackDamage;
     }
 
     public double getAngle() {
@@ -147,5 +151,11 @@ public abstract class Enemy extends Character {
         return -1;
     }
 
-    public abstract int attack();
+    public int attack() {
+        return attackDamage;
+    }
+
+    public EnemyType getType() {
+        return type;
+    }
 }
