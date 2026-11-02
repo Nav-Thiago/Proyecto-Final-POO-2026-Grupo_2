@@ -13,7 +13,7 @@ public class DatabaseConnection {
         this.connection = DriverManager.getConnection("jdbc:sqlite:no_way_back.db");
     }
 
-    public static synchronized DatabaseConnection getInstance() throws SQLException {
+    public static DatabaseConnection getInstance() throws SQLException {
         if (instance == null) {
             instance = new DatabaseConnection();
         }

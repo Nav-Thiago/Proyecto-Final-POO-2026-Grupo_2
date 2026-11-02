@@ -13,7 +13,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
     }
 
     @Override
-    public boolean attack(Player player, GameState state){
+    public void attack(Player player, GameState state){
         long currentTime = state.getClock().nowMillis();
 
         if (this.actualMunition > 0 && currentTime - this.lastShoot >= this.cooldown) {
@@ -33,10 +33,7 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
             state.addPlayerBullet(bullet);
 
             state.emitSound(getAttackSound());
-
-            return true;
         }
-        return false;
     }
 
     @Override

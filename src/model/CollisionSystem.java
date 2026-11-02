@@ -67,7 +67,7 @@ public class CollisionSystem {
         for (PoisonBullet poison : state.getPoisonBullets()) {
             if (poison.isActive() && poison.collidesWith(player)) {
                 poison.setActive(false);
-                poison.applyTo(player);//POLIMORFISMO: cada bala sabe qué hacer
+                poison.applyTo(player); //POLIMORFISMO: cada bala sabe qué hacer
             }
         }
     }

@@ -1,12 +1,12 @@
 package model;
 
-public class GameFactory {
+public class GameConstructor {
 
     private static final int MAP_COLS = 200;
     private static final int MAP_ROWS = 200;
     private static final String MAP_FILE = "/Resources/mapa_bosque_ultimo-111026/mapa_bosque_NWB.tmj";
 
-    private GameFactory() {}
+    private GameConstructor() {}
 
     public static GameModel createGame(MatchDAO matchDAO) {
         GameClock clock = new GameClock();

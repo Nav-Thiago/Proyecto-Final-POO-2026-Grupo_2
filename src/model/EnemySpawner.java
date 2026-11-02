@@ -52,13 +52,13 @@ public class EnemySpawner {
             Enemy newZombie;
 
             if (tipoZombie == 0) {
-                newZombie = new Enemy(spawnX, spawnY, EnemyType.TANK, 86, 86, 1.5, 250, 250, 15);
+                newZombie = new Enemy(spawnX, spawnY, EnemyType.TANK, 86, 86, 1.5, 250, 15);
             } else if (tipoZombie == 1) {
-                newZombie = new Enemy(spawnX, spawnY, EnemyType.FAST, 40, 64, 5.0, 80, 80, 25);
+                newZombie = new Enemy(spawnX, spawnY, EnemyType.FAST, 40, 64, 5.0, 80, 25);
             } else if (tipoZombie == 2) {
                 newZombie = new PoisonZombie(spawnX, spawnY, state.getClock());
             } else {
-                newZombie = new Enemy(spawnX, spawnY, EnemyType.NORMAL, 64, 64, 3.0, 100, 100, 10);
+                newZombie = new Enemy(spawnX, spawnY, EnemyType.NORMAL, 64, 64, 3.0, 100, 10);
             }
 
             state.addEnemy(newZombie);

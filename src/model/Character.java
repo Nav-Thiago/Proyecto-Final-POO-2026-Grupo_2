@@ -4,12 +4,10 @@ public abstract class Character extends Entity {
 
     protected double speed;
     private int health;
-    private int maxHealth;
 
-    public Character(double x, double y, int width, int height, double speed, int health, int maxHealth) {
+    public Character(double x, double y, int width, int height, double speed, int health) {
         super(x, y, width, height);
         this.speed = speed;
-        this.maxHealth = maxHealth;
         this.health = health;
     }
 
@@ -18,10 +16,6 @@ public abstract class Character extends Entity {
     }
     public void setHealth(int health) {
         this.health = health;
-    }
-
-    public int getMaxHealth() {
-        return maxHealth;
     }
 
     protected void move(double dx, double dy, GameState state) {

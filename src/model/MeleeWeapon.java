@@ -12,7 +12,7 @@ public class MeleeWeapon extends Weapon {
     }
 
     @Override
-    public boolean attack(Player player, GameState state) {
+    public void attack(Player player, GameState state) {
         long currentTime = state.getClock().nowMillis();
 
         if (currentTime - this.lastShoot >= this.cooldown) {
@@ -45,13 +45,10 @@ public class MeleeWeapon extends Weapon {
                         int healthBefore = zombie.getHealth();
                         zombie.takeDamage((int) totalDamage);
                         state.getMatchStats().addDamageDealt(healthBefore - zombie.getHealth());
-                        hitSomething = true;
                     }
                 }
             }
-            return hitSomething;
         }
-        return false;
     }
 
     @Override

@@ -77,7 +77,7 @@ public class MenuController {
             mainContainer.remove(activeGamePanel);
         }
 
-        activeModel = GameFactory.createGame(matchDAO);
+        activeModel = GameConstructor.createGame(matchDAO);
 
         controller = new GameController(activeModel, this::toggleGamePause);
 

@@ -9,6 +9,7 @@ import java.util.function.UnaryOperator;
 
 public class Player extends Character {
 
+    private static final int MAX_HEALTH = 100;
     private boolean moveUp;
     private boolean moveDown;
     private boolean moveLeft;
@@ -38,7 +39,7 @@ public class Player extends Character {
     private final GameClock clock;
 
     public Player(double x, double y, GameClock clock) {
-        super(x, y, 64, 64, 12 , 100, 100);
+        super(x, y, 64, 64, 12 , MAX_HEALTH);
 
         this.clock = clock;
         this.knife = new MeleeWeapon(50, 1000);
@@ -85,6 +86,10 @@ public class Player extends Character {
         return clock;
     }
 
+    public int getMaxHealth() {
+        return MAX_HEALTH;
+    }
+
     public void update(GameState state) {
         updateEffects(); // vence los efectos temporales
         stats = stats.prune(); // descarta los decoradores vencidos
@@ -126,7 +131,7 @@ public class Player extends Character {
             this.setAmmoHolder(this.primaryWeapon);
         } else {
             this.activeWeapon = this.knife;
-            this.setAmmoHolder(null);
+            this.setAmmoHolder(this.primaryWeapon);
         }
     }
 
@@ -176,7 +181,7 @@ public class Player extends Character {
     }
 
     public void heal(int amount) {
-        setHealth(Math.min(getHealth() + amount, getMaxHealth()));
+        setHealth(Math.min(getHealth() + amount, MAX_HEALTH));
     }
 
     public int getShield() {

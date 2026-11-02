@@ -38,7 +38,7 @@ public abstract class Weapon {
         return centerY + Math.sin(a) * MUZZLE_FORWARD + Math.cos(a) * MUZZLE_SIDE;
     }
  
-    public abstract boolean attack(Player player, GameState state);
+    public abstract void attack(Player player, GameState state);
 
     public abstract boolean isAutomatic();
 

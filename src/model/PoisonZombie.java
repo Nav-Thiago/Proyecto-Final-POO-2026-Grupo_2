@@ -8,7 +8,7 @@ public class PoisonZombie extends RangedEnemy {
     private long lastShootTime;
 
     public PoisonZombie(double x, double y, GameClock clock) {
-        super(x, y, EnemyType.POISON, 40, 64, 2.0, 100, 100, 5);
+        super(x, y, EnemyType.POISON, 40, 64, 2.0, 100, 5);
         this.lastShootTime = clock.nowMillis();
     }
 

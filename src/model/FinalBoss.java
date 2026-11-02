@@ -12,7 +12,7 @@ public class FinalBoss extends RangedEnemy {
     private long spitAnimStart = -1; // -1 = no está escupiendo
 
     public FinalBoss(double x, double y, GameClock clock) {
-        super(x, y, EnemyType.BOSS, 110, 110, 3.5, 1000, 1000, 30);
+        super(x, y, EnemyType.BOSS, 110, 110, 3.5, 1000, 30);
         this.lastSpitTime = clock.nowMillis();
     }
 

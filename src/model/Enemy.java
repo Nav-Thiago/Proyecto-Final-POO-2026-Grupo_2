@@ -15,8 +15,8 @@ public class Enemy extends Character {
     private long attackStart = -1;   // -1 = no está atacando
     private boolean damageDealt;
 
-    public Enemy(double x, double y, EnemyType type, int width, int height, double speed, int health, int maxHealth, int attackDamage) {
-        super(x, y, width, height, speed, health, maxHealth);
+    public Enemy(double x, double y, EnemyType type, int width, int height, double speed, int health, int attackDamage) {
+        super(x, y, width, height, speed, health);
         this.angle = 0.0;
         this.type = type;
         this.attackDamage = attackDamage;
@@ -90,7 +90,7 @@ public class Enemy extends Character {
         }
     }
 
-    // Gira al enemigo hacia el jugador y devuelve la distancia entre centros (Lo usa PoisonZombie al disparar)
+    // Gira al enemigo hacia el jugador y devuelve la distancia entre centros
     protected double faceTarget(Player target) {
         double dx = (target.getX() + target.getWidth() / 2.0) - (this.x + this.width / 2.0);
         double dy = (target.getY() + target.getHeight() / 2.0) - (this.y + this.height / 2.0);
