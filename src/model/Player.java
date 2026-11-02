@@ -1,10 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class Player extends Character {
@@ -18,8 +14,7 @@ public class Player extends Character {
 
     // [POWERUP] estado que modifican los power ups
     private final List<Effect> effects = new ArrayList<>();
-    private PlayerStats stats = new BaseStats(); // cadena de decoradores (escudo, daño, munición)
-    private AmmoHolder ammoHolder; // arma actual (puede ser null hasta que exista Weapon)
+    private PlayerStats stats = new BaseStats(); // cadena de decoradores (escudo, daño)
 
     private double angle; // Ángulo en radianes hacia el cursor
 
@@ -34,7 +29,7 @@ public class Player extends Character {
     //variable para llevar un registro del daño total recibido por el jugador(HUD)
     private int damageTaken = 0;
 
-    private final Queue<String> pickupEvents = new ConcurrentLinkedQueue<>();
+    private final Queue<String> pickupEvents = new LinkedList<>();
 
     private final GameClock clock;
 
@@ -128,17 +123,14 @@ public class Player extends Character {
     public void swapWeapon() {
         if (this.activeWeapon == this.knife && this.primaryWeapon != null) {
             this.activeWeapon = this.primaryWeapon;
-            this.setAmmoHolder(this.primaryWeapon);
         } else {
             this.activeWeapon = this.knife;
-            this.setAmmoHolder(this.primaryWeapon);
         }
     }
 
     public void equipWeapon(FireArm weapon) {
         this.primaryWeapon = weapon;
         this.activeWeapon = this.primaryWeapon;
-        this.setAmmoHolder(weapon);
     }
 
     public void attack(GameState state) {
@@ -171,23 +163,6 @@ public class Player extends Character {
         isAttacking = false;
     }
 
-    // Envuelve las stats actuales con un nuevo decorador
-    public void decorateStats(UnaryOperator<PlayerStats> decorator) {
-        stats = decorator.apply(stats);
-    }
-
-    public double getDamageBonus() {
-        return stats.getDamageBonus();
-    }
-
-    public void heal(int amount) {
-        setHealth(Math.min(getHealth() + amount, MAX_HEALTH));
-    }
-
-    public int getShield() {
-        return stats.getShield();
-    }
-
     @Override
     public void takeDamage(int amount) {
         long currentTime = clock.nowMillis();
@@ -208,17 +183,31 @@ public class Player extends Character {
         }
     }
 
-    public void setAmmoHolder(AmmoHolder ammoHolder) {
-        this.ammoHolder = ammoHolder;
+    // Envuelve las stats actuales con un nuevo decorador
+    public void decorateStats(UnaryOperator<PlayerStats> decorator) {
+        stats = decorator.apply(stats);
+    }
+
+    public double getDamageBonus() {
+        return stats.getDamageBonus();
+    }
+
+    public void heal(int amount) {
+        setHealth(Math.min(getHealth() + amount, MAX_HEALTH));
+    }
+
+    public int getShield() {
+        return stats.getShield();
     }
 
     public void addPickupAmmo() {
-    if (ammoHolder != null) ammoHolder.addAmmo(ammoHolder.getAmmoPerPickup());
+        if (primaryWeapon != null)
+            primaryWeapon.addAmmo(primaryWeapon.getAmmoPerPickup());
     }
 
     public void refillAmmo() {
-        if (this.ammoHolder != null) {
-            this.ammoHolder.refillAmmo();
+        if (primaryWeapon != null) {
+            primaryWeapon.refillAmmo();
         }
     }
 

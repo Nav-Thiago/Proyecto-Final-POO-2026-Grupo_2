@@ -1,6 +1,6 @@
 package model;
 
-public abstract class FireArm extends Weapon implements AmmoHolder {
+public abstract class FireArm extends Weapon {
 
     protected int actualMunition;
     private final int maxMunition;
@@ -36,18 +36,15 @@ public abstract class FireArm extends Weapon implements AmmoHolder {
         }
     }
 
-    @Override
     public void addAmmo(int amount) {
         // El math.min asegura que no se pase de la munición máxima
         this.actualMunition = Math.min(this.actualMunition + amount, this.maxMunition);
     }
 
-    @Override
     public void refillAmmo() {
         this.actualMunition = this.maxMunition;
     }
 
-    @Override
     public abstract int getAmmoPerPickup();
 
     @Override
