@@ -129,6 +129,16 @@ public class Enemy extends Character {
         }
     }
 
+    private boolean canMove(double dx, double dy, GameState state) {
+        if (dx == 0 && dy == 0) return false;
+
+        double length = Math.hypot(dx, dy);
+        double moveX = (dx / length) * speed;
+        double moveY = (dy / length) * speed;
+
+        return !isCollidingWithMap(x + moveX, y + moveY, state);
+    }
+
     public void cancelWindup(long now) {
         if (attackStart < 0) return;
 

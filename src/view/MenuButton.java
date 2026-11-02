@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.*;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -33,7 +32,7 @@ public class MenuButton extends JButton{
 
         setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        addMouseListener((MouseListener) new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {
             @Override 
             public void mouseEntered(MouseEvent e) {
                 hover = true;

@@ -101,12 +101,6 @@ public class Player extends Character {
         if (moveRight) dx += 1;
 
         move(dx, dy, state);
-
-        // Bordes del mapa calculados 
-        if (x < 0) x = 0;
-        if (x + width > state.getMapWidth()) x = state.getMapWidth() - width;
-        if (y < 0) y = 0;
-        if (y + height > state.getMapHeight()) y = state.getMapHeight() - height;
     }
 
     public void aimAt(double mouseX, double mouseY) {

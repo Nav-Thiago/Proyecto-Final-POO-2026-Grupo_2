@@ -49,16 +49,6 @@ public abstract class Character extends Entity {
            map[leftTile][bottomTile] || map[rightTile][bottomTile];
     }
 
-    protected boolean canMove(double dx, double dy, GameState state) {
-        if (dx == 0 && dy == 0) return false;
-
-        double length = Math.hypot(dx, dy);
-        double moveX = (dx / length) * speed;
-        double moveY = (dy / length) * speed;
-
-        return !isCollidingWithMap(x + moveX, y + moveY, state);
-    }
-
     public void takeDamage(int amount) {
         if (amount < this.health) {
             health -= amount;
