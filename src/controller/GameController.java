@@ -40,12 +40,13 @@ public class GameController extends MouseAdapter implements MouseMotionListener,
         if (model.getStatus() != GameModel.GameStatus.PLAYING) {
             return;
         }
+        Player player = this.model.getState().getPlayer();
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(true);
-            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(true);
-            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getState().getPlayer().setMoveLeft(true);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(true);
-            case KeyEvent.VK_Q -> this.model.getState().getPlayer().swapWeapon();
+            case KeyEvent.VK_W, KeyEvent.VK_UP -> player.setMoveUp(true);
+            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> player.setMoveDown(true);
+            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> player.setMoveLeft(true);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> player.setMoveRight(true);
+            case KeyEvent.VK_Q -> player.swapWeapon();
             case KeyEvent.VK_E -> this.model.playerInteract();
             default -> {}
         }
@@ -56,11 +57,12 @@ public class GameController extends MouseAdapter implements MouseMotionListener,
             onPause.run();
             return;
         }
+        Player player = this.model.getState().getPlayer();
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W, KeyEvent.VK_UP -> this.model.getState().getPlayer().setMoveUp(false);
-            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> this.model.getState().getPlayer().setMoveDown(false);
-            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> this.model.getState().getPlayer().setMoveLeft(false);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.model.getState().getPlayer().setMoveRight(false);
+            case KeyEvent.VK_W, KeyEvent.VK_UP -> player.setMoveUp(false);
+            case KeyEvent.VK_S, KeyEvent.VK_DOWN -> player.setMoveDown(false);
+            case KeyEvent.VK_A, KeyEvent.VK_LEFT -> player.setMoveLeft(false);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> player.setMoveRight(false);
             default -> {}
         }
     }
@@ -95,7 +97,8 @@ public class GameController extends MouseAdapter implements MouseMotionListener,
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            this.model.getState().getPlayer().setAttacking(false);
+            Player player = model.getState().getPlayer();
+            player.setAttacking(false);
         }
     }
 
@@ -104,7 +107,7 @@ public class GameController extends MouseAdapter implements MouseMotionListener,
         if (model.getStatus() != GameModel.GameStatus.PLAYING) {
             return;
         }
-        model.Player player = this.model.getState().getPlayer();
+        Player player = this.model.getState().getPlayer();
 
         int screenWidth = gamePanel.getWidth();
         int screenHeight = gamePanel.getHeight();
