@@ -2,4 +2,6 @@
 out/
 .idea/
 *.iml
-*.db
+*.db.vscode/
+proyecto_completo.txt
+src/proyecto_completo.txt
