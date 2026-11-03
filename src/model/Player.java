@@ -6,17 +6,16 @@ import java.util.function.UnaryOperator;
 public class Player extends Character {
 
     private static final int MAX_HEALTH = 100;
+    private static final int INVULNERABILITY_COOLDOWN= 1000; // 1 segundo de inmunidad al chocar
+
     private boolean moveUp;
     private boolean moveDown;
     private boolean moveLeft;
     private boolean moveRight;
     private boolean isAttacking;
 
-    // [POWERUP] estado que modifican los power ups
     private final List<Effect> effects = new ArrayList<>();
     private PlayerStats stats = new BaseStats(); // cadena de decoradores (escudo, daño)
-
-    private double angle; // Ángulo en radianes hacia el cursor
 
     private final MeleeWeapon knife;
     private FireArm primaryWeapon; // Arma de fuego equipada
@@ -24,7 +23,6 @@ public class Player extends Character {
 
     // Variables de inmunidad
     private long lastDamageTime = 0;
-    private final int invulnerabilityCooldown = 1000; // 1 segundo de inmunidad al chocar
      
     //variable para llevar un registro del daño total recibido por el jugador(HUD)
     private int damageTaken = 0;
@@ -65,10 +63,6 @@ public class Player extends Character {
         return moveUp || moveDown || moveRight || moveLeft;
     }
 
-    public double getAngle() {
-        return angle;
-    }
-
     public FireArm getPrimaryWeapon() {
         return primaryWeapon;
     }
@@ -89,7 +83,7 @@ public class Player extends Character {
         updateEffects(); // vence los efectos temporales
         stats = stats.prune(); // descarta los decoradores vencidos
 
-        if (this.isAttacking && this.activeWeapon != null && this.activeWeapon.isAutomatic()) {
+        if (this.isAttacking && this.activeWeapon.isAutomatic()) {
             this.attack(state);
         }
 
@@ -101,6 +95,26 @@ public class Player extends Character {
         if (moveRight) dx += 1;
 
         move(dx, dy, state);
+    }
+
+    @Override
+    public void takeDamage(int amount) {
+        long currentTime = clock.nowMillis();
+
+        // Evaluamos el cooldown de choque antes de procesar el daño
+        if (currentTime - lastDamageTime >= INVULNERABILITY_COOLDOWN) {
+            // Los decoradores de escudo absorben primero; a la vida llega lo que sobra
+            int reachesHealth = stats.absorbDamage(amount);
+            int absorbedByShield = amount - reachesHealth;
+
+            int healthBefore = getHealth();
+            super.takeDamage(reachesHealth);
+
+            damageTaken += absorbedByShield + (healthBefore - getHealth());
+
+            // Reiniciamos el temporizador de inmunidad
+            this.lastDamageTime = currentTime;
+        }
     }
 
     public void aimAt(double mouseX, double mouseY) {
@@ -128,9 +142,7 @@ public class Player extends Character {
     }
 
     public void attack(GameState state) {
-        if (this.activeWeapon != null) {
-            this.activeWeapon.attack(this, state);
-        }
+        this.activeWeapon.attack(this, state);
     }
 
     public void addEffect(Effect effect) {
@@ -155,26 +167,6 @@ public class Player extends Character {
         moveLeft = false;
         moveRight = false;
         isAttacking = false;
-    }
-
-    @Override
-    public void takeDamage(int amount) {
-        long currentTime = clock.nowMillis();
-        
-        // Evaluamos el cooldown de choque antes de procesar el daño
-        if (currentTime - lastDamageTime >= invulnerabilityCooldown) {
-            // Los decoradores de escudo absorben primero; a la vida llega lo que sobra
-            int reachesHealth = stats.absorbDamage(amount);
-            int absorbedByShield = amount - reachesHealth;
-
-            int healthBefore = getHealth();
-            super.takeDamage(reachesHealth);
-
-            damageTaken += absorbedByShield + (healthBefore - getHealth());
-
-            // Reiniciamos el temporizador de inmunidad
-            this.lastDamageTime = currentTime;
-        }
     }
 
     // Envuelve las stats actuales con un nuevo decorador

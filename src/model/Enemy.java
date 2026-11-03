@@ -8,7 +8,6 @@ public class Enemy extends Character {
 
     private static final double[] AVOID_ANGLES_DEG = {0, 25, -25, 50, -50, 75, -75, 100, -100};
 
-    protected double angle;
     private final EnemyType type;
     private final int attackDamage;
     private long lastAttackTime = 0;
@@ -17,13 +16,8 @@ public class Enemy extends Character {
 
     public Enemy(double x, double y, EnemyType type, int width, int height, double speed, int health, int attackDamage) {
         super(x, y, width, height, speed, health);
-        this.angle = 0.0;
         this.type = type;
         this.attackDamage = attackDamage;
-    }
-
-    public double getAngle() {
-        return angle;
     }
 
     public void update(Player target, GameState state) {

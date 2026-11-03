@@ -3,6 +3,7 @@ package model;
 public abstract class Character extends Entity {
 
     protected double speed;
+    protected double angle; // hacia donde mira
     private int health;
 
     public Character(double x, double y, int width, int height, double speed, int health) {
@@ -14,8 +15,13 @@ public abstract class Character extends Entity {
     public int getHealth() {
         return health;
     }
-    public void setHealth(int health) {
+
+    protected void setHealth(int health) {
         this.health = health;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     protected void move(double dx, double dy, GameState state) {
